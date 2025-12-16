@@ -149,6 +149,8 @@ import axios from "axios";
 
 const CategoryMegaMenu = () => {
   const [menuData, setMenuData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [hoveredMain, setHoveredMain] = useState(null);
   const [hoveredSub, setHoveredSub] = useState(null);
   const [hoveredSeries, setHoveredSeries] = useState(null);
@@ -156,17 +158,36 @@ const CategoryMegaMenu = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(
-        "https://api.summithomeappliance.com/php_controllar/contraollers/getMegaMenu.php"
-      )
-      .then((res) => setMenuData(res.data))
-      .catch((err) => console.error("Menu fetch error:", err));
+    const fetchMenuData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("http://127.0.0.1:8000/api/mega-menu");
+        setMenuData(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Menu fetch error:", err);
+        setError("Failed to load menu data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuData();
   }, []);
 
   return (
     <div className="category-nav hidden lg:flex items-center justify-center space-x-2  mt-2 text-sm font-medium pb-2">
-      {menuData.map((main) => (
+      {loading ? (
+        <div className="flex items-center justify-center w-full py-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+          <span className="ml-2 text-gray-600">Loading menu...</span>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center w-full py-4">
+          <span className="text-red-600">{error}</span>
+        </div>
+      ) : (
+        menuData.map((main) => (
         <div
           key={main.id}
           className="relative group"
@@ -325,7 +346,8 @@ const CategoryMegaMenu = () => {
             </div>
           )}
         </div>
-      ))}
+      ))
+      )}
     </div>
   );
 };
