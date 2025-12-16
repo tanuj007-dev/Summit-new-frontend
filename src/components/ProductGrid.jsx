@@ -5,10 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const CategoryPage = ({addToCart,buyNowHandle,isLoggedIn,wishlist,handlewishlist}) => {
   const [products, setProducts] = useState([]);
   const [subcategory, setSubCategory] = useState([]);
+  const [wishlistItems, setWishlist] = useState([]);
 
   const [filterOptions, setFilterOptions] = useState({
     lid_type: [],
@@ -34,7 +36,37 @@ const CategoryPage = ({addToCart,buyNowHandle,isLoggedIn,wishlist,handlewishlist
 
   const getProduct = async () => {
     try {
-      const res = await axiosInstance.get(`getProductList.php?main=${main}`);
+      // Use the new API endpoint with search parameter based on category
+      let searchQuery = '';
+      
+      // Build search query based on route params
+      if (main) {
+        searchQuery = main;
+      } else if (subcat) {
+        searchQuery = subcat;
+      } else if (series) {
+        searchQuery = series;
+      } else if (seriesOption) {
+        searchQuery = seriesOption;
+      } else if (productSize) {
+        searchQuery = productSize;
+      }
+      
+      console.log('Fetching products with search query:', searchQuery);
+      
+      // Create a custom axios instance for the new API endpoint
+      const newApiInstance = axios.create({
+        baseURL: 'http://127.0.0.1:8000',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+        timeout: 10000,
+      });
+      
+      // Use the new API endpoint
+      const res = await newApiInstance.get(`/api/products/view?search=${searchQuery}`);
+      console.log('API Response:', res.data);
       const productsData = res.data;
 
       setProducts(productsData);
@@ -48,10 +80,13 @@ const CategoryPage = ({addToCart,buyNowHandle,isLoggedIn,wishlist,handlewishlist
         bottom_type: uniqueValues(productsData, 'bottom_type'),
       });
 
-      const response = await axiosInstance.get(`getCategory.php?main=${main}`);
-      setSubCategory(response.data);
+      // Only fetch categories if we have a main category
+      if (main) {
+        const response = await axiosInstance.get(`getCategory.php?main=${main}`);
+        setSubCategory(response.data);
+      }
     } catch (e) {
-      console.error(e);
+      console.error("Error fetching products:", e);
     }
   };
 
@@ -65,7 +100,7 @@ const CategoryPage = ({addToCart,buyNowHandle,isLoggedIn,wishlist,handlewishlist
         }
       })
       .catch((err) => console.error("Failed to load wishlist:", err));
-  }, [main]);
+  }, [main, subcat, series, seriesOption, productSize]);
 
   const filteredProducts = products?.filter(product => {
     return (
@@ -393,9 +428,9 @@ const CategoryPage = ({addToCart,buyNowHandle,isLoggedIn,wishlist,handlewishlist
           >
             <div className="absolute top-3 right-3 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
             <FontAwesomeIcon
-              icon={wishlist?.includes(parseInt(product.id)) ? solidHeart : regularHeart}
+              icon={wishlistItems?.includes(parseInt(product.id)) ? solidHeart : regularHeart}
               style={{
-                color: wishlist?.includes(parseInt(product.id)) ? "#E03B2D" : "gray",
+                color: wishlistItems?.includes(parseInt(product.id)) ? "#E03B2D" : "gray",
                 cursor: "pointer",
                 fontSize: "16px",
               }}

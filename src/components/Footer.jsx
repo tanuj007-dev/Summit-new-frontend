@@ -22,19 +22,19 @@ const Footer = () => {
       .catch((err) => console.error("Footer menu fetch error:", err));
   }, []);
   return (
-    <footer>
-      <div className="relative flex flex-wrap md:flex-nowrap space-x-0 md:space-x-32 bg-[url('/asset/images/FooterMountains.png')] md:bg-[length:100%_100%] bg-[length:180%_100%] bg-center bg-no-repeat h-[40%vh] md:h-[80vh] px-4 py-12 md:px-16 overflow-hidden ">
-        <div>
+    <footer className="md:hidden">
+      <div className="relative flex flex-wrap space-x-0 bg-[url('/asset/images/FooterMountains.png')] bg-[length:200%_100%] bg-center bg-no-repeat h-[40vh] px-4 py-12 overflow-hidden ">
+        <div className="absolute top-4 left-4">
           <img
             src="/asset/images/Logo.png"
             alt=""
-            className="w-20 sm:w-24 rounded-lg"
+            className="w-12"
           />
         </div>
-        <div className="flex md:justify-between break-words sm:space-x-0 mt-5 w-full">
-          <div className="text-white  break-words  max-w-xs">
-            <h1 className="font-semibold">Contact Us</h1>
-            <div className="text-[0.7rem] md:text-sm space-x-3 space-y-1 md:space-y-3 mt-4">
+        <div className="flex justify-center gap-2 break-words mt-4 w-full">
+          <div className="text-white break-words max-w-xs">
+            <h1 className="font-semibold mt-4 text-[0.7rem]">Contact Us</h1>
+            <div className="text-[0.6rem] space-x-3 space-y-1 mt-1">
               <p className="flex items-center gap-1">
                 {" "}
                 <a href="">
@@ -60,13 +60,13 @@ const Footer = () => {
               </p>
             </div>
           </div>
-          <div className="text-white order-1 md:order-2 -mt-6 md:mt-0">
-            <h1 className="font-semibold ">Useful Links</h1>
-            <ul className="text-[0.7rem] md:text-sm space-y-2 mt-4">
+          <div className="text-white order-1 -mt-6">
+            <h1 className="font-semibold text-[0.7rem]">Useful Links</h1>
+            <ul className="text-[0.6rem] space-y-2 mt-4">
               <li>
                 <Link to="/blogs">Blogs</Link>
               </li>
-              {/* <li><Link to='/about'>About Us</Link> </li> */}
+              <li><Link to='/about'>About Us</Link> </li>
               <li>
                 {" "}
                 <Link to="/shipping-policy">Shipping Policy</Link>{" "}
@@ -85,9 +85,13 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+          
+          {/* Dark shadow from bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
+          
         </div>
 
-        <div></div>
+        
       </div>
       {/* links and tags  */}
     <div className="relative flex flex-wrap md:flex-nowrap h-[40vh] md:h-[120vh] px-4 py-12 md:px-16 overflow-hidden">
@@ -328,5 +332,4 @@ const Footer = () => {
 };
 
 export default Footer;
-
-// bg-[url('/asset/images/FooterMountains.png')]
+ 

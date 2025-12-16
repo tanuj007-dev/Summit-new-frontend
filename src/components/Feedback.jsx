@@ -49,20 +49,20 @@ const feedbackArray = [
 ];
 
 const FeedbackCard = ({ item }) => (
-  <div className="bg-[#F5F5F7] rounded-2xl  p-6 flex flex-col justify-between h-[280px] md:h-[200px] border border-gray-100">
+  <div className="bg-[#F5F5F7] rounded-2xl p-3 sm:p-4 md:p-6 flex flex-col justify-between h-[100px] sm:h-[180px] md:h-[200px] border border-gray-100">
     {/* Star Ratings */}
-    <div className="flex mb-3">
+    <div className="flex mb-2 sm:mb-3">
       {Array.from({ length: 5 }).map((_, i) =>
         i < item.rating ? (
-          <FaStar key={i} className="text-[#E53935]" />
+          <FaStar key={i} className="text-[#E53935] text-xs sm:text-sm md:text-base" />
         ) : (
-          <FaRegStar key={i} className="text-[#E53935]" />
+          <FaRegStar key={i} className="text-[#E53935] text-xs sm:text-sm md:text-base" />
         )
       )}
     </div>
 
     {/* Review Text */}
-    <p className="text-gray-700 text-sm mb-6 leading-relaxed line-clamp-4">
+    <p className="text-gray-700 text-xs sm:text-[6px] md:text-sm mb-3 sm:mb-4 md:mb-6 leading-relaxed line-clamp-3 sm:line-clamp-4">
       {item.review}
     </p>
 
@@ -71,11 +71,11 @@ const FeedbackCard = ({ item }) => (
       <img
         src={item.image}
         alt={item.name}
-        className="w-12 h-12 rounded-full object-cover mr-3"
+        className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 rounded-full object-cover mr-2 sm:mr-3"
       />
       <div>
-        <p className="text-sm font-semibold">{item.name}</p>
-        <p className="text-xs text-gray-500">{item.profession}</p>
+        <p className="text-[9px] sm:text-[6px] md:text-sm font-semibold">{item.name}</p>
+        <p className="text-[8px] sm:text-xs md:text-xs text-gray-500">{item.profession}</p>
       </div>
     </div>
   </div>
@@ -85,11 +85,11 @@ const Feedback = () => {
   return (
     <div className="py-12 bg-white">
       {/* Heading */}
-      <div className="px-6 md:px-12 mb-8 text-start">
-        <h2 className="text-3xl font-bold text-black">
+      <div className="px-2 md:px-12 mb-8 ">
+        <h2 className="text-xl sm:text-3xl text-center sm:text-start font-bold text-black">
           Hear It from Happy Kitchens
         </h2>
-        <p className="text-gray-500 font-medium mt-2">
+        <p className="text-gray-500 text-center sm:text-start text-justify px-4 text-xs sm:text-xl sm:px-0 font-medium mt-2">
           Real reviews from Amazon, Flipkart, and more — see why Indian cooks trust Summit every day.
         </p>
       </div>

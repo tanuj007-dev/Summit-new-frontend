@@ -1,92 +1,45 @@
-// import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import axios from "../axiosConfig";
+import axios from "../axiosConfig";
 import { HiArrowLongRight } from "react-icons/hi2";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 const Blogs = () => {
   const navigate = useNavigate();
-  // const [posts, setPosts] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [authors, setAuthors] = useState({});
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [authors, setAuthors] = useState({});
 
-  const staticBlogs = [
-    {
-      id: 1,
-      title: "When to use triply ply pressure cookers?",
-      excerpt:
-        "Expert advice best use cases for triply ply pressure cookers.",
-      image: "/asset/images/blogimg.png",
-      date: "February 22, 2025",
-      author: "Samar Verma  ",
-    },
-    {
-      id: 2,
-      title: "When to use triply ply pressure cookers?",
-      excerpt:
-        "Expert advice best use cases for triply ply pressure cookers.",
-      image: "/asset/images/blogimg.png",
-      date: "February 22, 2025",
-      author: "Samar Verma  ",
-    },
-    {
-      id: 3,
-      title: "When to use triply ply pressure cookers?",
-      excerpt:
-        "Expert advice best use cases for triply ply pressure cookers.",
-      image: "/asset/images/blogimg.png",
-      date: "February 22, 2025",
-      author: "Samar Verma  ",
-    },
-    {
-      id: 4,
-      title: "When to use triply ply pressure cookers?",
-      excerpt:
-        "Expert advice best use cases for triply ply pressure cookers.",
-      image: "/asset/images/blogimg.png",
-      date: "February 22, 2025",
-      author: "Samar Verma  ",
-    },
-    {
-      id: 5,
-      title: "When to use triply ply pressure cookers?",
-      excerpt:
-        "Expert advice best use cases for triply ply pressure cookers.",
-      image: "/asset/images/blogimg.png",
-      date: "February 22, 2025",
-      author: "Samar Verma  ",
-    },
-    
-  ];
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://blogs.summithomeappliance.com/wp-json/wp/v2/posts?_embed&per_page=10&page=1`
+        );
+        setPosts(response.data);
 
-  // useEffect(() => {
-  //   const fetchPosts = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const response = await axios.get(
-  //         `https://blogs.summithomeappliance.com/wp-json/wp/v2/posts?_embed&per_page=4&page=1`
-  //       );
-  //       setPosts(response.data);
-
-  //       // Get all unique author IDs
-  //       const authorIds = [...new Set(response.data.map((post) => post.author))];
-
-  //       // Fetch author names
-  //       const authorRequests = authorIds.map((id) =>
-  //         axios.get(`https://blogs.summithomeappliance.com/wp-json/wp/v2/users/${id}`)
-  //       );
-  //       const authorResponses = await Promise.all(authorRequests);
-  //       const authorMap = {};
-  //       authorResponses.forEach((res) => {
-  //         authorMap[res.data.id] = res.data.name;
-  //       });
-  //       setAuthors(authorMap);
-  //     } catch {
-  //       setPosts([]);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchPosts();
-  // }, []);
+        const authorIds = [...new Set(response.data.map((post) => post.author))];
+        const authorRequests = authorIds.map((id) =>
+          axios.get(`https://blogs.summithomeappliance.com/wp-json/wp/v2/users/${id}`)
+        );
+        const authorResponses = await Promise.all(authorRequests);
+        const authorMap = {};
+        authorResponses.forEach((res) => {
+          authorMap[res.data.id] = res.data.name;
+        });
+        setAuthors(authorMap);
+      } catch {
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   const bloglistener = (slug) => {
     navigate(`/blog/${slug}`);
@@ -96,180 +49,126 @@ const Blogs = () => {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlContent;
     const text = tempDiv.textContent || tempDiv.innerText || "";
-    return text.slice(0,70) + "...";
+    return text.split(" ").slice(0, 15).join(" ") + "...";
   };
 
   return (
-    <div className="allblog">
-      <style>
-        {`
-        .allblog {
-          max-width: 1665px;
-          margin: 0 auto;
-          padding: 40px 65px ;
-          font-family: -Helvetica Now Display, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen;
-        }
-
-        .blog-header {
-          text-align: center;
-          margin-bottom: 40px;
-        }
-
-        .blog-header h1 {
-          font-size: 36px;
-          font-weight: bold;
-          margin: 0;
-        }
-
-        .blog-grid {
-          display: grid;
-          grid-template-columns: repeat(1, 1fr); /* Mobile */
-          gap: 40px 30px;
-        }
-
-        @media (min-width: 768px) {
-          .blog-grid {
-            grid-template-columns: repeat(, 1fr); /* Tablet */
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .blog-grid {
-            grid-template-columns: repeat(5, 1fr); /* Desktop */
-          }
-        }
-
-        .blog-card {
-          display: flex;
-          flex-direction: column;
-          border-radius: 20px;
-          background: white;
-          overflow: hidden;
-          cursor: pointer;
-          transition: transform 0.3s;
-        //   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-        }
-
-        .blog-card:hover {
-          transform: translateY(-5px);
-        }
-
-        .blog-card img {
-          width: 100%;
-          height: 250px;
-          object-fit: cover;
-          border-radius: 30px;
-        }
-
-        .meta {
-          font-size: 14px;
-          color: #666;
-          margin-top: 10px;
-        }
-
-        .blog-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin-top: 5px;
-          color: #111;
-          
-        }
-
-        .excerpt {
-          font-size: 14px;
-          color: #636365;
-          margin: 10px 0;
-        }
-
-        .readmore {
-          font-weight: 500;
-          font-size: 14px;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          color: #111;
-        }
-
-        .more-articles {
-          margin-top: 40px;
-          text-align: center;
-        }
-
-        .more-articles button {
-          background: #f5f5f5;
-          padding: 12px 30px;
-          border-radius: 30px;
-          font-size: 16px;
-          cursor: pointer;
-          border: none;
-          transition: background 0.3s;
-        }
-
-        .more-articles button:hover {
-          background: #ddd;
-        }
-        `}
-      </style>
-
-      <div className="blog-header">
+    <div className="allblog max-w-[1665px] mx-auto p-10 sm:px-16 font-sans">
+      {/* Heading */}
+      <div className="blog-header text-center mb-10">
         <h3 className="text-4xl font-semibold">Blogs</h3>
       </div>
 
-      {/* {loading ? (
-        <p style={{ textAlign: "center" }}>Loading...</p>
-      ) : (
-        <div className="blog-grid">
-          {posts.map((post) => {
-            const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
-            const date = new Date(post.date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            });
-            const authorName = authors[post.author] || "Unknown";
-
-            return (
-              <div key={post.id} className="blog-card" onClick={() => bloglistener(post.slug)}>
-                {imageUrl && <img src={imageUrl} alt={post.title.rendered} />}
-                <div style={{ padding: "16px" }}>
-                  <div className="meta">{date} &nbsp;&nbsp; {authorName.substring(0,20)}...</div>
-                  <div className="blog-title" dangerouslySetInnerHTML={{ __html: (post.title.length>50)?(post.title.rendered).substring(0,50)+"...":(post.title.rendered) }} />
-                  <div className="excerpt">{getFirst15Words(post.content.rendered)}</div>
-                  <div className="readmore">Read more →</div>
-                </div>
-              </div>
-            );
-          })}
+      {/* Blog posts from API */}
+      {loading ? (
+        <div className="text-center py-10">
+          <p className="text-lg text-gray-600">Loading...</p>
         </div>
-      )} */}
-
-{/* static blog pictures */}
-        <div className="blog-grid  ">
-        {staticBlogs.map((post) => (
-          <div
-            key={post.id}
-            className="blog-card"
-            onClick={() => bloglistener(post.id)}
+      ) : (
+        <div className="relative">
+          <Swiper
+            modules={[Navigation, Autoplay]}
+            spaceBetween={24}
+            slidesPerView={1}
+            loop={true}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+            navigation={{
+              nextEl: '.swiper-button-next-blog',
+              prevEl: '.swiper-button-prev-blog',
+            }}
+            breakpoints={{
+              0: {
+                slidesPerView: 1,
+                spaceBetween: 16,
+              },
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
+              1024: {
+                slidesPerView: 4,
+                spaceBetween: 28,
+              },
+              1280: {
+                slidesPerView: 5,
+                spaceBetween: 32,
+              },
+            }}
+            className="blog-swiper"
           >
-            <img src={post.image} alt={post.title} />
-            <div style={{ padding: "16px" }}>
-              <div className="meta">
-                {post.date} &nbsp;&nbsp; {post.author}
-              </div>
-              <div className="blog-title">{post.title}</div>
-              <div className="excerpt">{post.excerpt}</div>
-              <div className="readmore">Read more <HiArrowLongRight size={30} className=" items-center justify-center mt-1 " /></div>
-            </div>
-          </div>
-        ))}
+            {posts.map((post) => {
+              const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+              const date = new Date(post.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+              const authorName = authors[post.author] || "Unknown";
+
+              return (
+                <SwiperSlide key={post.id}>
+                  <div
+                    className="blog-card flex flex-col bg-[#F2F2F3] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:translate-y-[-5px] h-[500px] min-h-[500px] max-h-[500px]"
+                    onClick={() => bloglistener(post.slug)}
+                  >
+                    {imageUrl && (
+                      <img 
+                        src={imageUrl} 
+                        alt={post.title.rendered} 
+                        className="w-full h-64 object-cover rounded-t-2xl flex-shrink-0"
+                      />
+                    )}
+                    <div className="p-4 flex flex-col flex-grow min-h-0">
+                      <div className="meta text-xs text-gray-600 mt-2 flex-shrink-0">
+                        {date} &nbsp;&nbsp; {authorName}
+                      </div>
+                      <div 
+                        className="blog-title text-sm text-justify font-semibold mt-2 mb-2 text-gray-900 flex-grow min-h-0 overflow-hidden" 
+                        dangerouslySetInnerHTML={{ __html: post.title.rendered }} 
+                      />
+                      <div className="excerpt text-justify text-[14px] text-gray-600 flex-shrink-0 overflow-hidden">
+                        {getFirst15Words(post.content.rendered)}
+                      </div>
+                      <div className="readmore text-sm font-medium flex items-center gap-1 text-gray-900 flex-shrink-0 mt-auto">
+                        Read more <HiArrowLongRight size={30} className=" items-center justify-center mt-1 " />
+                      </div>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+
+          {/* Navigation Buttons */}
+          <button
+            className="swiper-button-prev-blog absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+          >
+            <FaChevronLeft />
+          </button>
+          <button
+            className="swiper-button-next-blog absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      )}
+
+      {/* More Articles Button */}
+      <div className="more-articles mt-10 text-center">
+        <button 
+          onClick={() => navigate("/all-blogs")}
+          className="bg-gray-200 px-8 py-3 rounded-full text-base font-medium cursor-pointer transition-colors duration-300 hover:bg-gray-200"
+        >
+          View More Articles
+        </button>
       </div>
-
-      <div className="more-articles">
-  <button onClick={() => navigate("/all-blogs")}>
-    View More Articles
-  </button>
-</div>
-
     </div>
   );
 };

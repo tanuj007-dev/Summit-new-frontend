@@ -2,6 +2,7 @@ import "./App.css";
 import Header from "./components/Header";
   import CategoryMegaMenu from   './components/header/CategoryMegaMenu.jsx'
 import Footer from "./components/Footer";
+import DesktopFooter from "./components/DesktopFooter";
 import HeroSlider from "./components/HeroSlider";
 import Trend from "./components/Trends";
 // import GasStoveSection from "./components/GasStoveSection";
@@ -476,7 +477,12 @@ function App() {
           <Route path="/admin/warranties" element={<AdminAuthProvider><ProtectedAdminRoute><WarrantiesPage /></ProtectedAdminRoute></AdminAuthProvider>} />
           <Route path="/admin/certifications" element={<AdminAuthProvider><ProtectedAdminRoute><CertificationsPage /></ProtectedAdminRoute></AdminAuthProvider>} />
         </Routes>
-        {!isAdminRoute && <Footer />}
+        {!isAdminRoute && (
+          <>
+            <Footer />
+            <DesktopFooter />
+          </>
+        )}
           </CartProvider>
         </TooltipProvider>
       </DataProvider>
