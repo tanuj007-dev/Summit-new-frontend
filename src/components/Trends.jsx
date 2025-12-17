@@ -75,10 +75,10 @@ const Trends = () => {
   };
 
   return (
-    <section className="w-full bg-white py-6 sm:py-8 px-4 sm:px-6 lg:px-8 relative">
+    <section className="w-full bg-white py-8 sm:py-8 px-4 sm:px-6 lg:px-8 relative">
       {/* ===== Heading ===== */}
       <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
+        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
           Trending Kitchen Appliances
         </h2>
         <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
@@ -86,7 +86,7 @@ const Trends = () => {
         </p>
       </div>
 
-      {/* ===== Clickable Category Buttons ===== */}
+      {/* ===== Clickable Category Buttons ===== */}  
       <div className="w-full mx-auto flex justify-center text-[#545455] font-medium mb-6 sm:mb-8 lg:mb-10">
         <div className="overflow-x-auto scrollbar-hide pb-2">
           <div className="flex gap-3 sm:gap-4 md:gap-6 justify-center sm:justify-start min-w-max px-1">
@@ -99,7 +99,7 @@ const Trends = () => {
                     setSelectedCategory(category);
                     setCurrentIndex(0);
                   }}
-                  className={`rounded-full px-3 sm:px-4 md:px-5 py-1.5 text-xs sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0 ${
+                  className={`rounded-full px-3 sm:px-4 md:px-5 py-1.5 text-[16px] sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0 ${
                     isActive
                       ? "bg-[#B91508] text-white"
                       : "bg-[#E9E9EB] text-[#545455] hover:bg-[#d5d5d7]"
@@ -148,20 +148,20 @@ const Trends = () => {
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-full h-[160px] sm:h-[200px] md:h-[260px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
+                        className="w-full h-[190px] sm:h-[200px] md:h-[260px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
                       />
                     </Link>
-                    <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[8px] sm:text-sm px-2 sm:px-3 py-1 rounded">
+                    <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
                       Sale
                     </span>
                   </div>
 
                   {/* TEXT + PRICE */}
                   <div className="text-center text-nowrap mt-3 sm:mt-4">
-                    <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-1">
+                    <h3 className="text-[18px] sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-[10px] sm:text-sm text-gray-400 mb-2 sm:mb-3">
+                    <p className="text-[14px] sm:text-sm text-gray-400 mb-2 sm:mb-3">
                       from{" "}
                       <span className="font-semibold text-black">
                         {item.price}
@@ -176,19 +176,19 @@ const Trends = () => {
                   <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
                     <button
                       onClick={() => handleAddToCart(item.id)}
-                      className="bg-[#B91508] text-white text-nowrap text-[10px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
+                      className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
                     >
                       Add to Cart
                     </button>
                     <button
                       onClick={() => handleBuyNow(item.id)}
-                      className="text-[#B91508] text-[10px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
+                      className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
                     >
                       Buy Now
                     </button>
                   </div>
                 </div>
-              </div>
+              </div>  
             ))}
           </div>
         </div>

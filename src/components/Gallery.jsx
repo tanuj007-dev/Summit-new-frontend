@@ -6,7 +6,7 @@ const Gallery = () => {
     <div className="w-full md:mt-1 py-10 px-4 md:py-1 md:px-16 md:pb-1 ">
       <div className="flex flex-col items-center ">
         {" "}
-        <h2 className="md:text-[1.6rem] text-lg font-semibold">
+        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold">
           Curated Kitchen Essentials
         </h2>
         <p className="text-[#636365] font-semibold mt-1">Only the Best</p>

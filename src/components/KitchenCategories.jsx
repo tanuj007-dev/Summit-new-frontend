@@ -16,10 +16,10 @@ export default function KitchenCategories() {
       {/* ================= DESKTOP VIEW ================= */}
       <section className="hidden md:block w-full bg-[#F5F5F7] py-12">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-semibold text-black">
+          <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
             Curated Kitchen Essentials
           </h2>
-          <p className="text-gray-500 text-[1.2rem] mt-1">
+          <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
             Only the Best
           </p>
         </div>
@@ -43,12 +43,12 @@ export default function KitchenCategories() {
       </section>
 
       {/* ================= MOBILE VIEW ================= */}
-      <section className="block md:hidden bg-[#F5F5F7] py-6">
+      <section className="block md:hidden bg-[#F5F5F7] py-8">
         <div className="text-center mb-6 px-4">
-          <h2 className="text-lg font-semibold text-black">
+          <h2 className="text-2xl font-semibold text-gray-900">
             Curated Kitchen Essentials
           </h2>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
             Only the Best
           </p>
         </div>
@@ -69,7 +69,7 @@ export default function KitchenCategories() {
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-36 object-cover"
+                className="w-full h-42 object-cover"
               />
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
