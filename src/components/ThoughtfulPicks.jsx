@@ -71,38 +71,41 @@ const ThoughtfulPicks = () => {
     }
   };
 
+  
   return (
     <section className="w-full bg-white py-6 px-4 sm:px-6 relative">
 
       {/* ===== Heading ===== */}
       <div className="text-center mb-2 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold">
+        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
           Thoughtful Picks by Price
         </h2>
-        <p className="text-gray-500 text-[12px] sm:text-base mt-1">
+        <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
           Gifting Made Simple, Shopping Made Smarter
         </p>
       </div>
 
       {/* ===== Filters ===== */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-3 sm:mb-6">
-        {filters.map(filter => (
-          <button
-            key={filter.value}
-            onClick={() => handleFilterClick(filter.value, filter.label)}
-            className={`px-4 py-1.5 text-[6px] sm:text-sm rounded-full transition-all
-              ${
-                activeFilter === filter.label
-                  ? "bg-[#B91508] text-white shadow-md scale-105"
-                  : "bg-[#E9E9EB] text-[#545455]"
-              }`}
-          >
-            {filter.label}
-          </button>
-        ))}
+      <div className="overflow-x-auto scrollbar-hide pb-2 mb-3 sm:mb-6">
+        <div className="flex gap-1 sm:gap-3 min-w-max px-1">
+          {filters.map(filter => (
+            <button
+              key={filter.value}
+              onClick={() => handleFilterClick(filter.value, filter.label)}
+              className={`rounded-full px-3 sm:px-4 md:px-5 py-1.5 text-[16px] sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0
+                ${
+                  activeFilter === filter.label
+                    ? "bg-[#B91508] text-white shadow-md scale-105"
+                    : "bg-[#E9E9EB] text-[#545455]"
+                }`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <p className="text-center text-xs sm:text-sm text-gray-500 mb-2  sm:mb-8">
+      <p className="text-center text-[12px] mb-3 sm:text-sm text-gray-500  sm:mb-8">
         Festive Favorites & Luxe Kitchenware — something truly special.
       </p>
 
@@ -143,19 +146,19 @@ const ThoughtfulPicks = () => {
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-[160px] sm:h-[200px] md:h-[260px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
+                      className="w-full h-[190px] sm:h-[200px] md:h-[260px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
                     />
-                    <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[8px] sm:text-sm px-2 sm:px-3 py-1 rounded">
+                   <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
                       Sale
                     </span>
                   </div>
 
                   {/* Text */}
                     <div className="text-center text-nowrap mt-3 sm:mt-4">
-                    <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-1">
+                    <h3 className="text-[18px] sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-[10px] sm:text-sm text-gray-400 mb-2 sm:mb-3">
+                    <p className="text-[14px] sm:text-sm text-gray-400 mb-2 sm:mb-3">
                       from{" "}
                       <span className="font-semibold text-black">
                         {item.price}
@@ -167,16 +170,16 @@ const ThoughtfulPicks = () => {
                   </div>
 
                   {/* Buttons */}
-                <div className="flex gap-1 sm:gap-3 justify-center mt-auto flex-nowrap">
+               <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
                     <button
                       onClick={() => handleAddToCart(item.id)}
-                      className="bg-[#B91508] text-white text-nowrap text-[10px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition flex-shrink-0"
+                      className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
                     >
                       Add to Cart
                     </button>
                     <button
                       onClick={() => handleBuyNow(item.id)}
-                      className="text-[#B91508] text-[10px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition flex-shrink-0"
+                      className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
                     >
                       Buy Now
                     </button>
