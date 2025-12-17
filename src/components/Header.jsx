@@ -236,7 +236,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                 </Link>
               </div>
               <div className="flex items-center space-x-2">
-                <FiSearch className="bg-[#F1F1F1] rounded-full text-black p-2 w-7 h-7" />
+                <FiSearch  className="bg-[#F1F1F1]  text- rounded-full text-black p-2 w-7 h-7" />
                 <span className="relative">
                   <Link
                     to={"/Cart"}
@@ -258,8 +258,8 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
             </div>
             <div className="hidden md:relative md:flex items-center justify-center w-full md:w-1/1">
               {/* Search input with icon */}
-              <span className="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm">
-                <FiSearch />
+              <span className="absolute inset-y-0 left-3 flex items-center text-gray-500 text-lg">
+                <FiSearch  />
               </span>
               <input
                 type="search"

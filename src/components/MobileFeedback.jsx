@@ -1,4 +1,4 @@
- import React from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { FaStar, FaRegStar } from "react-icons/fa";
@@ -26,7 +26,7 @@ const feedbackArray = [
     name: "Anjali Mehta",
     profession: "Kitchen Lifestyle Influencer",
     review:
-      "As someone who loves experimenting with recipes, this brand’s grinder and cookware collection perfectly blend durability with style. It’s now my kitchen essential!",
+      "As someone who loves experimenting with recipes, this brand's grinder and cookware collection perfectly blend durability with style. It's now my kitchen essential!",
     rating: 4,
     image: "/asset/images/feedback/feed3.png",
   },
@@ -34,7 +34,7 @@ const feedbackArray = [
     name: "Vikas Singh",
     profession: "Food Enthusiast",
     review:
-      "As someone who loves experimenting with recipes, this brand’s grinder and cookware collection perfectly blend durability with style. It’s now my kitchen essential!",
+      "As someone who loves experimenting with recipes, this brand's grinder and cookware collection perfectly blend durability with style. It's now my kitchen essential!",
     rating: 5,
     image: "/asset/images/feedback/feed2.png",
   },
@@ -42,54 +42,54 @@ const feedbackArray = [
     name: "Sneha Gupta",
     profession: "Baker & YouTuber",
     review:
-      "As someone who loves experimenting with recipes, this brand’s grinder and cookware collection perfectly blend durability with style. It’s now my kitchen essential!",
+      "As someone who loves experimenting with recipes, this brand's grinder and cookware collection perfectly blend durability with style. It's now my kitchen essential!",
     rating: 4,
     image: "/asset/images/feedback/feed3.png",
   },
 ];
 
-const FeedbackCard = ({ item }) => (
-  <div className="bg-[#F5F5F7] rounded-2xl p-6 py-8 flex flex-col justify-between h-[240px] border border-gray-100">
+const MobileFeedbackCard = ({ item }) => (
+  <div className="bg-[#F5F5F7] rounded-2xl p-4 py-6 flex flex-col justify-between h-[190px] border border-gray-100 md:hidden">
     {/* Star Ratings */}
-    <div className="flex mb-4">
+    <div className="flex mb-3">
       {Array.from({ length: 5 }).map((_, i) =>
         i < item.rating ? (
-          <FaStar key={i} className="text-[#E53935] text-base" />
+          <FaStar key={i} className="text-[#E53935] text-sm" />
         ) : (
-          <FaRegStar key={i} className="text-[#E53935] text-base" />
+          <FaRegStar key={i} className="text-[#E53935] text-sm" />
         )
       )}
     </div>
 
     {/* Review Text */}
-    <p className="text-gray-700 text-sm mb-6 leading-relaxed line-clamp-4">
+    <p className="text-gray-700 text-xs mb-4 leading-relaxed line-clamp-3">
       {item.review}
     </p>
 
     {/* User Info */}
-    <div className="flex items-center mt-auto">
+    <div className="flex items-center">
       <img
         src={item.image}
         alt={item.name}
-        className="w-12 h-12 rounded-full object-cover mr-3"
+        className="w-10 h-10 rounded-full object-cover mr-3"
       />
       <div className="">
-        <p className="text-sm font-semibold">{item.name}</p>
+        <p className="text-xs font-semibold">{item.name}</p>
         <p className="text-xs text-gray-500">{item.profession}</p>
       </div>
     </div>
   </div>
 );
 
-const Feedback = () => {
+const MobileFeedback = () => {
   return (
-    <div className="hidden md:block py-8 bg-white">
+    <div className="py-8 bg-white">
       {/* Heading */}
-      <div className="px-12 mb-8 ">
-        <h2 className="text-3xl text-start font-bold text-black">
+      <div className="px-4 mb-6 md:hidden">
+        <h2 className="text-xl text-center font-bold text-black">
           Hear It from Happy Kitchens
         </h2>
-        <p className="text-gray-500 text-start text-xl font-medium mt-2">
+        <p className="text-gray-500 text-center text-sm font-medium mt-2">
           Real reviews from Amazon, Flipkart, and more — see why Indian cooks trust Summit every day.
         </p>
       </div>
@@ -97,8 +97,8 @@ const Feedback = () => {
       {/* Row 1 - Left to Right */}
       <Swiper
         modules={[Autoplay]}
-        spaceBetween={24}
-        slidesPerView={3}
+        spaceBetween={16}
+        slidesPerView={1.2}
         loop={true}
         autoplay={{
           delay: 0,
@@ -109,17 +109,17 @@ const Feedback = () => {
       >
         {feedbackArray.map((item, i) => (
           <SwiperSlide key={i}>
-            <FeedbackCard item={item} />
+            <MobileFeedbackCard item={item} />
           </SwiperSlide>
         ))}
       </Swiper>
 
       {/* Row 2 - Right to Left */}
-      <div className="mt-10">
+      <div className="mt-8">
         <Swiper
           modules={[Autoplay]}
-          spaceBetween={24}
-          slidesPerView={3}
+          spaceBetween={16}
+          slidesPerView={1.2}
           loop={true}
           autoplay={{
             delay: 0,
@@ -130,7 +130,7 @@ const Feedback = () => {
         >
           {feedbackArray.map((item, i) => (
             <SwiperSlide key={i}>
-              <FeedbackCard item={item} />
+              <MobileFeedbackCard item={item} />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -139,4 +139,4 @@ const Feedback = () => {
   );
 };
 
-export default Feedback;
+export default MobileFeedback;

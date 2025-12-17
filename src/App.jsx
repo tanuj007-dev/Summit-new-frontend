@@ -18,6 +18,7 @@ import SummitSelect from "./components/SummitSelect";
 import SummitSection from "./components/SummitSection";
 import Available from "./components/Available";
 import Feedback from "./components/Feedback";
+import MobileFeedback from "./components/MobileFeedback";
 import Connectivity from "./components/Connectivity";
 import Blogs from "./components/Blogs";
 import DetailProduct from "./components/DetailProduct";
@@ -383,6 +384,7 @@ function App() {
                 {/* <ReelSection /> */}
                 {/* <SummitSection /> */}
                 <Available />
+                <MobileFeedback />
                 <Feedback />
                 <Connectivity />
                 <Blogs />
