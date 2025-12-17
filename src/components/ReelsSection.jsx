@@ -63,13 +63,13 @@ const ThoughtfulPicks = ({ user }) => {
   };
 
   return (
-    <section className="w-full bg-[#F5F5F7] py-5 sm:py-10 px-6">
+    <section className="w-full bg-[#F5F5F7] py-8 sm:py-10 px-6 sm:px-6">
       {/* Mobile View */}
       <div className="md:hidden ">
-        <h2 className="text-[15px] font-semibold text-black">Reels in Action: Summit in Your Kitchen</h2>
+        <h2 className="text-2xl font-semibold text-black">Reels in Action: Summit in Your Kitchen</h2>
      
       </div>
-      <p className="md:hidden text-[#636365] text-justify   text-xs mt-2">
+      <p className="md:hidden text-[#636365] text-justify   text-sm mt-2">
         See your favorite creators whip up magic with Summit home and kitchen
         appliances - shop the exact product below
       </p>
@@ -79,7 +79,7 @@ const ThoughtfulPicks = ({ user }) => {
         <h2 className="text-xl sm:text-3xl font-semibold">Reels in Action</h2>
         <p className="text-[#636365] text-3xl">: Summit in Your Kitchen</p>
       </div>
-      <p className="hidden md:block text-[#636365] px-8 mx-8 font-semibold">
+      <p className="hidden md:block text-[#636365] px-8 mx-8 mt-2 font-semibold">
         See your favorite creators whip up magic with Summit home and kitchen
         appliances - shop the exact product beflow
       </p>
@@ -115,16 +115,16 @@ const ThoughtfulPicks = ({ user }) => {
 
             {/* TEXT + PRICE */}
            <div className="text-center mt-4">
-              <div className="flex items-center justify-center mb-2 text-gray-500 text-[12px] font-normal space-x-2">
-                <FaInstagram className="text-gray-500 text-lg" />
+              <div className="flex items-center justify-center mb-1 text-gray-500 text-[12px] font-normal space-x-2">
+                <FaInstagram className="text-gray-500 text-xl" />
                 <span>@cookwithmark</span>
               </div>
 
-              <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-[18px] sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">
                 {item.title}
               </h3>
 
-              <p className="text-md mb-2 text-gray-400">
+              <p className="text-[14px] mb-1 text-gray-400">
                 from{" "}
                 <span className="font-semibold text-black">{item.price}</span>{" "}
                 <span className="text-gray-400 line-through ml-1">
@@ -132,24 +132,24 @@ const ThoughtfulPicks = ({ user }) => {
                 </span>
               </p>
               {item.title !== "Inner Lid Pressure Cooker" && (
-                <span className="text-[#636365]">Only 2 units left</span>
+                <span className="text-[14px] text-[#636365]">Only 2 units left</span>
               )}
             </div>
             {/* BUTTONS */}
-             <div className="flex gap-3 justify-center mt-2">
-              <button
-                onClick={() => handleAddToCart()}
-                className="bg-[#B91508] text-white text-sm px-4 py-1 rounded-full hover:bg-red-700 transition"
-              >
-                Add to Cart
-              </button>
-              <button
-                onClick={() => handleBuyNow()}
-                className="text-[#B91508] text-sm px-4 py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
-              >
-                Buy Now
-              </button>
-            </div>
+            <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
+                    <button
+                      onClick={() => handleAddToCart(item.id)}
+                      className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      onClick={() => handleBuyNow(item.id)}
+                      className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
+                    >
+                      Buy Now
+                    </button>
+                  </div>
           </div>
         ))}
       </div>

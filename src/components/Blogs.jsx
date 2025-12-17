@@ -56,7 +56,7 @@ const Blogs = () => {
     <div className="allblog max-w-[1665px] mx-auto p-10 sm:px-16 font-sans">
       {/* Heading */}
       <div className="blog-header text-center mb-10">
-        <h3 className="text-4xl font-semibold">Blogs</h3>
+        <h3 className="text-2xl sm:text-4xl font-semibold">Blogs</h3>
       </div>
 
       {/* Blog posts from API */}
@@ -122,7 +122,7 @@ const Blogs = () => {
                       <img 
                         src={imageUrl} 
                         alt={post.title.rendered} 
-                        className="w-full h-64 object-cover rounded-t-2xl flex-shrink-0"
+                        className="w-full h-70 object-cover rounded-2xl flex-shrink-0"
                       />
                     )}
                     <div className="p-4 flex flex-col flex-grow min-h-0">
@@ -148,12 +148,12 @@ const Blogs = () => {
 
           {/* Navigation Buttons */}
           <button
-            className="swiper-button-prev-blog absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+            className="swiper-button-prev-blog absolute left-[-10px] sm:left-[-2px] z-10 top-1/2 -translate-y-8/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
           >
             <FaChevronLeft />
           </button>
           <button
-            className="swiper-button-next-blog absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+            className="swiper-button-next-blog absolute right-[-10px] sm:right-[-2px] z-10 top-1/2 -translate-y-8/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
           >
             <FaChevronRight />
           </button>

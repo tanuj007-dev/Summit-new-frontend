@@ -23,18 +23,20 @@ const Footer = () => {
   }, []);
   return (
     <footer className="md:hidden">
-      <div className="relative flex flex-wrap space-x-0 bg-[url('/asset/images/FooterMountains.png')] bg-[length:200%_100%] bg-center bg-no-repeat h-[40vh] px-4 py-12 overflow-hidden ">
+      <div className="relative flex flex-wrap space-x-0 bg-[url('/asset/images/FooterMountains.png')] bg-[length:200%_100%] bg-center bg-no-repeat     min-h-fit
+ px-4 py-12 overflow-hidden ">
         <div className="absolute top-4 left-4">
           <img
             src="/asset/images/Logo.png"
             alt=""
-            className="w-12"
+            className="w-12 "
           />
         </div>
-        <div className="flex justify-center gap-2 break-words mt-4 w-full">
+          
+        <div className="flex justify-between gap-2 break-words mt-4 w-full">
           <div className="text-white break-words max-w-xs">
-            <h1 className="font-semibold mt-4 text-[0.7rem]">Contact Us</h1>
-            <div className="text-[0.6rem] space-x-3 space-y-1 mt-1">
+            <h1 className="font-semibold mt-4 text-[16px]">Contact Us</h1>
+            <div className="text-[14px] space-x-2 space-y-1 mt-1">
               <p className="flex items-center gap-1">
                 {" "}
                 <a href="">
@@ -42,13 +44,13 @@ const Footer = () => {
                 </a>
                 1800 419 6048
               </p>
-              <p className="flex items-center gap-1">
+              {/* <p className="flex items-center gap-1">
                 {" "}
                 <a href="">
                   <FaEnvelope />
                 </a>
                 customercare@summithomeappliance.com
-              </p>
+              </p> */}
               <p className="flex gap-1">
                 {" "}
                 <a href="">
@@ -58,16 +60,24 @@ const Footer = () => {
                 Ghaziabad-201102 UP <br />
                 (INDIA)
               </p>
+              <p className="flex items-center gap-1">
+                {" "}
+                <a href="">
+                  <FaEnvelope />
+                </a>
+                customercare
+                  @summithomeappliance.com
+              </p>
             </div>
           </div>
           <div className="text-white order-1 -mt-6">
-            <h1 className="font-semibold text-[0.7rem]">Useful Links</h1>
-            <ul className="text-[0.6rem] space-y-2 mt-4">
+            <h1 className="font-semibold text-nowrap text-[16px]">Useful Links</h1>
+            <ul className="text-[14px] text-nowrap space-y-2 mt-4">
               <li>
                 <Link to="/blogs">Blogs</Link>
               </li>
               <li><Link to='/about'>About Us</Link> </li>
-              <li>
+              <li className="">
                 {" "}
                 <Link to="/shipping-policy">Shipping Policy</Link>{" "}
               </li>
@@ -87,14 +97,15 @@ const Footer = () => {
           </div>
           
           {/* Dark shadow from bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
+           
           
         </div>
 
         
       </div>
       {/* links and tags  */}
-    <div className="relative flex flex-wrap md:flex-nowrap h-[40vh] md:h-[120vh] px-4 py-12 md:px-16 overflow-hidden">
+    <div className="relative flex flex-wrap md:flex-nowrap min-h-fit
+ md:h-[120vh] px-4 py-12 md:px-16 overflow-hidden">
   
   {/* 🔹 Blurred Background Image */}
   <div className="absolute inset-0">
@@ -109,11 +120,12 @@ const Footer = () => {
   <div className="absolute inset-0 bg-black/50"></div>
 
   {/* 🔹 Content */}
-  <div className="relative text-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mx-auto text-sm px-4">
+  <div className="relative text-white  grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-14 mx-auto ">
    {/* 1 col */}
    <div >
   <h3 className="font-bold mb-2">Pressure Cooker</h3>
-  <ul className="space-y-1">
+  <ul className="space-y-1 text-[13px] whitespace-normal sm:text-nowrap
+">
     <li>Inner Lid Pressure Cooker</li>
     <li>Outer Lid Pressure Cooker</li>
     <li>Clip On/Flip On Pressure Cooker</li>
@@ -135,7 +147,8 @@ const Footer = () => {
           {/* 2 col */}
              <div>
   <h3 className="font-semibold mb-2">Cookware</h3>
-  <ul className="space-y-1">
+  <ul className="space-y-1 text-[13px] whitespace-normal sm:text-nowrap
+">
     <li>Non-Stick Cookware</li>
     <li>Ceramic Non-Stick Cookware</li>
     <li>Triply Cookware</li>
@@ -162,7 +175,7 @@ const Footer = () => {
 </div>
 
           {/* 3 col */}
-
+{/* 
          <div>
   <h3 className="font-semibold mb-2">Kitchen Appliances</h3>
   <ul className="space-y-1">
@@ -199,11 +212,11 @@ const Footer = () => {
     <li>OTG Oven</li>
     <li>Air Fryer</li>
   </ul>
-</div>
+</div> */}
 
  {/* 4 col */}
 
-  <div>
+  {/* <div>
   <h3 className="font-semibold mb-2">Food Preparation Appliances</h3>
   <ul className="space-y-1">
     <li>Mixer Grinder</li>
@@ -224,7 +237,7 @@ const Footer = () => {
     <li>Electric Chopper</li>
     <li>Grain Grinder</li>
   </ul>
-</div>
+</div> */}
 
    
   </div>
@@ -290,12 +303,12 @@ const Footer = () => {
       </div> */}
 
           
-          <div className="flex justify-between md:px-16 text-white px-6  py-4 md:text-xs items-center">
-            <div className="text-[0.5rem] md:text-sm">
+          <div className="flex justify-between md:px-16 text-white   py-4  items-center">
+            <div className="text-[12px]">
               Vardhman Industries ©{new Date().getFullYear()} | All rights
               reserved
             </div>
-            <div className="text-[0.6rem] md:text-xs flex space-x-4 ">
+            <div className="text-[0.5rem] md:text-xs flex space-x-4 ">
               <Link
                 to={"https://www.instagram.com/summit_home_appliances/?hl=en"}
               >

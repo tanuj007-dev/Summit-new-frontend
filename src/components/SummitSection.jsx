@@ -33,7 +33,7 @@ const SummitSection = () => {
       
   return (
     <div>
-      <div className="px-4 md:px-16 py-10">
+      <div className="px-4 md:px-16 py-8 sm:py-10">
         <div className="relative">
           <div className="w-full flex flex-col ">
             <h2 className=" text-center text-2xl font-semibold">

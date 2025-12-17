@@ -111,7 +111,7 @@ const SummitSelect = ({ user }) => {
     <section className="w-full bg-white py-6 sm:py-8 px-4 sm:px-6 lg:px-8 relative">
       {/* Section Title */}
       <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
+        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
         Summit Select
         </h2>
         <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
@@ -148,20 +148,20 @@ const SummitSelect = ({ user }) => {
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-full h-[160px] sm:h-[180px] md:h-[220px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
+                        className="w-full h-[190px] sm:h-[180px] md:h-[220px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
                       />
                     </Link>
-                   <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[8px] sm:text-sm px-2 sm:px-3 py-1 rounded">
+               <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
                       Sale
                     </span>
                   </div>
 
                   {/* TEXT + PRICE */}
-                  <div className="text-center mt-2 sm:mt-3 md:mt-4 w-full">
-                    <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
+                    <div className="text-center text-nowrap mt-3 sm:mt-4">
+                    <h3 className="text-[18px] sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-[10px] sm:text-xs md:text-sm text-gray-400 mb-2 sm:mb-3">
+                    <p className="text-[14px] sm:text-sm text-gray-400 mb-2 sm:mb-3">
                       from{" "}
                       <span className="font-semibold text-black">
                         {item.price}
@@ -173,16 +173,16 @@ const SummitSelect = ({ user }) => {
                   </div>
 
                   {/* BUTTONS */}
-                  <div className="flex gap-1 sm:gap-2 md:gap-3 justify-center mt-auto w-full">
+                 <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
                     <button
                       onClick={() => handleAddToCart(item.id)}
-                      className="bg-[#B91508] text-white text-[8px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition flex-1"
+                      className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
                     >
                       Add to Cart
                     </button>
                     <button
                       onClick={() => handleBuyNow(item.id)}
-                      className="text-[#B91508] text-[8px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition flex-1"
+                      className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
                     >
                       Buy Now
                     </button>
