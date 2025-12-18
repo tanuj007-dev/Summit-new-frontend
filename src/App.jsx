@@ -62,6 +62,7 @@ import { Toaster } from "./components/Admin/layout/ui/toaster";
 import { DataProvider } from "./context/DataContext";
 import { AdminAuthProvider } from "./context/AdminAuthContext";
 import NotFound from "./components/NotFound";
+import Loading from "./components/Loading";
 import Dashboard from "./components/Admin/pages/Dashboard";
 import ProductsPage from "./components/Admin/pages/ProductsPage";
 import ProductDetailsPage from "./components/Admin/pages/ProductDetailsPage";
@@ -73,7 +74,7 @@ import WarrantiesPage from "./components/Admin/pages/WarrantiesPage";
 import CertificationsPage from "./components/Admin/pages/CertificationsPage";
 import ProtectedAdminRoute from "./components/Admin/ProtectedAdminRoute";
 import AdminLogin from "./components/Admin/AdminLogin";
- 
+ import ScrollVelocity from './components/ScrollVelocity'
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasSyncedLocalCart, setHasSyncedLocalCart] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { pathname } = useLocation();
   console.log('isLoggedIn', isLoggedIn)
@@ -90,6 +92,26 @@ function App() {
   
   // Check if current route is admin panel
   const isAdminRoute = pathname.startsWith('/admin');
+  // Check if current route is a 404 page (catched by the * route)
+  const isNotFoundRoute = () => {
+    const validRoutes = [
+      '/', '/about', '/contact', '/cart', '/login', '/register', 
+      '/accountsPage', '/myorders', '/wishlist', '/checkout', '/thankyou',
+      '/trackShipment', '/shipping-policy', '/refund-policy', '/privacy-policy',
+      '/terms-conditions', '/blogs', '/all-blogs', '/product', '/category',
+      '/products', '/kitchena-appliances', '/admin'
+    ];
+    
+    // Check if pathname starts with any valid route
+    const isValidRoute = validRoutes.some(route => 
+      pathname === route || pathname.startsWith(route + '/') || pathname.startsWith(route + '?')
+    );
+    
+    const is404 = !isValidRoute && !pathname.startsWith('/admin');
+    console.log('Route Debug - pathname:', pathname, 'isValidRoute:', isValidRoute, 'is404:', is404);
+    
+    return is404;
+  };
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -115,21 +137,32 @@ function App() {
   }
 
   useEffect(() => {
-    axios
-      .get(
-        "/wishlistupload.php?action=get"
-      )
-      .then((res) => {
-        if (Array.isArray(res.data)) {
-          const productIds = res.data.map((item) => parseInt(item.product_id));
+    const loadInitialData = async () => {
+      try {
+        // Load products
+        const productsResponse = await axios.get("/products.php");
+        setProducts(productsResponse.data);
+        
+        // Load login status
+        const loginResponse = await axios.get("/CheckLogin.php", {
+          withCredentials: true,
+        });
+        setIsLoggedIn(loginResponse.data.loggedIn);
+        
+        // Load wishlist
+        const wishlistResponse = await axios.get("/wishlistupload.php?action=get");
+        if (Array.isArray(wishlistResponse.data)) {
+          const productIds = wishlistResponse.data.map((item) => parseInt(item.product_id));
           setWishlist(productIds);
-        } else {
-          console.error("Unexpected wishlist format", res.data);
         }
-      })
-      .catch((err) => {
-        console.error("Failed to load wishlist:", err);
-      });
+      } catch (error) {
+        console.error("Error loading initial data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialData();
   }, []);
 
 
@@ -169,31 +202,8 @@ function App() {
   };
 
   useEffect(() => {
-    axios
-      .get(
-        "/products.php"
-      )
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error loading products:", err));
-  }, []);
-  useEffect(() => {
   }, [products]);
 
-  useEffect(() => {
-    axios.get(
-      "/CheckLogin.php",
-      {
-        withCredentials: true,
-      }
-    )
-      .then((response) => {
-        setIsLoggedIn(response.data.loggedIn);
-      })
-      .catch((error) => {
-        console.error("Error checking login status:", error);
-      });
-
-  }, []);
 
   useEffect(() => {
     if (isLoggedIn && !hasSyncedLocalCart) {
@@ -341,25 +351,30 @@ function App() {
     window.location.reload(true);
   };
 
+  if (isLoading) {
+    return <Loading fullScreen={true} />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <DataProvider>
         <TooltipProvider>
           <Toaster />
           <CartProvider>
-            {!isAdminRoute && <Header
+            {!isAdminRoute && !isNotFoundRoute() && <Header
               addcart={cartItems}
               isLoggedIn={isLoggedIn}
               handlelogout={handlelogout}
             />}
-            {!isAdminRoute && pathname === '/' && <CategoryMegaMenu />} 
+            {!isAdminRoute && !isNotFoundRoute() && pathname === '/' && <CategoryMegaMenu />} 
             <Routes>
           <Route
             path="/"
             element={
               <>
-                <HeroSlider />
-              
+      
+                <HeroSlider />  
+                 
                 <Trend
                   buyNowHandle={buyNowHandle}
                   user={products}
@@ -376,7 +391,13 @@ function App() {
                 <Discription />
                 <ThoughtfulPicks/>
                 <ReelsSection/>
+                {/* <ScrollVelocity
+  texts={['Summit Home Appliances', 'Discover the Future of Cooking']} 
+  velocity={100} 
+  className="custom-scroll-text"
+/> */}
                 <SummitSelect/>
+
                 {/* <ByPrice
                   user={products}
                   addToCart={addToCart}
@@ -480,8 +501,9 @@ function App() {
           <Route path="/admin/materials" element={<AdminAuthProvider><ProtectedAdminRoute><MaterialsPage /></ProtectedAdminRoute></AdminAuthProvider>} />
           <Route path="/admin/warranties" element={<AdminAuthProvider><ProtectedAdminRoute><WarrantiesPage /></ProtectedAdminRoute></AdminAuthProvider>} />
           <Route path="/admin/certifications" element={<AdminAuthProvider><ProtectedAdminRoute><CertificationsPage /></ProtectedAdminRoute></AdminAuthProvider>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-        {!isAdminRoute && (
+        {!isAdminRoute && !isNotFoundRoute() && (
           <>
             <Footer />
             <DesktopFooter />

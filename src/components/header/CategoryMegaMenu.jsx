@@ -216,11 +216,11 @@ const CategoryMegaMenu = () => {
               id: "alluminium",
               name: "Alluminium",
               options: [
-                { id: "Ultimate", name: "Ultimate", sizes: ["3L", "5L"] },
-                { id: "Fine", name: "Fine", sizes: ["7L", "10L"] },
-                { id: "Prime", name: "Prime", sizes: ["7L", "10L"] },
-                { id: "Supreme", name: "Supreme", sizes: ["7L", "10L"] },
-                { id: "Heavy", name: "Heavy", sizes: ["7L", "10L"] },
+                { id: "Ultimate", name: "Ultimate", sizes: ["3L", "5L", "16L", "20L", "24L", "18L", "22L"] },
+                { id: "Fine", name: "Fine", sizes: ["7L", "10L", "1L", "1.5L", "2L", "3L", "5L"] },
+                { id: "Prime", name: "Prime", sizes: ["7L", "10L", "3L", "5L", "5.5L"] },
+                { id: "Supreme", name: "Supreme", sizes: ["1L", "1.5L", "2L", "3L", "5L", "5.5L", "7L", "8L", "10L", "12L", "15L"] },
+                { id: "Heavy", name: "Heavy", sizes: ["5L", "5.5L"] },
               ],
             },
             {

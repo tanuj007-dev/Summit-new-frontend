@@ -37,7 +37,7 @@
     "framer-motion": "^12.23.24",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.507.0",
-    "motion": "^12.23.24",
+    "motion": "^12.23.26",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-helmet": "^6.1.0",

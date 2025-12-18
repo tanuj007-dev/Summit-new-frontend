@@ -73,14 +73,14 @@ const ThoughtfulPicks = () => {
 
   
   return (
-    <section className="w-full bg-white py-6 px-4 sm:px-6 relative">
+    <section className="w-full bg-white py-6 px-2 sm:px-6 relative">
 
       {/* ===== Heading ===== */}
       <div className="text-center mb-2 sm:mb-6">
         <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
           Thoughtful Picks by Price
         </h2>
-        <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
+        <p className="text-[#636365] text-sm sm:text-base md:text-lg mb-4 font-semibold mt-1">
           Gifting Made Simple, Shopping Made Smarter
         </p>
       </div>
@@ -92,7 +92,7 @@ const ThoughtfulPicks = () => {
             <button
               key={filter.value}
               onClick={() => handleFilterClick(filter.value, filter.label)}
-              className={`rounded-full justify-center px-3 sm:px-4 md:px-5 py-1.5 text-[16px] sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0
+              className={`rounded-full justify-center px-3 sm:px-4 md:px-5 py-1.5 text-sm sm:text-base md:text-lg transition-all whitespace-nowrap flex-shrink-0
                 ${
                   activeFilter === filter.label
                     ? "bg-[#B91508] text-white shadow-md scale-105"
@@ -105,17 +105,15 @@ const ThoughtfulPicks = () => {
         </div>
       </div>
 
-      <p className="text-center text-[12px] mb-3 sm:text-sm text-gray-500  sm:mb-8">
-        Festive Favorites & Luxe Kitchenware — something truly special.
-      </p>
+      
 
       {/* ===== Slider ===== */}
-      <div className="relative flex items-center">
+      <div className="relative flex mt-6 items-center">
 
         {/* Prev */}
        <button
                  onClick={prevSlide}
-                 className="absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+                 className="absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-gray-100 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
                >
                  <FaChevronLeft />
                </button>
@@ -193,7 +191,7 @@ const ThoughtfulPicks = () => {
         {/* Next */}
        <button
                 onClick={nextSlide}
-                className="absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+                className="absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-gray-100 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
               >
                 <FaChevronRight />
               </button>

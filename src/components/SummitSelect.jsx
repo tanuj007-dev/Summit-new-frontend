@@ -126,7 +126,7 @@ const SummitSelect = ({ user }) => {
         {/* Left Button */}
         <button
                  onClick={prevSlide}
-                 className="absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+                 className="absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-gray-100 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
                >
                  <FaChevronLeft />
                </button>
@@ -196,7 +196,7 @@ const SummitSelect = ({ user }) => {
         {/* Right Button */}
            <button
                   onClick={nextSlide}
-                  className="absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+                  className="absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-gray-100 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
                 >
                   <FaChevronRight />
                 </button>

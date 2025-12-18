@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { FaRegCheckCircle } from "react-icons/fa";
 const About = () => {
   return (
-    <main className="bg-white">
+    <main className="bg-white  " >
       <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-12 py-14 sm:py-16 lg:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden shadow-xl">
@@ -67,7 +67,7 @@ const About = () => {
         </div>
       </section>
 
-      <section className="bg-white">
+      {/* <section className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
@@ -137,107 +137,196 @@ const About = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
-          <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center rounded-full bg-[#B91508]/10 px-4 py-2 text-sm border border-[#B91508] font-semibold text-[#B91508]">
-              Why Summit
-            </div>
-            <h2 className="mt-5 text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">
-              Why Choose <span className="text-[#B91508]">Summit</span>?
-            </h2>
-            <p className="mt-3 max-w-2xl text-gray-600 leading-relaxed">
-              Every Summit product is engineered with precision and care, bringing together the best of traditional craftsmanship and modern technology.
-            </p>
+     
+    <section className="bg-[#FBFAF9]">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-12 py-14 sm:py-16">
+
+        {/* Header */}
+        <div className="flex flex-col items-center text-center">
+          <div className="inline-flex items-center rounded-full bg-[#B91508]/10 px-4 py-2 text-sm border border-[#B91508] font-semibold text-[#B91508]">
+            Why Summit
           </div>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-3xl border shadow-2xl border-gray-200 bg-white p-7 hover:shadow-md transition">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-                  <path d="M12 21s-7-4-7-10V6l7-4 7 4v5c0 6-7 10-7 10Z" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="mt-6 text-lg font-semibold text-gray-900">High-Grade Materials</div>
-              <div className="mt-2 text-sm text-gray-600 leading-relaxed">
-                Crafted from premium aluminum and stainless steel, ensuring even heat distribution and lasting durability.
-              </div>
-            </div>
+          <h2 className="mt-5 text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">
+            Why Choose <span className="text-[#B91508]">Summit</span>?
+          </h2>
 
-            <div className="rounded-3xl border shadow-2xl border-gray-200 bg-white p-7 hover:shadow-md transition">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-                  <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4Z" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M9 12l2 2 4-5" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="mt-6 text-lg font-semibold text-gray-900">Advanced Safety Valves</div>
-              <div className="mt-2 text-sm text-gray-600 leading-relaxed">
-                Multiple safety mechanisms including pressure regulators and gasket release systems for worry-free cooking.
-              </div>
-            </div>
-
-            <div className="rounded-3xl border shadow-2xl border-gray-200 bg-white p-7 hover:shadow-md transition">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-                  <path d="M7 14l5-5 5 5" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M12 9v13" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="mt-6 text-lg font-semibold text-gray-900">Ergonomic Handles</div>
-              <div className="mt-2 text-sm text-gray-600 leading-relaxed">
-                Heat-resistant, comfortable grip handles designed for safe handling even with full loads.
-              </div>
-            </div>
-
-            <div className="rounded-3xl border shadow-2xl border-gray-200 bg-white p-7 hover:shadow-md transition">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-                  <path d="M12 6v6l4 2" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9Z" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="mt-6 text-lg font-semibold text-gray-900">Long-Lasting Performance</div>
-              <div className="mt-2 text-sm text-gray-600 leading-relaxed">
-                Built to withstand years of daily use with consistent performance and minimal maintenance.
-              </div>
-            </div>
-
-            <div className="rounded-3xl border shadow-2xl border-gray-200 bg-white p-7 hover:shadow-md transition">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-                  <path d="M4 20h16" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M6 20V10a6 6 0 0 1 12 0v10" stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="mt-6 text-lg font-semibold text-gray-900">Indian Cooking Optimized</div>
-              <div className="mt-2 text-sm text-gray-600 leading-relaxed">
-                Designed specifically for Indian cooking styles—from dal to biryani, we've got you covered.
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-[#B91508] p-7 shadow-md text-white flex flex-col justify-between">
-              <div>
-                <div className="text-xl sm:text-2xl font-semibold">Discover the Summit Difference</div>
-                <div className="mt-2 text-sm text-white/85 leading-relaxed">
-                  Experience the perfect blend of safety, style, and performance.
-                </div>
-              </div>
-              <div className="mt-8">
-                <Link to="/product" className="inline-flex items-center gap-2 text-sm font-semibold text-white underline underline-offset-4">
-                  View All Products
-                  <span aria-hidden>→</span>
-                </Link>
-              </div>
-            </div>
-          </div>
+          <p className="mt-3 max-w-2xl text-gray-600 leading-relaxed">
+            Every Summit product is engineered with precision and care, bringing together the best of traditional craftsmanship and modern technology.
+          </p>
         </div>
-      </section>
+
+        {/* Cards */}
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Card 1 */}
+          <div className="group rounded-3xl border border-gray-200 bg-white p-7
+            shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+            transition-all duration-500 ease-out
+            hover:-translate-y-2
+            hover:shadow-[0_20px_50px_rgba(185,21,8,0.15)]
+            hover:border-[#B91508]/40">
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10
+              transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                <path d="M12 21s-7-4-7-10V6l7-4 7 4v5c0 6-7 10-7 10Z"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+
+            <div className="mt-6 text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-[#B91508]">
+              High-Grade Materials
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600 leading-relaxed transition-all duration-300 group-hover:text-gray-700">
+              Crafted from premium aluminum and stainless steel, ensuring even heat distribution and lasting durability.
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="group rounded-3xl border border-gray-200 bg-white p-7
+            shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+            transition-all duration-500 ease-out
+            hover:-translate-y-2
+            hover:shadow-[0_20px_50px_rgba(185,21,8,0.15)]
+            hover:border-[#B91508]/40">
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10
+              transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4Z"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M9 12l2 2 4-5"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+
+            <div className="mt-6 text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-[#B91508]">
+              Advanced Safety Valves
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600 leading-relaxed transition-all duration-300 group-hover:text-gray-700">
+              Multiple safety mechanisms including pressure regulators and gasket release systems for worry-free cooking.
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="group rounded-3xl border border-gray-200 bg-white p-7
+            shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+            transition-all duration-500 ease-out
+            hover:-translate-y-2
+            hover:shadow-[0_20px_50px_rgba(185,21,8,0.15)]
+            hover:border-[#B91508]/40">
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10
+              transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                <path d="M7 14l5-5 5 5"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 9v13"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+
+            <div className="mt-6 text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-[#B91508]">
+              Ergonomic Handles
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600 leading-relaxed transition-all duration-300 group-hover:text-gray-700">
+              Heat-resistant, comfortable grip handles designed for safe handling even with full loads.
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="group rounded-3xl border border-gray-200 bg-white p-7
+            shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+            transition-all duration-500 ease-out
+            hover:-translate-y-2
+            hover:shadow-[0_20px_50px_rgba(185,21,8,0.15)]
+            hover:border-[#B91508]/40">
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10
+              transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                <path d="M12 6v6l4 2"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9Z"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+
+            <div className="mt-6 text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-[#B91508]">
+              Long-Lasting Performance
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600 leading-relaxed transition-all duration-300 group-hover:text-gray-700">
+              Built to withstand years of daily use with consistent performance and minimal maintenance.
+            </div>
+          </div>
+
+          {/* Card 5 */}
+          <div className="group rounded-3xl border border-gray-200 bg-white p-7
+            shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+            transition-all duration-500 ease-out
+            hover:-translate-y-2
+            hover:shadow-[0_20px_50px_rgba(185,21,8,0.15)]
+            hover:border-[#B91508]/40">
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B91508]/10
+              transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                <path d="M4 20h16"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6 20V10a6 6 0 0 1 12 0v10"
+                  stroke="#B91508" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+
+            <div className="mt-6 text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-[#B91508]">
+              Indian Cooking Optimized
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600 leading-relaxed transition-all duration-300 group-hover:text-gray-700">
+              Designed specifically for Indian cooking styles—from dal to biryani, we've got you covered.
+            </div>
+          </div>
+
+          {/* CTA Card */}
+          <div className="group rounded-3xl bg-[#B91508] p-7 text-white
+            shadow-[0_15px_40px_rgba(185,21,8,0.35)]
+            transition-all duration-500 ease-out
+            hover:scale-[1.03]
+            hover:shadow-[0_25px_60px_rgba(185,21,8,0.5)]
+            flex flex-col justify-between">
+
+            <div>
+              <div className="text-xl sm:text-2xl font-semibold">
+                Discover the Summit Difference
+              </div>
+              <div className="mt-2 text-sm text-white/85 leading-relaxed">
+                Experience the perfect blend of safety, style, and performance.
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <Link
+                to="/product"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white
+                underline underline-offset-4 transition-all duration-300 group-hover:gap-3">
+                View All Products →
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
 
       <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-12 py-14 sm:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-5">
               <div className="inline-flex items-center rounded-full bg-[#B91508]/10 px-4 py-2 text-xs font-semibold text-[#B91508]">
@@ -255,42 +344,32 @@ const About = () => {
 
               <ul className="mt-7 space-y-3 text-sm text-gray-700">
                 <li className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B91508]/10">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5">
-                      <path d="M9 12l2 2 4-5" stroke="#B91508" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <span className="m flex size-7 items-center justify-center rounded-full bg-[#B91508]/10">
+                     <FaRegCheckCircle size={23} className="text-[#B91508]" />
                   </span>
                   100% pressure tested before dispatch
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B91508]/10">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5">
-                      <path d="M9 12l2 2 4-5" stroke="#B91508" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <span className="mt-0.5 flex size-7 items-center justify-center rounded-full bg-[#B91508]/10">
+                  <FaRegCheckCircle size={23} className="text-[#B91508]" />
                   </span>
                   Premium food-grade materials only
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B91508]/10">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5">
-                      <path d="M9 12l2 2 4-5" stroke="#B91508" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <span className=" flex size-7 items-center justify-center rounded-full bg-[#B91508]/10">
+                    <FaRegCheckCircle size={23} className="text-[#B91508]" />
                   </span>
                   Multi-point safety inspection
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B91508]/10">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5">
-                      <path d="M9 12l2 2 4-5" stroke="#B91508" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <span className=" flex size-7 items-center justify-center rounded-full bg-[#B91508]/10">
+                    <FaRegCheckCircle size={23} className="text-[#B91508]" />
                   </span>
                   Certified manufacturing facilities
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B91508]/10">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5">
-                      <path d="M9 12l2 2 4-5" stroke="#B91508" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <span className=" flex size-7  items-center justify-center rounded-full bg-[#B91508]/10">
+                     <FaRegCheckCircle size={23} className="text-[#B91508]" />
                   </span>
                   Customer satisfaction guarantee
                 </li>
@@ -339,7 +418,7 @@ const About = () => {
             <div className="lg:col-span-7">
               <div className="relative overflow-hidden rounded-3xl shadow-xl">
                 <img
-                  src="/asset/images/pressurecooker.jpg"
+                  src="/asset/images/cooker3.png"
                   alt="Summit pressure cooker quality and safety"
                   className="h-[360px] sm:h-[440px] lg:h-[520px] w-full object-cover"
                 />
@@ -365,7 +444,7 @@ const About = () => {
       </section>
 
       <section className="bg-[#B91508]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-12 py-14 sm:py-16">
           <div className="flex flex-col items-center text-center">
             <h2 className="text-3xl sm:text-5xl font-semibold text-white leading-tight">
               Built for Your Kitchen.

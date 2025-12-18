@@ -19,7 +19,9 @@ import { useNavigate } from "react-router-dom";
 import axios from '.././axiosConfig';
 //  import CategoryMegaMenu from  '../components/header/CategoryMegaMenu.jsx'
 import { CartContext } from "../context/CartContext";
+import { RxCross1 } from "react-icons/rx";
 import Marquee from "./marquee/Marquee";
+import { MdSearch } from "react-icons/md";
 const Header = ({ addcart, isLoggedIn, handlelogout }) => {
   const [hide, setHide] = useState(true);
   const [activeindex, setActive] = useState(null);
@@ -40,12 +42,21 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
 
   }, []);
   const items = [
+    "Home",
+    "Best Seller",
+    "New Arrivals",
+    "Pressure Cooker",
+    
+    "Contact US",
+    "About Us",
+   
     "ACCOUNT MAIN",
     // "ORDERS HISTORY",
     "MY WISHLIST",
     // "PROFILE SETTING",
     // "TRANSACTION",
     "MY CART",
+    "Product Catalogue",
   ];
   const [searchProduct, setSearchProduct] = useState('');
   const [searchProductData, setSearchProductData] = useState([]);
@@ -113,110 +124,92 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
         </div>
       </header>
 
+      {/* Mobile Sidebar Menu */}
       <div
-        className={
-          hide
-            ? "hidden"
-            : "px-4 pt-10 fixed top-0 left-0 w-full h-full bg-gray-100 bg-opacity-90 z-[9999] "
-        }
-        onChange={() => setHide(!hide)}
+        className={`fixed top-0 right-0 h-full w-80 text-lg bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[9999] md:hidden overflow-hidden ${
+          hide ? 'translate-x-full' : 'translate-x-0'
+        }`}
       >
-        <p
-          className="text-gray-500 cursor-pointer absolute top-5 right-10 "
-          onClick={() => setHide(!hide)}
-        >
-          X
-        </p>
-        <div className="flex text-center md:text-start ">
-          <div className="w-full md:w-62  md:pr-5  md:text-xs text-gray-500 font-semibold">
-            <ul className="mx-auto  flex flex-col md:gap-1 gap-4 mt-5 cursor-pointer ">
-              {items.map((item, i) => {
-                if (item === "MY CART") {
-                  return (
-                    <Link key={i} to="/Cart" onClick={() => setHide(!hide)}>
-                      <li
-                        onClick={() => setActive(i)}
-                        className={`w-full pl-4 pr-10 py-2 rounded transition-all duration-200 ${activeindex === i ? "bg-[#B91508] text-white" : ""
-                          }`}
-                      >
-                        {item}
-
-                      </li>
-                    </Link>
-                  );
-                }
-                if (item === "MY WISHLIST") {
-                  return (
-                    <Link key={i} to="/Wishlist" onClick={() => setHide(!hide)}>
-                      <li
-                        onClick={() => setActive(i)}
-                        className={`w-full pl-4 pr-10 py-2 rounded transition-all duration-200 ${activeindex === i ? "bg-[#B91508] text-white" : ""
-                          }`}
-                      >
-
-                        {item}
-
-                      </li>
-                    </Link>
-                  );
-                }
+        {/* Close Button */}
+        <div className="flex justify-end p-4 border-b">
+          <button
+            onClick={() => setHide(true)}
+            className="text-gray-600 hover:text-gray-900 text-3xl font-light"
+          >
+           <RxCross1 />
+          </button>
+        </div>
+        
+        {/* Menu Items */}
+        <nav className="p-4">
+          <ul className="space-y-1">
+            {items.map((item, i) => {
+              if (item === "MY CART") {
                 return (
-                  <div key={i}>
-                    <li
-                      className={`pl-4 pr-10 py-2 rounded transition-all duration-200 ${activeindex === i
-                          ? "bg-[#B91508] text-white py-2 md:p"
-                          : ""
-                        }`}
-                      onClick={() => setActive(i)}
-                    >
+                  <Link key={i} to="/Cart" onClick={() => setHide(true)}>
+                    <li className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors flex items-center justify-between">
+                      <span>{item}</span>
+                      <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {totalItems}
+                      </span>
+                    </li>
+                  </Link>
+                );
+              }
+              if (item === "MY WISHLIST") {
+                return (
+                  <Link key={i} to="/Wishlist" onClick={() => setHide(true)}>
+                    <li className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
                       {item}
                     </li>
-                    <div className="mx-auto w-full border-t md:hidden"></div>
-                  </div>
+                  </Link>
                 );
-              })}
-              <li
-                className={`pl-4 pr-10 py-2 rounded transition-all duration-200 ${activeindex === items.length ? "bg-[#B91508] text-white" : ""
-                  }`}
-                onClick={() => {
-                  setActive(items.length);
-                  if (isLoggedIn) {
-                    handlelogout(), setHide(!hide);
-                  }
-                  if (!isLoggedIn) {
-                    navigate("/login");
-                    setHide(!hide);
-                  }
-                }}
-              >
-                {isLoggedIn ? (
-                  <a href="/">LOG OUT</a>
-                ) : (
-                  <Link
-                    to="/login"
+              }
+              return (
+                <div key={i}>
+                  <li
+                    className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
                     onClick={() => {
-                      setActive(items.length);
+                      setActive(i);
                       setHide(true);
                     }}
-                    className={`block pl- pr- rounded transition-all duration-200 ${activeindex === items.length
-                        ? "bg-[#B91508] text-white"
-                        : "text-gray-600"
-                      }`}
                   >
-                    LOG IN
-                  </Link>
-                )}
-              </li>
-            </ul>
-          </div>
-          <div className="hidden md:flex md:flex-col p-8 border border-gray-300 w-full rounded-md  bg-white">
-            <AccountsPage></AccountsPage>
-            <Orders />
-          </div>
-        </div>
+                    {item}
+                  </li>
+                </div>
+              );
+            })}
+            
+            {/* Login/Logout */}
+            <li
+              className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+              onClick={() => {
+                setActive(items.length);
+                if (isLoggedIn) {
+                  handlelogout();
+                  setHide(true);
+                }
+                if (!isLoggedIn) {
+                  navigate("/login");
+                  setHide(true);
+                }
+              }}
+            >
+              {isLoggedIn ? "LOG OUT" : "LOG IN"}
+            </li>
+          </ul>
+        </nav>
       </div>
+      
+      {/* Overlay */}
+      {!hide && (
+        <div
+          
+          onClick={() => setHide(true)}
+        />
+      )}
       {/* -----------------------Header End---------------------------------- */}
-      <nav className="px-4 py-1.5 md:px-16  md:pt-5 bg-[#FAFAFC]">
+      <nav className="px-2 py-1.5 md:px-16  md:pt-5 bg-[#FAFAFC]">
         {/* ---------------------first nav bar--------------------- */}
         <div className="flex  items-center justify-between  w-full h-14">
           <div className="flex w-full space-x-5  md:w-[60%]">
@@ -234,11 +227,11 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
             <div className="md:hidden flex justify-between w-full">
               <div>
                 <Link to={"/"}>
-                  <img src="/asset/images/LogoS.png" alt="" className="w-14" />
+                  <img src="/asset/images/LogoS.png" alt="" className="w-16" />
                 </Link>
               </div>
-              <div className="flex items-center space-x-2">
-                <FiSearch  className="bg-[#F1F1F1]  text- rounded-full text-black p-2 w-7 h-7" />
+              <div className="flex items-center  space-x-4">
+                <MdSearch  className="bg-[#F1F1F1]   rounded-full text-black p-2 w-10 h-10 " />
                 <span className="relative">
                   <Link
                     to={"/Cart"}
@@ -253,7 +246,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                   </Link>
                 </span>
                 <HiOutlineMenu
-                  className="w-7 h-7 text-[#1C1C1C]"
+                  className="  w-7 h-7 text-[#1C1C1C]"
                   onClick={menuhandler}
                 />
               </div>

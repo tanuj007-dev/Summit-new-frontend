@@ -58,8 +58,14 @@ const Blogs = () => {
     <div className="allblog max-w-[1665px] mx-auto p-10 sm:px-16 font-sans">
       
       {/* Heading */}
-      <div className="blog-header text-center mb-10">
+      <div className="blog-header flex justify-between items-center mb-10">
         <h3 className="text-2xl sm:text-4xl font-semibold">Blogs</h3>
+        <h3 
+          className="text-2xl sm:text-4xl font-semibold cursor-pointer hover:text-gray-600 transition-colors"
+          onClick={() => navigate("/all-blogs")}
+        >
+          view all
+        </h3>
       </div>
 
       {/* Blog posts from API */}
@@ -84,7 +90,7 @@ const Blogs = () => {
             }}
             breakpoints={{
               0: {
-                slidesPerView: 1,
+                slidesPerView: 2,
                 spaceBetween: 16,
               },
               640: {
@@ -125,22 +131,22 @@ const Blogs = () => {
                       <img 
                         src={imageUrl} 
                         alt={post.title.rendered} 
-                        className="w-full h-70 object-cover rounded-2xl flex-shrink-0"
+                        className="w-full h-52 object-cover rounded-2xl flex-shrink-0"
                       />
                     )}
                     <div className="p-4 flex flex-col flex-grow min-h-0">
-                      <div className="meta text-xs text-gray-600 mt-2 flex-shrink-0">
+                      <div className="meta text-xs text-gray-600  flex-shrink-0">
                         {date} &nbsp;&nbsp; {authorName}
                       </div>
                       <div 
-                        className="blog-title text-sm text-justify font-semibold mt-2 mb-2 text-gray-900 flex-grow min-h-0 overflow-hidden" 
+                        className="blog-title text-sm text-justify font-semibold mt-2 text-gray-900 flex-grow min-h-0 overflow-hidden" 
                         dangerouslySetInnerHTML={{ __html: post.title.rendered }} 
                       />
-                      <div className="excerpt text-justify text-[14px] text-gray-600 flex-shrink-0 overflow-hidden">
+                      <div className="excerpt leading-snug text-justify text-[11px] sm:text-[14px] text-gray-600 flex-shrink-0 overflow-hidden">
                         {getFirst15Words(post.content.rendered)}
                       </div>
-                      <div className="readmore text-sm font-medium flex items-center gap-1 text-gray-900 flex-shrink-0 mt-auto">
-                        Read more <HiArrowLongRight size={30} className=" items-center justify-center mt-1 " />
+                      <div className="readmore text-[11px] sm:text-sm font-medium flex items-center gap-1 text-gray-900 flex-shrink-0 mt-auto">
+                        Read more <HiArrowLongRight size={25} className=" items-center justify-center mt-1 " />
                       </div>
                     </div>
                   </div>
@@ -151,12 +157,12 @@ const Blogs = () => {
 
           {/* Navigation Buttons */}
           <button
-            className="swiper-button-prev-blog absolute left-[-10px] sm:left-[-2px] z-10 top-1/2 -translate-y-8/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+            className="swiper-button-prev-blog absolute left-[-20px] sm:left-[-2px] z-10 top-1/2 -translate-y-8/4 bg-gray-200 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
           >
             <FaChevronLeft />
           </button>
           <button
-            className="swiper-button-next-blog absolute right-[-10px] sm:right-[-2px] z-10 top-1/2 -translate-y-8/4 bg-white text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
+            className="swiper-button-next-blog absolute right-[-20px] sm:right-[-2px] z-10 top-1/2 -translate-y-8/4 bg-gray-200 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
           >
             <FaChevronRight />
           </button>
@@ -164,14 +170,14 @@ const Blogs = () => {
       )}
 
       {/* More Articles Button */}
-      <div className="more-articles mt-10 text-center">
+      {/* <div className="more-articles mt-10 text-center">
         <button 
           onClick={() => navigate("/all-blogs")}
           className="bg-gray-200 px-8 py-3 rounded-full text-base font-medium cursor-pointer transition-colors duration-300 hover:bg-gray-200"
         >
           View More Articles
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
