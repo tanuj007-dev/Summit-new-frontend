@@ -88,7 +88,7 @@ const ThoughtfulPicks = ({ user }) => {
         {products.map((item, i) => (
           <div key={i} className="flex flex-col items-center flex-shrink-0 w-[250px] md:hidden snap-center">
             {/* VIDEO BOX */}
-            <div className="relative w-full overflow-hidden rounded-2xl shadow-md group ">
+            <div className="relative w-full overflow-hidden rounded-2xl shadow-md group">
               <Link to="#">
                 <video
                   ref={(el) => (videoRefs.current[i] = el)}
@@ -96,14 +96,14 @@ const ThoughtfulPicks = ({ user }) => {
                   poster={item.thumbnail}
                   loop
                   playsInline
-                  className="w-full h-[400px] object-cover rounded-2xl"
+                  className="w-full h-[450px] object-cover rounded-2xl"
                 ></video>
               </Link>
 
               {/* Play/Pause Button */}
               <button
                 onClick={() => togglePlay(i)}
-                className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-10"
               >
                 {playingIndex === i ? (
                   <FaPause className="text-white text-4xl drop-shadow-lg" />
@@ -111,45 +111,39 @@ const ThoughtfulPicks = ({ user }) => {
                   <FaPlay className="text-white text-4xl drop-shadow-lg" />
                 )}
               </button>
-            </div>
 
-            {/* TEXT + PRICE */}
-           <div className="text-center mt-4">
-              <div className="flex items-center justify-center mb-1 text-gray-500 text-[12px] font-normal space-x-2">
-                <FaInstagram className="text-gray-500 text-xl" />
-                <span>@cookwithmark</span>
-              </div>
+              {/* Overlay Content - Title, Price, Add to Cart */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-5">
+                {/* <div className="flex items-center mb-2 text-white text-[12px] font-normal space-x-2">
+                  <FaInstagram className="text-white text-sm" />
+                  <span>@cookwithmark</span>
+                </div> */}
 
-              <h3 className="text-[18px] sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">
-                {item.title}
-              </h3>
+                <h3 className="text-sm font-semibold text-white mb- line-clamp-1">
+                  {item.title}
+                </h3>
 
-              <p className="text-[14px] mb-1 text-gray-400">
-                from{" "}
-                <span className="font-semibold text-black">{item.price}</span>{" "}
-                <span className="text-gray-400 line-through ml-1">
-                  {item.oldPrice}
-                </span>
-              </p>
-              {item.title !== "Inner Lid Pressure Cooker" && (
-                <span className="text-[14px] text-[#636365]">Only 2 units left</span>
-              )}
-            </div>
-            {/* BUTTONS */}
-            <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
-                    <button
-                      onClick={() => handleAddToCart(item.id)}
-                      className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
-                    >
-                      Add to Cart
-                    </button>
-                    <button
-                      onClick={() => handleBuyNow(item.id)}
-                      className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
-                    >
-                      Buy Now
-                    </button>
+                <div className="flex items-center justify-between mb-1">
+                  <div>
+                    <p className="text-sm text-white">
+                      <span className="font-semibold">{item.price}</span>{" "}
+                      <span className="text-gray-300 line-through ml-1 text-xs">
+                        {item.oldPrice}
+                      </span>
+                    </p>
+                   
                   </div>
+                </div>
+
+                {/* Add to Cart Button */}
+                <button
+                  onClick={() => handleAddToCart(item.id)}
+                  className="w-full bg-[#B91508] text-white text-sm px-3 py-2 rounded-full hover:bg-red-700 transition flex items-center justify-center"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -174,7 +168,7 @@ const ThoughtfulPicks = ({ user }) => {
               {/* Play/Pause Button */}
               <button
                 onClick={() => togglePlay(i)}
-                className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-10"
               >
                 {playingIndex === i ? (
                   <FaPause className="text-white text-4xl drop-shadow-lg" />
@@ -182,45 +176,38 @@ const ThoughtfulPicks = ({ user }) => {
                   <FaPlay className="text-white text-4xl drop-shadow-lg" />
                 )}
               </button>
-            </div>
 
-            {/* TEXT + PRICE */}
-            <div className="text-center mt-4">
-              <div className="flex items-center justify-center mb-2 text-gray-500 text-lg font-normal space-x-2">
-                <FaInstagram className="text-gray-500 text-lg" />
-                <span>@cookwithmark</span>
+              {/* Overlay Content - Title, Price, Add to Cart */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-5">
+                {/* <div className="flex items-center mb-2 text-white text-sm font-normal space-x-2">
+                  <FaInstagram className="text-white text-lg" />
+                  <span>@cookwithmark</span>
+                </div> */}
+
+                <h3 className="text-lg font-semibold text-white mb-0   line-clamp-1">
+                  {item.title}
+                </h3>
+
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="text-base text-white">
+                      <span className="font-semibold">{item.price}</span>{" "}
+                      <span className="text-gray-300 line-through ml-1 text-sm">
+                        {item.oldPrice}
+                      </span>
+                    </p>
+                    
+                  </div>
+                </div>
+
+                {/* Add to Cart Button */}
+                <button
+                  onClick={() => handleAddToCart(item.id)}
+                  className="w-full bg-[#B91508] text-white text-sm px-4 py-2 rounded-full hover:bg-red-700 transition flex items-center justify-center"
+                >
+                  Add to Cart
+                </button>
               </div>
-
-              <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">
-                {item.title}
-              </h3>
-
-              <p className="text-md mb-2 text-gray-400">
-                from{" "}
-                <span className="font-semibold text-black">{item.price}</span>{" "}
-                <span className="text-gray-400 line-through ml-1">
-                  {item.oldPrice}
-                </span>
-              </p>
-              {item.title !== "Inner Lid Pressure Cooker" && (
-                <span className="text-[#636365]">Only 2 units left</span>
-              )}
-            </div>
-
-            {/* BUTTONS */}
-            <div className="flex gap-3 justify-center mt-2">
-              <button
-                onClick={() => handleAddToCart()}
-                className="bg-[#B91508] text-white text-sm px-4 py-1 rounded-full hover:bg-red-700 transition"
-              >
-                Add to Cart
-              </button>
-              <button
-                onClick={() => handleBuyNow()}
-                className="text-[#B91508] text-sm px-4 py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
-              >
-                Buy Now
-              </button>
             </div>
           </div>
         ))}

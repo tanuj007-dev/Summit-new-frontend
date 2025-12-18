@@ -57,7 +57,78 @@ const SummitSelect = ({ user }) => {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+  const [mouseStartX, setMouseStartX] = useState(0);
+  const [mouseEndX, setMouseEndX] = useState(0);
+  const [isDragging, setIsDragging] = useState(0);
+
+  const minSwipeDistance = 30; // Reduced minimum distance for faster swipe detection
+
+  // Touch handlers
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+
+    // Reset touch positions
+    setTouchStartX(0);
+    setTouchEndX(0);
+  };
+
+  // Mouse handlers
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setMouseStartX(e.clientX);
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setMouseEndX(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    
+    const distance = mouseStartX - mouseEndX;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+
+    // Reset mouse positions and dragging state
+    setMouseStartX(0);
+    setMouseEndX(0);
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      setMouseStartX(0);
+      setMouseEndX(0);
+    }
+  };
+
   // Responsive slides per view
   const getSlidesToShow = () => {
     if (typeof window !== 'undefined') {
@@ -108,7 +179,7 @@ const SummitSelect = ({ user }) => {
   }, []);
 
   return (
-    <section className="w-full bg-white py-6 sm:py-8 px-4 sm:px-6 lg:px-8 relative">
+    <section className="w-full bg-white py-6 sm:py-8 px-2 sm:px-6 lg:px-8 relative">
       {/* Section Title */}
       <div className="text-center mb-6 sm:mb-8">
         <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
@@ -122,19 +193,20 @@ const SummitSelect = ({ user }) => {
     
 
       {/* Slider Container */}
-      <div className="relative  flex items-center">
-        {/* Left Button */}
-        <button
-                 onClick={prevSlide}
-                 className="absolute left-[-10px] sm:left-2 z-10 top-1/2 -translate-y-7/4 bg-gray-100 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
-               >
-                 <FaChevronLeft />
-               </button>
-
-        {/* Slider Track */}
-        <div className="w-full overflow-hidden">
+      <div className="relative flex flex-col">
+        <div 
+          className="w-full overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        >
           <div
-            className="flex transition-transform duration-500 ease-in-out"
+            className="flex transition-transform duration-300 ease-out"
             style={{
               transform: `translateX(-${(currentIndex * 100) / slidesToShow}%)`,
             }}
@@ -193,13 +265,22 @@ const SummitSelect = ({ user }) => {
           </div>
         </div>
 
-        {/* Right Button */}
-           <button
-                  onClick={nextSlide}
-                  className="absolute right-[-10px] sm:right-2 z-10 top-1/2 -translate-y-7/4 bg-gray-100 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
-                >
-                  <FaChevronRight />
-                </button>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="mt-6 px-8">
+        <div className="relative">
+          {/* Progress Track */}
+          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+            {/* Progress Fill */}
+            <div 
+              className="h-full bg-gray-400 transition-all duration-200 ease-out rounded-full"
+              style={{
+                width: `${((currentIndex + slidesToShow) / products.length) * 100}%`
+              }}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

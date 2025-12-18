@@ -402,8 +402,47 @@ const CategoryMegaMenu = () => {
   const [hoveredOption, setHoveredOption] = useState(null);
 
   return (
-    <div   className="category-nav overflow-x-auto  scrollbar-hide flex lg:flex sticky top-0 z-50 items-center justify-center space-x-2  mt-2 text-sm font-medium pb-2">
-      <>
+    <>
+      {/* Mobile Category View */}
+     <div className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 py-4 px-4">
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-6 pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+          {menuData.map((main) => (
+            <Link
+              key={main.id}
+              to={`/products/${main.id}`}
+              className="flex flex-col items-center min-w-fit space-y-2 group"
+            >
+              <div className="w-16 h-16 rounded-full bg-gray-100 p-3 flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                <img
+                  src={`/asset/images/${
+                    main.name === "Pressure Cooker"
+                      ? "PressureCooker"
+                      : main.name === "Gas Stove"
+                      ? "GasStove"
+                      : main.name === "Gas Tandoor"
+                      ? "GasTandoor"
+                      : main.name === "Mixer Grinder"
+                      ? "MixerGrinder"
+                      : main.name === "Steam Cookware"
+                      ? "Steam Cookware"
+                      : main.name === "Cookware"
+                      ? "Cookware"
+                      : "Others"
+                  }.png`}
+                  alt={main.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="text-xs text-gray-700 text-center whitespace-nowrap group-hover:text-red-600 transition-colors">
+                {main.name}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop Category View */}
+      <div className="hidden lg:flex category-nav overflow-x-auto scrollbar-hide sticky top-0 z-50 items-center justify-center space-x-2 mt-2 text-sm font-medium pb-2">
         {/* Display all categories */}
         {menuData.map((main) => (
           <div
@@ -637,8 +676,8 @@ const CategoryMegaMenu = () => {
             )}
           </div>
         ))}
-      </>
-    </div>
+      </div>
+    </>
   );
 };
 

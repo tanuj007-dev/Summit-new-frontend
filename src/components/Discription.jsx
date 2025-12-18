@@ -13,7 +13,7 @@ const Discription = () => {
         />
       </div>
       <div className="flex flex-col space-y-2 sm:space-y-6 mt-8  md:w-[50%]">
-        <h2 className="text-[21px] md:text-3xl leading-snug text-start font-bold">
+        <h2 className="text-[21px] md:text-3xl leading-snug text-center sm:text-start font-bold">
           Personalize It – Get Your Name Engraved,
           <br className="md:block hidden"/> Just Like We’ve Always Done
         </h2>
@@ -28,7 +28,7 @@ const Discription = () => {
         </p>
         <Link
   to="/contact"
-  className="bg-[#B91508] text-[15px] mt-4  md:text-lg px-3 sm:px-6 py-1 sm:py-2.5 w-max self-start text-white rounded-full"
+  className="bg-[#B91508] text-[15px] mt-4  md:text-lg px-3 sm:px-6 py-1 sm:py-2.5 w-max justify-center items-center text-white rounded-full mx-auto md:mx-0"
 >
   Get yours Now
 </Link>

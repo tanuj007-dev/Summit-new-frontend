@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
  
 const Blogs = () => {
@@ -55,10 +56,10 @@ const Blogs = () => {
 
   return (
     
-    <div className="allblog max-w-[1665px] mx-auto p-10 sm:px-16 font-sans">
+    <div className="allblog max-w-[1665px] mx-auto p-6 px-4 sm:px-16 font-sans">
       
       {/* Heading */}
-      <div className="blog-header flex justify-between items-center mb-10">
+      <div className="blog-header flex justify-between items-center mb-6">
         <h3 className="text-2xl sm:text-4xl font-semibold">Blogs</h3>
         <h3 
           className="text-2xl sm:text-4xl font-semibold cursor-pointer hover:text-gray-600 transition-colors"
@@ -76,7 +77,7 @@ const Blogs = () => {
       ) : (
         <div className="relative">
           <Swiper
-            modules={[Navigation, Autoplay]}
+            modules={[Autoplay, Pagination]}
             spaceBetween={24}
             slidesPerView={1}
             loop={true}
@@ -84,9 +85,9 @@ const Blogs = () => {
               delay: 3000,
               disableOnInteraction: false,
             }}
-            navigation={{
-              nextEl: '.swiper-button-next-blog',
-              prevEl: '.swiper-button-prev-blog',
+            pagination={{
+              el: '.blog-progress-bar',
+              type: 'progressbar',
             }}
             breakpoints={{
               0: {
@@ -124,29 +125,29 @@ const Blogs = () => {
               return (
                 <SwiperSlide key={post.id}>
                   <div
-                    className="blog-card flex flex-col bg-[#F2F2F3] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:translate-y-[-5px] h-[500px] min-h-[500px] max-h-[500px]"
+                    className="blog-card flex flex-col bg-[#F2F2F3] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:translate-y-[-5px] h-[550px] min-h-[550px] max-h-[550px]"
                     onClick={() => bloglistener(post.slug)}
                   >
                     {imageUrl && (
                       <img 
                         src={imageUrl} 
                         alt={post.title.rendered} 
-                        className="w-full h-52 object-cover rounded-2xl flex-shrink-0"
+                        className="w-full h-48 object-cover flex-shrink-0"
                       />
                     )}
-                    <div className="p-4 flex flex-col flex-grow min-h-0">
-                      <div className="meta text-xs text-gray-600  flex-shrink-0">
+                    <div className="p-4 flex flex-col flex-grow">
+                      <div className="meta text-xs text-gray-600 flex-shrink-0">
                         {date} &nbsp;&nbsp; {authorName}
                       </div>
                       <div 
-                        className="blog-title text-sm text-justify font-semibold mt-2 text-gray-900 flex-grow min-h-0 overflow-hidden" 
+                        className="blog-title text-sm text-left font-semibold mt-2 text-gray-900 flex-grow overflow-hidden line-clamp-3" 
                         dangerouslySetInnerHTML={{ __html: post.title.rendered }} 
                       />
-                      <div className="excerpt leading-snug text-justify text-[11px] sm:text-[14px] text-gray-600 flex-shrink-0 overflow-hidden">
+                      <div className="excerpt leading-snug text-left text-[11px] sm:text-[13px] text-gray-600 flex-grow overflow-hidden line-clamp-4">
                         {getFirst15Words(post.content.rendered)}
                       </div>
-                      <div className="readmore text-[11px] sm:text-sm font-medium flex items-center gap-1 text-gray-900 flex-shrink-0 mt-auto">
-                        Read more <HiArrowLongRight size={25} className=" items-center justify-center mt-1 " />
+                      <div className="readmore text-[11px] sm:text-sm font-medium flex items-center gap-1 text-gray-900 flex-shrink-0 mt-2">
+                        Read more <HiArrowLongRight size={20} className="mt-1" />
                       </div>
                     </div>
                   </div>
@@ -155,17 +156,14 @@ const Blogs = () => {
             })}
           </Swiper>
 
-          {/* Navigation Buttons */}
-          <button
-            className="swiper-button-prev-blog absolute left-[-20px] sm:left-[-2px] z-10 top-1/2 -translate-y-8/4 bg-gray-200 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
-          >
-            <FaChevronLeft />
-          </button>
-          <button
-            className="swiper-button-next-blog absolute right-[-20px] sm:right-[-2px] z-10 top-1/2 -translate-y-8/4 bg-gray-200 text-black p-2 sm:p-3 rounded-full shadow-md hover:bg-gray-100 "
-          >
-            <FaChevronRight />
-          </button>
+          {/* Custom Progress Bar */}
+          <div className="blog-progress-bar mt-6 px-8">
+            <div className="relative">
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="swiper-pagination-progressbar h-full bg-gray-400 transition-all duration-300 ease-out rounded-full" />
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

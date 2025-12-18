@@ -72,7 +72,7 @@ export default function KitchenCategories() {
                 className="w-full h-42 object-cover"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
 
               <h3 className="absolute bottom-2 left-2 text-white text-sm font-semibold">
                 {item.title}
