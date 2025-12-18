@@ -145,7 +145,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
-import { useEffect } from "react";
 
 const CategoryMegaMenu = () => {
   
@@ -229,7 +228,6 @@ const CategoryMegaMenu = () => {
               name: "Hard Anodized Alluminium",
               options: [
                 { id: "Blacko", name: "Blacko", sizes: ["3L", "5L"] },
-              ,
               ],
             },
             {
@@ -404,7 +402,7 @@ const CategoryMegaMenu = () => {
   const [hoveredOption, setHoveredOption] = useState(null);
 
   return (
-    <div className="category-nav hidden lg:flex sticky top-0 z-50 items-center justify-center space-x-2  mt-2 text-sm font-medium pb-2">
+    <div   className="category-nav overflow-x-auto  scrollbar-hide flex lg:flex sticky top-0 z-50 items-center justify-center space-x-2  mt-2 text-sm font-medium pb-2">
       <>
         {/* Display all categories */}
         {menuData.map((main) => (
@@ -422,7 +420,7 @@ const CategoryMegaMenu = () => {
             {/* MAIN CATEGORY BUTTON */}
             <Link
               to={`/products/${main.id}`}
-              className="flex items-center space-x-1 cursor-pointer px-3 py-1 hover:text-red-600 transition"
+              className="flex text-nowrap  items-center space-x-1 cursor-pointer px-3 py-1 hover:text-red-600 transition"
             >
               <img
                 src={`/asset/images/${
@@ -458,7 +456,7 @@ const CategoryMegaMenu = () => {
     bg-[#FAFAFC]
     shadow-lg 
     z-50
-    mt-8
+    mt-14
     p-6
     w-[1400px]
     flex

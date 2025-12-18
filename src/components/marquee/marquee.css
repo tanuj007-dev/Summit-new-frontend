@@ -1,0 +1,22 @@
+.marquee {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  white-space: nowrap;
+  font-family: Arial, sans-serif;
+}
+
+.marquee-content {
+  display: inline-flex;
+  gap: 3rem; /* spacing between items */
+  animation: marquee-scroll 15s linear infinite; /* slower, readable */
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); /* only half because content is duplicated */
+  }
+}

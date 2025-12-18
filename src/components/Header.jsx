@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import axios from '.././axiosConfig';
 //  import CategoryMegaMenu from  '../components/header/CategoryMegaMenu.jsx'
 import { CartContext } from "../context/CartContext";
-
+import Marquee from "./marquee/Marquee";
 const Header = ({ addcart, isLoggedIn, handlelogout }) => {
   const [hide, setHide] = useState(true);
   const [activeindex, setActive] = useState(null);
@@ -79,9 +79,11 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
 
   return (
     <div className="relative">
+       <Marquee />
       <header
         className=" hidden  md:flex justify-between items-center bg-[#F0F0F2] font-[Helvetica Now Display]  p-4 px-16 text-black "
       >
+        
         <div className="flex gap-6 items-center text-sm w-96">
           <p>
             <a target="_blank" href="/asset/pdf/Summit Catalog 2025 cooker  Editable.pdf">Product Catalogue</a>

@@ -87,12 +87,12 @@ const ThoughtfulPicks = () => {
 
       {/* ===== Filters ===== */}
       <div className="overflow-x-auto scrollbar-hide pb-2 mb-3 sm:mb-6">
-        <div className="flex gap-1 sm:gap-3 min-w-max px-1">
+        <div className="flex gap-1 justify-center sm:gap-3 min-w-max px-1">
           {filters.map(filter => (
             <button
               key={filter.value}
               onClick={() => handleFilterClick(filter.value, filter.label)}
-              className={`rounded-full px-3 sm:px-4 md:px-5 py-1.5 text-[16px] sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0
+              className={`rounded-full justify-center px-3 sm:px-4 md:px-5 py-1.5 text-[16px] sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0
                 ${
                   activeFilter === filter.label
                     ? "bg-[#B91508] text-white shadow-md scale-105"

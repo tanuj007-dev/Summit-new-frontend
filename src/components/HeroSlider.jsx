@@ -34,11 +34,26 @@ const HeroSlider = () => {
 
   return (
     <>
-      {/* Mobile Version - Only text and button */}
-      <div className="md:hidden relative w-full h-[400px] overflow-hidden bg-gradient-to-r from-[#b8896d] via-[#cfa78d] to-[#e1c1ad]">
+      {/* Mobile Version - Video background with text overlay */}
+      <div className="md:hidden relative w-full h-[400px] overflow-hidden">
+        {/* Video Background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/asset/cooker1.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Overlay for text readability */}
+        <div className="absolute inset-0 bg-black/30"></div>
+        
         {/* Mobile Slider Wrapper */}
         <div
-          className="flex transition-transform duration-700 ease-in-out h-full"
+          className="relative flex transition-transform duration-700 ease-in-out h-full"
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {slides.map((slide, i) => (

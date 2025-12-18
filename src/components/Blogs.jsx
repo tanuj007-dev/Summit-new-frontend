@@ -7,6 +7,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+ 
 const Blogs = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
@@ -53,7 +54,9 @@ const Blogs = () => {
   };
 
   return (
+    
     <div className="allblog max-w-[1665px] mx-auto p-10 sm:px-16 font-sans">
+      
       {/* Heading */}
       <div className="blog-header text-center mb-10">
         <h3 className="text-2xl sm:text-4xl font-semibold">Blogs</h3>

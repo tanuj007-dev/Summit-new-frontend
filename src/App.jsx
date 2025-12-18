@@ -19,6 +19,7 @@ import SummitSection from "./components/SummitSection";
 import Available from "./components/Available";
 import Feedback from "./components/Feedback";
 import MobileFeedback from "./components/MobileFeedback";
+import No1Banner from "./components/No1Banner";
 import Connectivity from "./components/Connectivity";
 import Blogs from "./components/Blogs";
 import DetailProduct from "./components/DetailProduct";
@@ -351,7 +352,7 @@ function App() {
               isLoggedIn={isLoggedIn}
               handlelogout={handlelogout}
             />}
-            {!isAdminRoute && <CategoryMegaMenu />} 
+            {!isAdminRoute && pathname === '/' && <CategoryMegaMenu />} 
             <Routes>
           <Route
             path="/"
@@ -386,6 +387,7 @@ function App() {
                 <Available />
                 <MobileFeedback />
                 <Feedback />
+                <No1Banner />
                 <Connectivity />
                 <Blogs />
                 {/* <ProductPage/> */}
