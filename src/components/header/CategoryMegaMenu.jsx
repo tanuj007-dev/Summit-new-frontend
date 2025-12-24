@@ -143,10 +143,74 @@
 // export default CategoryMegaMenu;
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
+import axiosInstance from "../../axiosConfig";
+import { ToastContainer, toast } from "react-toastify";
 
 const CategoryMegaMenu = () => {
+  const navigate = useNavigate();
+  
+  // Function to handle category clicks with API integration
+  const handleCategoryClick = async (searchTerm, category, event) => {
+    // Prevent default link behavior
+    if (event) {
+      event.preventDefault();
+    }
+    
+    try {
+      console.log('Testing search term:', searchTerm);
+      
+      // Try multiple search term variations to find one that works
+      const searchVariations = [
+        searchTerm,
+        searchTerm.replace(/\s+/g, ' ').toLowerCase(),
+        searchTerm.split(' ')[0], // Try just first word
+        searchTerm.replace(/\s+/g, ''), // Try without spaces
+        searchTerm.replace(/cooker$/, ''), // Try without 'cooker'
+        searchTerm.replace(/pressure cooker$/, 'pressure'), // Try just 'pressure'
+      ];
+      
+      let products = [];
+      let workingSearchTerm = '';
+      
+      for (const term of searchVariations) {
+        console.log('Trying search term:', term);
+        try {
+          const response = await axiosInstance.get('/api/products/view', {
+            params: { search: term }
+          });
+          
+          const responseData = response.data?.data || response.data || [];
+          if (responseData.length > 0) {
+            products = responseData;
+            workingSearchTerm = term;
+            console.log('Found products with term:', term, 'Count:', products.length);
+            break;
+          }
+        } catch (error) {
+          console.log('Search failed for term:', term, error);
+          continue;
+        }
+      }
+      
+      if (products.length > 0) {
+        // Navigate to ProductGrid with the search term
+        const categoryPath = category.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        navigate(`/products/${categoryPath}`, { 
+          state: { 
+            searchResults: products,
+            searchTerm: workingSearchTerm 
+          }
+        });
+      } else {
+        toast.info(`No products found for "${searchTerm}". Tried variations: ${searchVariations.join(', ')}`);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to load products. Please try again.");
+    }
+  };
   
   // Static categories data with correct API identifiers
   const staticCategories = [
@@ -250,149 +314,265 @@ const CategoryMegaMenu = () => {
         },
       ],
     },
+   {
+  id: "gas-stove",
+  name: "Gas Stove",
+  sub_categories: [
     {
-      id: "gas-stove",
-      name: "Gas Stove",
-      sub_categories: [
+      id: "2-burner",
+      name: "2 Burner",
+      series: [
         {
-          id: "2-burner",
-          name: "2 Burner",
-          series: [
+          id: "glass",
+          name: "Glass Top",
+          options: [
+            { id: "Supreme", name: "Supreme", sizes: ["2 Burner"] },
+            { id: "Virtus-2", name: "Virtus 2", sizes: ["2 Burner"] },
+            { id: "Oval", name: "Oval", sizes: ["2 Burner"] },
+          ],
+        },
+      ],
+    },
+    {
+      id: "3-burner",
+      name: "3 Burner",
+      series: [
+        {
+          id: "glass",
+          name: "Glass Top",
+          options: [
+            { id: "Virtus-3", name: "Virtus 3", sizes: ["3 Burner"] },
+            { id: "Triple-Cook", name: "Triple Cook", sizes: ["3 Burner"] },
+          ],
+        },
+      ],
+    },
+  ],
+},
+
+    {
+  id: "gas-tandoor",
+  name: "Gas Tandoor",
+  sub_categories: [
+    {
+      id: "aluminium",
+      name: "Aluminium",
+      series: [
+        {
+          id: "prime",
+          name: "Prime",
+          options: [
             {
-              id: "glass-top",
-              name: "Glass Top",
-              options: [
-                { id: "manual", name: "Manual", sizes: ["Small", "Medium"] },
-                { id: "auto", name: "Auto", sizes: ["Medium", "Large"] },
-              ],
+              id: "unassembled",
+              name: "Unassembled",
+              sizes: ["1.5 KG", "2 KG"],
+            },
+            {
+              id: "assembled",
+              name: "Assembled",
+              sizes: ["2.5 KG"],
             },
           ],
         },
         {
-          id: "3-burner",
-          name: "3 Burner",
-          series: [
+          id: "papdi",
+          name: "Papdi",
+          options: [
             {
-              id: "steel-top",
-              name: "Steel Top",
-              options: [
-                {
-                  id: "premium",
-                  name: "Premium",
-                  sizes: ["Standard", "Deluxe"],
-                },
-              ],
+              id: "unassembled",
+              name: "Unassembled",
+              sizes: ["2 KG"],
+            },
+            {
+              id: "assembled",
+              name: "Assembled",
+              sizes: ["2.5 KG"],
+            },
+          ],
+        },
+        {
+          id: "packing",
+          name: "Packing",
+          options: [
+            {
+              id: "bulk",
+              name: "Bulk Packing",
+              sizes: ["2 KG", "2.5 KG"],
+            },
+          ],
+        },
+        {
+          id: "supreme",
+          name: "Supreme",
+          options: [
+            {
+              id: "assembled",
+              name: "Assembled",
+              sizes: ["3 KG"],
             },
           ],
         },
       ],
     },
     {
-      id: "gas-tandoor",
-      name: "Gas Tandoor",
-      sub_categories: [
+      id: "iron",
+      name: "Iron",
+      series: [
         {
-          id: "traditional",
-          name: "Traditional",
-          series: [
+          id: "cook",
+          name: "Cook",
+          options: [
             {
-              id: "clay",
-              name: "Clay",
-              options: [
-                { id: "small", name: "Small", sizes: ['9"', '11"'] },
-                { id: "large", name: "Large", sizes: ['13"', '15"'] },
-              ],
+              id: "assembled",
+              name: "Assembled",
+              sizes: ["2 KG", "3 KG"],
+            },
+          ],
+        },
+        {
+          id: "heavy",
+          name: "Heavy",
+          options: [
+            {
+              id: "assembled",
+              name: "Assembled",
+              sizes: ["3 KG", "3.5 KG"],
+            },
+          ],
+        },
+        {
+          id: "elite",
+          name: "Elite",
+          options: [
+            {
+              id: "assembled",
+              name: "Assembled",
+              sizes: ["3.5 KG"],
             },
           ],
         },
       ],
     },
+  ],
+},
+
+  {
+  id: "mixer-grinder",
+  name: "Mixer Grinder",
+  sub_categories: [
     {
-      id: "mixer-grinder",
-      name: "Mixer Grinder",
-      sub_categories: [
+      id: "450w",
+      name: "450 Watt",
+      series: [
         {
-          id: "500w",
-          name: "500W",
-          series: [
-            {
-              id: "basic",
-              name: "Basic",
-              options: [
-                { id: "3-jar", name: "3 Jar", sizes: ["Standard", "Compact"] },
-              ],
-            },
-          ],
-        },
-        {
-          id: "750w",
-          name: "750W",
-          series: [
-            {
-              id: "professional",
-              name: "Professional",
-              options: [
-                { id: "4-jar", name: "4 Jar", sizes: ["Deluxe", "Premium"] },
-              ],
-            },
+          id: "entry",
+          name: "Entry Range",
+          options: [
+            { id: "Nutri-Fit", name: "Nutri Fit", sizes: ["2 Jar"] },
           ],
         },
       ],
     },
     {
-      id: "cookware",
-      name: "Cookware",
-      sub_categories: [
+      id: "750w",
+      name: "750 Watt",
+      series: [
+        {
+          id: "mid",
+          name: "Mid Range",
+          options: [
+            { id: "Ace", name: "Ace", sizes: ["3 Jar"] },
+            { id: "Elegant", name: "Elegant", sizes: ["3 Jar"] },
+          ],
+        },
+      ],
+    },
+    {
+      id: "1000w",
+      name: "1000 Watt",
+      series: [
+        {
+          id: "premium",
+          name: "Premium Range",
+          options: [
+            { id: "Royal", name: "Royal", sizes: ["4 Jar"] },
+          ],
+        },
+      ],
+    },
+  ],
+},
+
+   {
+  id: "cookware",
+  name: "Cookware",
+  sub_categories: [
+    {
+      id: "tawa",
+      name: "Tawa",
+      series: [
+        {
+          id: "non-stick",
+          name: "Non Stick",
+          options: [
+            { id: "Dosa-Tawa", name: "Dosa Tawa", sizes: ["24cm", "26cm", "28cm"] },
+            { id: "Roti-Tawa", name: "Roti Tawa", sizes: ["24cm", "26cm"] },
+          ],
+        },
+      ],
+    },
+    {
+      id: "kadai",
+      name: "Kadai",
+      series: [
+        {
+          id: "non-stick",
+          name: "Non Stick",
+          options: [
+            { id: "Steel-Lid", name: "Steel Lid", sizes: ["2L", "3L", "5L"] },
+            { id: "Glass-Lid", name: "Glass Lid", sizes: ["2L", "3L", "5L"] },
+          ],
+        },
+      ],
+    },
+    {
+      id: "frypan",
+      name: "Frypan",
+      series: [
+        {
+          id: "non-stick",
+          name: "Non Stick",
+          options: [
+            { id: "Classic", name: "Classic Frypan", sizes: ["20cm", "24cm", "28cm"] },
+          ],
+        },
+      ],
+    },
+  ],
+},
+
+   {
+  id: "steam-cookware",
+  name: "Steam Cookware",
+  sub_categories: [
+    {
+      id: "idli-cooker",
+      name: "Idli Cooker",
+      series: [
         {
           id: "aluminium",
           name: "Aluminium",
-          series: [
-            {
-              id: "standard",
-              name: "Standard",
-              options: [
-                { id: "2l", name: "2L", sizes: ["2L", "3L"] },
-                { id: "5l", name: "5L", sizes: ["5L", "7L"] },
-              ],
-            },
-          ],
-        },
-        {
-          id: "stainless-steel",
-          name: "Stainless Steel",
-          series: [
-            {
-              id: "premium",
-              name: "Premium",
-              options: [
-                { id: "3l", name: "3L", sizes: ["3L", "4L"] },
-                { id: "10l", name: "10L", sizes: ["10L", "15L"] },
-              ],
-            },
+          options: [
+            { id: "4-plate", name: "4 Plates", sizes: ["Standard"] },
+            { id: "5-plate", name: "5 Plates", sizes: ["Standard"] },
+            { id: "6-plate", name: "6 Plates", sizes: ["Standard"] },
           ],
         },
       ],
     },
-    {
-      id: "steam-cookware",
-      name: "Steam Cookware",
-      sub_categories: [
-        {
-          id: "steamer",
-          name: "Steamer",
-          series: [
-            {
-              id: "multi-layer",
-              name: "Multi-Layer",
-              options: [
-                { id: "3-tier", name: "3 Tier", sizes: ["Small", "Medium"] },
-                { id: "5-tier", name: "5 Tier", sizes: ["Medium", "Large"] },
-              ],
-            },
-          ],
-        },
-      ],
-    },
+  ],
+}
+
   ];
 
   const [menuData] = useState(staticCategories);
@@ -407,9 +587,9 @@ const CategoryMegaMenu = () => {
      <div className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 py-4 px-4">
   <div className="flex overflow-x-scroll overflow-y-hidden space-x-6 pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
           {menuData.map((main) => (
-            <Link
+            <button
               key={main.id}
-              to={`/products/${main.id}`}
+              onClick={(e) => handleCategoryClick(main.name.toLowerCase(), main.name, e)}
               className="flex flex-col items-center min-w-fit space-y-2 group"
             >
               <div className="w-16 h-16 rounded-full bg-gray-100 p-3 flex items-center justify-center group-hover:bg-red-50 transition-colors">
@@ -436,7 +616,7 @@ const CategoryMegaMenu = () => {
               <span className="text-xs text-gray-700 text-center whitespace-nowrap group-hover:text-red-600 transition-colors">
                 {main.name}
               </span>
-            </Link>
+            </button>
           ))}
         </div>
       </div>
@@ -449,17 +629,22 @@ const CategoryMegaMenu = () => {
             key={main.id}
             className="relative group"
             onMouseEnter={() => setHoveredMain(main.id)}
-            onMouseLeave={() => {
-              setHoveredMain(null);
-              setHoveredSub(null);
-              setHoveredSeries(null);
-              setHoveredOption(null);
+            onMouseLeave={(e) => {
+              // Check if mouse is moving to mega menu
+              const relatedTarget = e.relatedTarget;
+              if (!relatedTarget || !relatedTarget.closest(`[data-mega-menu="${main.id}"]`)) {
+                setHoveredMain(null);
+                setHoveredSub(null);
+                setHoveredSeries(null);
+                setHoveredOption(null);
+              }
             }}
           >
             {/* MAIN CATEGORY BUTTON */}
-            <Link
-              to={`/products/${main.id}`}
+            <button
+              onClick={(e) => handleCategoryClick(main.name.toLowerCase(), main.name, e)}
               className="flex text-nowrap  items-center space-x-1 cursor-pointer px-3 py-1 hover:text-red-600 transition"
+              onMouseEnter={() => setHoveredMain(main.id)}
             >
               <img
                 src={`/asset/images/${
@@ -482,11 +667,12 @@ const CategoryMegaMenu = () => {
               />
               <span>{main.name}</span>
               <FaChevronDown className="text-xs text-gray-400" />
-            </Link>
+            </button>
 
             {/* MEGA MENU */}
             {hoveredMain === main.id && (
    <div
+  data-mega-menu={main.id}
   className="
     fixed
     top-[150px]
@@ -494,8 +680,8 @@ const CategoryMegaMenu = () => {
     -translate-x-1/2
     bg-[#FAFAFC]
     shadow-lg 
-    z-50
-    mt-14
+    z-[9999]
+    mt-18
     p-6
     w-[1400px]
     flex
@@ -503,6 +689,14 @@ const CategoryMegaMenu = () => {
     max-h-[70vh]
     overflow-y-auto
   "
+  onMouseEnter={() => setHoveredMain(main.id)}
+  onMouseLeave={() => {
+    setHoveredMain(null);
+    setHoveredSub(null);
+    setHoveredSeries(null);
+    setHoveredOption(null);
+  }}
+  style={{ pointerEvents: 'auto' }}
 >
 
 
@@ -510,8 +704,8 @@ const CategoryMegaMenu = () => {
                 {/* COLUMN 1 – SUBCATEGORIES */}
                 <div className="w-1/3 space-y-4 border-r border-[#D9D9D9] pr-6">
                   {main.sub_categories?.map((sub) => (
-                    <Link
-                      to={`/products/${main.id}/${sub.id}`}
+                    <button
+                      onClick={(e) => handleCategoryClick(sub.name.toLowerCase(), sub.name, e)}
                       className={`block cursor-pointer p-3 rounded-lg transition-colors ${
                         hoveredSub === sub.id
                           ? "bg-red-50 border border-red-200"
@@ -573,7 +767,7 @@ const CategoryMegaMenu = () => {
                           </svg>
                         </div>
                       </div>
-                    </Link>
+                    </button>
                   ))}
                 </div>
 
@@ -583,8 +777,8 @@ const CategoryMegaMenu = () => {
                     .filter((s) => s.id === hoveredSub)
                     .flatMap((s) =>
                       s.series?.map((ser) => (
-                        <Link
-                          to={`/products/${main.id}/${s.id}/${ser.id}`}
+                        <button
+                          onClick={(e) => handleCategoryClick(ser.name.toLowerCase(), ser.name, e)}
                           className="block cursor-pointer"
                           onMouseEnter={() => {
                             setHoveredSeries(ser.id);
@@ -616,8 +810,8 @@ const CategoryMegaMenu = () => {
                           </p>
                           <div className="space-y-2">
                             {ser.options?.map((opt) => (
-                              <Link
-                                to={`/products/${main.id}/${s.id}/${ser.id}/${opt.id}`}
+                              <button
+                                onClick={(e) => handleCategoryClick(opt.name.toLowerCase(), opt.name, e)}
                                 className={`block text-sm cursor-pointer px-3 py-2 rounded-md transition-colors ${
                                   hoveredOption === opt.id
                                     ? "bg-red-100 text-red-700 font-medium border border-red-200"
@@ -626,10 +820,10 @@ const CategoryMegaMenu = () => {
                                 onMouseEnter={() => setHoveredOption(opt.id)}
                               >
                                 {opt.name}
-                              </Link>
+                              </button>
                             ))}
                           </div>
-                        </Link>
+                        </button>
                       ))
                     )}
                 </div>
@@ -646,8 +840,8 @@ const CategoryMegaMenu = () => {
                             ?.filter((o) => o.id === hoveredOption)
                             .flatMap((o) =>
                               o.sizes?.map((size, i) => (
-                                <Link
-                                  to={`/products/${main.id}/${s.id}/${ser.id}/${o.id}/${size}`}
+                                <button
+                                  onClick={(e) => handleCategoryClick(size.toLowerCase(), size, e)}
                                   className="flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                                 >
                                   <span className="text-sm text-gray-700 group-hover:text-red-600">
@@ -666,7 +860,7 @@ const CategoryMegaMenu = () => {
                                       d="M9 5l7 7-7 7"
                                     />
                                   </svg>
-                                </Link>
+                                </button>
                               ))
                             )
                         )

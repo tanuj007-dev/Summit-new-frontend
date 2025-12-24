@@ -144,9 +144,30 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
         <nav className="p-4">
           <ul className="space-y-1">
             {items.map((item, i) => {
+              const routeMap = {
+                "Home": "/",
+                "Best Seller": "/",
+                "New Arrivals": "/",
+                "Pressure Cooker": "/",
+                "Contact US": "/contact",
+                "About Us": "/about",
+                "ACCOUNT MAIN": isLoggedIn
+                  ? "/accountsPage"
+                  : "/login?redirectTo=" + encodeURIComponent("/accountsPage"),
+                "MY CART": "/cart",
+                "MY WISHLIST": "/wishlist",
+              };
+
               if (item === "MY CART") {
                 return (
-                  <Link key={i} to="/Cart" onClick={() => setHide(true)}>
+                  <Link
+                    key={i}
+                    to={routeMap[item]}
+                    onClick={() => {
+                      setActive(i);
+                      setHide(true);
+                    }}
+                  >
                     <li className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors flex items-center justify-between">
                       <span>{item}</span>
                       <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -158,7 +179,50 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               }
               if (item === "MY WISHLIST") {
                 return (
-                  <Link key={i} to="/Wishlist" onClick={() => setHide(true)}>
+                  <Link
+                    key={i}
+                    to={routeMap[item]}
+                    onClick={() => {
+                      setActive(i);
+                      setHide(true);
+                    }}
+                  >
+                    <li className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                      {item}
+                    </li>
+                  </Link>
+                );
+              }
+
+              if (item === "Product Catalogue") {
+                return (
+                  <a
+                    key={i}
+                    href="/asset/pdf/Summit Catalog 2025 cooker  Editable.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => {
+                      setActive(i);
+                      setHide(true);
+                    }}
+                  >
+                    <li className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                      {item}
+                    </li>
+                  </a>
+                );
+              }
+
+              if (routeMap[item]) {
+                return (
+                  <Link
+                    key={i}
+                    to={routeMap[item]}
+                    onClick={() => {
+                      setActive(i);
+                      setHide(true);
+                    }}
+                  >
                     <li className="py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
                       {item}
                     </li>
@@ -234,7 +298,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                 <MdSearch  className="bg-[#F1F1F1]   rounded-full text-black p-2 w-10 h-10 " />
                 <span className="relative">
                   <Link
-                    to={"/Cart"}
+                    to={"/cart"}
                     className="relative bg-[#F1F1F1] rounded-full p-2 text-gray-950 font-normal"
                   >
                     <ShoppingCartOutlinedIcon className="" />
@@ -357,7 +421,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                 if (!isLoggedIn) {
                   navigate("/login");
                 } else {
-                  setHide(!hide);
+                  navigate("/accountsPage");
                 }
               }}
               className="cursor-pointer"

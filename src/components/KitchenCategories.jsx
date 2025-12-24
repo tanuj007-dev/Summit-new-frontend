@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const categories = [
   { title: "Cookware", image: "/asset/images/cookware.jpg" },
@@ -11,6 +12,14 @@ const categories = [
 ];
 
 export default function KitchenCategories() {
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (categoryTitle) => {
+    // Convert category title to URL-friendly format
+    const formattedCategory = categoryTitle.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/products/${formattedCategory}`);
+  };
+
   return (
     <>
       {/* ================= DESKTOP VIEW ================= */}
@@ -25,20 +34,26 @@ export default function KitchenCategories() {
         </div>
 
         <div className="w-[95%] mx-auto grid grid-cols-3 gap-8 px-8">
-          <CategoryCard {...categories[0]} height="h-64" />
-          <div className="col-span-2">
+          <div onClick={() => handleCategoryClick(categories[0].title)}>
+            <CategoryCard {...categories[0]} height="h-64" />
+          </div>
+          <div className="col-span-2" onClick={() => handleCategoryClick(categories[1].title)}>
             <CategoryCard {...categories[1]} height="h-64" />
           </div>
 
           {categories.slice(2, 5).map((item, index) => (
-            <CategoryCard key={index} {...item} height="h-60" />
+            <div key={index} onClick={() => handleCategoryClick(item.title)}>
+              <CategoryCard {...item} height="h-60" />
+            </div>
           ))}
 
-          <div className="col-span-2">
+          <div className="col-span-2" onClick={() => handleCategoryClick(categories[5].title)}>
             <CategoryCard {...categories[5]} height="h-64" />
           </div>
 
-          <CategoryCard {...categories[6]} height="h-64" />
+          <div onClick={() => handleCategoryClick(categories[6].title)}>
+            <CategoryCard {...categories[6]} height="h-64" />
+          </div>
         </div>
       </section>
 
@@ -57,9 +72,12 @@ export default function KitchenCategories() {
           {categories.map((item, index) => (
             <div
               key={index}
+              onClick={() => handleCategoryClick(item.title)}
               className={`relative rounded-xl overflow-hidden bg-white
                 shadow-[0_8px_20px_rgba(0,0,0,0.12)]
-                transition-all duration-300
+                transition-all duration-300 cursor-pointer
+                hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)]
+                hover:-translate-y-1
                 ${
                   index === categories.length - 1
                     ? "col-span-2"

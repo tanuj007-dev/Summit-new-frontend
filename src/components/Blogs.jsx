@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaCalendar, FaTag } from "react-icons/fa";
  
 const Blogs = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const Blogs = () => {
 
   return (
     
-    <div className="allblog max-w-[1665px] mx-auto p-6 px-4 sm:px-16 font-sans">
+    <div className="allblog max-w-[1665px] mx-auto p-6 px-3 sm:px-16 font-sans">
       
       {/* Heading */}
       <div className="blog-header flex justify-between items-center mb-6">
@@ -96,7 +97,7 @@ const Blogs = () => {
               },
               640: {
                 slidesPerView: 2,
-                spaceBetween: 20,
+                spaceBetween: 16,
               },
               768: {
                 slidesPerView: 3,
@@ -107,7 +108,7 @@ const Blogs = () => {
                 spaceBetween: 28,
               },
               1280: {
-                slidesPerView: 5,
+                slidesPerView: 4,
                 spaceBetween: 32,
               },
             }}
@@ -116,39 +117,42 @@ const Blogs = () => {
             {posts.map((post) => {
               const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
               const date = new Date(post.date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
+                month: "numeric",
+                day: "numeric", 
+                year: "numeric"
               });
               const authorName = authors[post.author] || "Unknown";
 
               return (
                 <SwiperSlide key={post.id}>
                   <div
-                    className="blog-card flex flex-col bg-[#F2F2F3] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:translate-y-[-5px] h-[550px] min-h-[550px] max-h-[550px]"
+                    className="blog-card bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] shadow-md h-[350px] sm:h-[450px] flex flex-col"
                     onClick={() => bloglistener(post.slug)}
                   >
                     {imageUrl && (
                       <img 
                         src={imageUrl} 
                         alt={post.title.rendered} 
-                        className="w-full h-48 object-cover flex-shrink-0"
+                        className="w-full h-56 sm:h-72 object-cover"
                       />
                     )}
-                    <div className="p-4 flex flex-col flex-grow">
-                      <div className="meta text-xs text-gray-600 flex-shrink-0">
-                        {date} &nbsp;&nbsp; {authorName}
-                      </div>
-                      <div 
-                        className="blog-title text-sm text-left font-semibold mt-2 text-gray-900 flex-grow overflow-hidden line-clamp-3" 
+                    <div className="p-1.5 sm:p-6 flex flex-col flex-grow">
+                      <h3 
+                        className="  sm:text-lg font-bold text-gray-900   sm:mb-4 leading-tight line-clamp-3 overflow-hidden" 
                         dangerouslySetInnerHTML={{ __html: post.title.rendered }} 
                       />
-                      <div className="excerpt leading-snug text-left text-[11px] sm:text-[13px] text-gray-600 flex-grow overflow-hidden line-clamp-4">
-                        {getFirst15Words(post.content.rendered)}
-                      </div>
-                      <div className="readmore text-[11px] sm:text-sm font-medium flex items-center gap-1 text-gray-900 flex-shrink-0 mt-2">
-                        Read more <HiArrowLongRight size={20} className="mt-1" />
-                      </div>
+                     <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-600 mt-auto">
+  <div className="flex items-center gap-2">
+    <FaCalendar className="text-gray-400" size={14} />
+    <span>{date}</span>
+  </div>
+
+  <div className="flex items-center gap-2">
+    <FaTag className="text-gray-400" size={14} />
+    <span>{authorName}</span>
+  </div>
+</div>
+
                     </div>
                   </div>
                 </SwiperSlide>
@@ -157,13 +161,13 @@ const Blogs = () => {
           </Swiper>
 
           {/* Custom Progress Bar */}
-          <div className="blog-progress-bar mt-6 px-8">
+          {/* <div className="blog-progress-bar mt-6 px-8">
             <div className="relative">
               <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div className="swiper-pagination-progressbar h-full bg-gray-400 transition-all duration-300 ease-out rounded-full" />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 

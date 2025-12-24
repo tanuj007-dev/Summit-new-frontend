@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import axios from "../axiosConfig";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    contact: "",
-    address: "",
     password: "",
     confirmPassword: "",
     agreed: false,
   });
 
-  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const isValidPassword = (password) => {
-    const pattern = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/;
-    return pattern.test(password);
-  };
+  // Relaxed validation (Laravel friendly)
+  const isValidPassword = (password) => password.length >= 6;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -29,83 +28,87 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
-    const { name, email, contact, address, password, confirmPassword, agreed } =
-      form;
+    const { name, email, password, confirmPassword, agreed } = form;
 
-    if (!name || !email || !contact || !address || !password || !confirmPassword) {
-      setMsg("Please fill all fields");
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error("Please fill all fields");
       return;
     }
 
     if (!agreed) {
-      setMsg("Please agree to the Terms of Service");
+      toast.error("Please agree to the Terms of Service");
       return;
     }
 
     if (!isValidPassword(password)) {
-      setMsg(
-        "Password must be at least 6 characters, include one uppercase letter and one special character."
-      );
+      toast.error("Password must be at least 6 characters");
       return;
     }
 
     if (password !== confirmPassword) {
-      setMsg("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
+    setLoading(true);
+
     try {
-      const res = await axios.post(
-        "/userRegister.php",
-        new URLSearchParams({
+      await axios.post(
+        "/api/register",
+        {
           name,
           email,
-          contact,
-          address,
           password,
-        }),
+          password_confirmation: confirmPassword,
+        },
         {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
 
-      const response = res.data;
-      setMsg(response.message ?? "Something went wrong.");
+      toast.success("Registration successful! Please login.");
 
-      if (response.status === "success") {
-        setForm({
-          name: "",
-          email: "",
-          contact: "",
-          address: "",
-          password: "",
-          confirmPassword: "",
-          agreed: false,
-        });
-      }
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        agreed: false,
+      });
+
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
       console.error("Registration error:", error);
-      setMsg("Something went wrong. Please try again.");
+
+      // Laravel validation error handling
+      if (error.response?.data?.errors) {
+        const firstError = Object.values(error.response.data.errors)[0][0];
+        toast.error(firstError);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left: Image / Promo */}
+      {/* Left Image */}
       <div className="hidden md:block md:w-1/2 bg-gray-100">
         <img
-          src="/asset/images/login.jpg" // Update this path to your banner
+          src="/asset/images/login.jpg"
           alt="Summit Promo"
           className="w-full h-screen object-cover"
         />
       </div>
 
-      {/* Right: Form */}
+      {/* Right Form */}
       <div className="flex-1 flex items-center justify-center bg-[#f9f9f9]">
-        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md border border-gray-200">
+        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md border">
           <h2 className="text-2xl font-bold text-center text-red-600 mb-6">
             Create an Account
           </h2>
@@ -115,85 +118,61 @@ const Register = () => {
               type="text"
               name="name"
               placeholder="Your Name"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
               value={form.name}
               onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-red-400"
             />
 
             <input
               type="email"
               name="email"
               placeholder="Your Email"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
               value={form.email}
               onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-red-400"
             />
-
-            <input
-              type="text"
-              name="contact"
-              placeholder="Contact Number"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
-              value={form.contact}
-              onChange={handleChange}
-            />
-
-            <input
-              type="text"
-              name="address"
-              placeholder="Address (House No, Area, City, Pincode)"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
-              value={form.address}
-              onChange={handleChange}
-            />
-            <small className="text-xs text-gray-500">Enter full address separated by commas</small>
 
             <input
               type="password"
               name="password"
               placeholder="Password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
               value={form.password}
               onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-red-400"
             />
 
             <input
               type="password"
               name="confirmPassword"
               placeholder="Repeat Password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
               value={form.confirmPassword}
               onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-red-400"
             />
 
-            <label className="flex items-center space-x-2 text-sm">
+            <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 name="agreed"
                 checked={form.agreed}
                 onChange={handleChange}
-                className="accent-red-500"
+                className="accent-red-600"
               />
               <span>
                 I agree to the{" "}
-                <a href="#" className="text-red-600 underline">
+                <span className="text-red-600 underline cursor-pointer">
                   Terms of Service
-                </a>
+                </span>
               </span>
             </label>
-
-            {msg && (
-              <p className={`text-sm ${msg.includes("success") ? "text-green-600" : "text-red-600"}`}>
-                {msg}
-              </p>
-            )}
 
             <button
               type="button"
               onClick={handleRegister}
-              className="w-full py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition"
+              disabled={loading}
+              className="w-full py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 disabled:opacity-50"
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
 
             <p className="text-sm text-center text-gray-600">
@@ -205,6 +184,8 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

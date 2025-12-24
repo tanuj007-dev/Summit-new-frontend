@@ -10,8 +10,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
   plugins: [react(), tailwindcss()],
 })
-
-
-  

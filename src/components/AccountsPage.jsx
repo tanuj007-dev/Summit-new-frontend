@@ -1,35 +1,122 @@
 import React, { useEffect, useState } from "react";
 import { FaPencilAlt, FaMapMarkerAlt } from "react-icons/fa";
-
+import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 
 const AccountsPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [msg, setMsg] = useState("");
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const navigate = useNavigate();
+
+  /* ------------------ SESSION ID HANDLER ------------------ */
+  const getSessionId = () => {
+    // Extract session ID from cookies
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'summithomeappliances-session') {
+        return value;
+      }
+    }
+    return null;
+  };
+
+  const getPhpSessionId = () => {
+    // Extract PHPSESSID from cookies
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'PHPSESSID') {
+        return value;
+      }
+    }
+    return null;
+  };
+
+  /* ------------------ DATA NORMALIZATION ------------------ */
+  const normalizeUserData = (apiData) => {
+    // Handle different possible data structures from /api/me
+    if (!apiData) return null;
+    
+    // If the API returns data in a nested structure
+    if (apiData.data && typeof apiData.data === 'object') {
+      return {
+        name: apiData.data.name || apiData.data.user?.name || 'User',
+        email: apiData.data.email || apiData.data.user?.email || 'No email',
+        contact: apiData.data.contact || apiData.data.phone || apiData.data.mobile || 'No contact',
+        address: apiData.data.address || apiData.data.user?.address || 'No address set'
+      };
+    }
+    
+    // If the API returns flat data structure
+    return {
+      name: apiData.name || apiData.user?.name || 'User',
+      email: apiData.email || apiData.user?.email || 'No email',
+      contact: apiData.contact || apiData.phone || apiData.mobile || 'No contact',
+      address: apiData.address || apiData.user?.address || 'No address set'
+    };
+  };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const checkAuthAndFetchUserInfo = async () => {
       try {
-        const res = await axios.get(
-          "/getUserInfo.php",
-          {
-            withCredentials: true, // important to send cookies/session
-          }
-        );
-
-        if (res.data.status === "success") {
-          setUserInfo(res.data.data);
-        } else {
-          setMsg(res.data.message || "Failed to fetch user info.");
+        // Debug: Check what cookies are available
+        console.log("All cookies:", document.cookie);
+        console.log("Session cookie:", getSessionId());
+        console.log("PHPSESSID cookie:", getPhpSessionId());
+        
+        // Get session IDs
+        const sessionId = getSessionId();
+        const phpSessionId = getPhpSessionId();
+        
+        if (!sessionId && !phpSessionId) {
+          throw new Error("No session ID found - please login first");
         }
+        
+        console.log("Using session IDs:", { sessionId, phpSessionId });
+        
+        // Prepare headers with PHPSESSID
+        const headers = {
+          "Content-Type": "application/json",
+        };
+        
+        // Add PHPSESSID to headers if available
+        if (phpSessionId) {
+          headers["Cookie"] = `PHPSESSID=${phpSessionId}`;
+        }
+        
+        // Call /api/me with proper headers
+        const response = await axios.get(`/api/me`, {
+          headers,
+          withCredentials: true,
+        });
+        
+        console.log("User info from /api/me:", response.data);
+        const normalizedData = normalizeUserData(response.data);
+        console.log("Normalized user data:", normalizedData);
+        setUserInfo(normalizedData);
       } catch (error) {
-        console.error(error);
-        setMsg("Something went wrong while fetching user info.");
+        console.error("Authentication failed:", error);
+        console.error("Error response:", error.response);
+        console.error("Error status:", error.response?.status);
+        console.error("Error headers:", error.response?.headers);
+        setMsg("Failed to fetch user information. Please login again.");
+        // Redirect to login after a delay
+        setTimeout(() => {
+          navigate("/login?redirectTo=" + encodeURIComponent("/accountsPage"));
+        }, 2000);
+      } finally {
+        setIsCheckingAuth(false);
       }
     };
 
-    fetchUserInfo();
-  }, []);
+    checkAuthAndFetchUserInfo();
+  }, [navigate]);
+
+  if (isCheckingAuth) {
+    return <p>Checking authentication...</p>;
+  }
 
   if (msg) {
     return <p style={{ color: "red" }}>{msg}</p>;

@@ -14,7 +14,7 @@ import Discription from "./components/Discription";
 import ThoughtfulPicks from "./components/ThoughtfulPicks";
 // import ByPrice from "./components/ByPrice";
 import ReelsSection from "./components/ReelsSection";
-import SummitSelect from "./components/SummitSelect";
+// import SummitSelect from "./components/SummitSelect";
 import SummitSection from "./components/SummitSection";
 import Available from "./components/Available";
 import Feedback from "./components/Feedback";
@@ -74,7 +74,7 @@ import WarrantiesPage from "./components/Admin/pages/WarrantiesPage";
 import CertificationsPage from "./components/Admin/pages/CertificationsPage";
 import ProtectedAdminRoute from "./components/Admin/ProtectedAdminRoute";
 import AdminLogin from "./components/Admin/AdminLogin";
- import ScrollVelocity from './components/ScrollVelocity'
+import ScrollVelocity from './components/ScrollVelocity'
 
 const queryClient = new QueryClient();
 
@@ -99,7 +99,7 @@ function App() {
       '/accountsPage', '/myorders', '/wishlist', '/checkout', '/thankyou',
       '/trackShipment', '/shipping-policy', '/refund-policy', '/privacy-policy',
       '/terms-conditions', '/blogs', '/all-blogs', '/product', '/category',
-      '/products', '/kitchena-appliances', '/admin'
+      '/products', '/kitchena-appliances', '/admin', '/product-details'
     ];
     
     // Check if pathname starts with any valid route
@@ -142,12 +142,17 @@ function App() {
         // Load products
         const productsResponse = await axios.get("/products.php");
         setProducts(productsResponse.data);
-        
-        // Load login status
-        const loginResponse = await axios.get("/CheckLogin.php", {
-          withCredentials: true,
-        });
-        setIsLoggedIn(loginResponse.data.loggedIn);
+
+        // Load login status from server session using /api/me endpoint
+        try {
+          const response = await axios.get("/api/me", {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          });
+          setIsLoggedIn(true);
+        } catch (error) {
+          setIsLoggedIn(false);
+        }
         
         // Load wishlist
         const wishlistResponse = await axios.get("/wishlistupload.php?action=get");
@@ -337,6 +342,7 @@ function App() {
 
   const handlelogout = async () => {
     localStorage.removeItem("userToken");
+
     try {
       const res = await axios.get(
         "/logout.php",
@@ -396,7 +402,7 @@ function App() {
   velocity={100} 
   className="custom-scroll-text"
 /> */}
-                <SummitSelect/>
+                {/* <SummitSelect/> */}
 
                 {/* <ByPrice
                   user={products}
@@ -418,8 +424,9 @@ function App() {
           />
 
           {/* ----new product page-----  */}
-          <Route path="/product" element={<Product></Product>} />
-          <Route path="/product-details/:slug" element={<ProductDetails />} />
+          {/* <Route path="/product" element={<Product></Product>} /> */}
+          <Route path="/product/:product_id" element={<ProductDetails />} />
+          <Route path="/product-details/:product_id" element={<ProductDetails />} />
           <Route path="/category/:slug" element={<Category/>} />
 
           <Route
@@ -454,9 +461,7 @@ function App() {
           <Route path="/kitchena-appliances/:cat" element={<SubCategory addToCart={addToCart} />} />
           {/* <Route path="/products/:main/" element={<ProductGrid/>} /> */}
           <Route path="/products/:main/:subcat?/:series?/:seriesOption?/:productSize?" element={<ProductGrid
-            buyNowHandle={buyNowHandle}
             isLoggedIn={isLoggedIn}
-            addToCart={addToCart}
             handlewishlist={handlewishlist}
             wishlist={wishlist}
           />} />

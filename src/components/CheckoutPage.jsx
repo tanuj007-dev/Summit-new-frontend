@@ -1,7 +1,7 @@
 // ✅ Updated CheckoutPage.js (with 8% Tax)
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../axiosConfig';
+import axios from 'axios';
 
 const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
   const navigate = useNavigate();

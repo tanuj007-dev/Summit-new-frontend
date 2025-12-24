@@ -138,7 +138,7 @@ const products = [
           >
             {/* IMAGE BOX */}
             <div className="relative w-full overflow-hidden rounded-2xl shadow-md">
-                <Link to={`/product-details/${product.slug}`}>
+                <Link to={`/product-details/${product.id}`}>
                                <img
                                  src={
                                    product?.variants?.[0]?.image
@@ -157,7 +157,7 @@ const products = [
 
             {/* TEXT + PRICE */}
             <div className="text-center mt-4">
-              <Link to={`/product-details/${product.slug}`}>
+              <Link to={`/product-details/${product.id}`}>
                              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
                                {product.name}
                              </h3>

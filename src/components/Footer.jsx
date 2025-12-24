@@ -8,32 +8,97 @@ import {
   FaTwitter,
   FaYoutube,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../axiosConfig";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+
+// Helper function to convert footer link text to search-friendly format
+const convertToSearchTerm = (text) => {
+  return text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+};
 
 const Footer = () => {
   const [footerData, setFooterData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axiosInstance
-      .get("/getFooterMenu.php")
+      .get("/")
       .then((res) => setFooterData(res.data || []))
       .catch((err) => console.error("Footer menu fetch error:", err));
   }, []);
+
+  // Function to handle footer link clicks with API integration
+  const handleFooterLinkClick = async (searchTerm, category) => {
+    try {
+      console.log('Testing search term:', searchTerm);
+      
+      // Try multiple search term variations to find one that works
+      const searchVariations = [
+        searchTerm,
+        searchTerm.replace(/\s+/g, ' ').toLowerCase(),
+        searchTerm.split(' ')[0], // Try just the first word
+        searchTerm.replace(/\s+/g, ''), // Try without spaces
+        searchTerm.replace(/cooker$/, ''), // Try without 'cooker'
+        searchTerm.replace(/pressure cooker$/, 'pressure'), // Try just 'pressure'
+      ];
+      
+      let products = [];
+      let workingSearchTerm = '';
+      
+      for (const term of searchVariations) {
+        console.log('Trying search term:', term);
+        try {
+          const response = await axiosInstance.get('/api/products/view', {
+            params: { search: term }
+          });
+          
+          const responseData = response.data?.data || response.data || [];
+          if (responseData.length > 0) {
+            products = responseData;
+            workingSearchTerm = term;
+            console.log('Found products with term:', term, 'Count:', products.length);
+            break;
+          }
+        } catch (error) {
+          console.log('Search failed for term:', term, error);
+          continue;
+        }
+      }
+      
+      if (products.length > 0) {
+        // Navigate to ProductGrid with the search term
+        const categoryPath = convertToSearchTerm(category);
+        navigate(`/products/${categoryPath}`, { 
+          state: { 
+            searchResults: products,
+            searchTerm: workingSearchTerm 
+          }
+        });
+      } else {
+        toast.info(`No products found for "${searchTerm}". Tried variations: ${searchVariations.join(', ')}`);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to load products. Please try again.");
+    }
+  };
   return (
     <footer className="md:hidden">
+         
       <div className="relative flex flex-wrap space-x-0 bg-[url('/asset/images/FooterMountains.png')] bg-[length:200%_100%] bg-center bg-no-repeat     min-h-fit
  px-4 py-12 overflow-hidden ">
+
         <div className="absolute top-4 left-4">
           <img
             src="/asset/images/Logo.png"
             alt=""
             className="w-12 "
           />
+          
         </div>
           
-        <div className="flex justify-between gap-2 break-words mt-4 w-full">
+        <div className=" gap-2 break-words mt-4 w-full">
           <div className="text-white break-words max-w-xs">
             <h1 className="font-semibold mt-4 text-[16px]">Contact Us</h1>
             <div className="text-[14px] space-x-2 space-y-1 mt-1">
@@ -56,8 +121,8 @@ const Footer = () => {
                 <a href="">
                   <FaMapMarkerAlt className="mt-1" />
                 </a>
-                B-36 Krishna Vihar Loni <br />
-                Ghaziabad-201102 UP <br />
+                B-36 Krishna Vihar Loni 
+                Ghaziabad-201102 UP 
                 (INDIA)
               </p>
               <p className="flex items-center gap-1">
@@ -69,8 +134,9 @@ const Footer = () => {
                   @summithomeappliance.com
               </p>
             </div>
+            
           </div>
-          <div className="text-white order-1 -mt-6">
+          <div className="text-white order-1 mt-6">
             <h1 className="font-semibold text-nowrap text-[16px]">Useful Links</h1>
             <ul className="text-[14px] text-nowrap space-y-2 mt-4">
               <li>
@@ -94,11 +160,13 @@ const Footer = () => {
                 <Link to="/refund-policy">Return & Refund Policy</Link>{" "}
               </li>
             </ul>
+            
           </div>
           
           {/* Dark shadow from bottom */}
            
-          
+            
+               
         </div>
 
         
@@ -114,6 +182,7 @@ const Footer = () => {
       alt="Background"
       className="w-full h-full object-cover blur-2xl scale-110"
     />
+    
   </div>
 
   {/* 🔹 Optional dark overlay for better contrast */}
@@ -126,21 +195,21 @@ const Footer = () => {
   <h3 className="font-bold mb-2">Pressure Cooker</h3>
   <ul className="space-y-1 text-[13px] whitespace-normal sm:text-nowrap
 ">
-    <li>Inner Lid Pressure Cooker</li>
-    <li>Outer Lid Pressure Cooker</li>
-    <li>Clip On/Flip On Pressure Cooker</li>
-    <li>Hard Anodised Pressure Cooker</li>
-    <li>Stainless Steel Pressure Cooker</li>
-    <li>Aluminium Pressure Cooker</li>
-    <li>Triply Pressure Cooker</li>
-    <li>2 Litre Pressure Cooker</li>
-    <li>3 Litre Pressure Cooker</li>
-    <li>5 Litre Pressure Cooker</li>
-    <li>5.5 Litre and Above Pressure Cooker</li>
-    <li>Straight Pressure Cooker</li>
-    <li>Handi Pressure Cooker</li>
-    <li>Pan Pressure Cooker</li>
-    <li>Pressure Cooker Collections</li>
+    <li><button onClick={() => handleFooterLinkClick('inner lid', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Inner Lid Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('outer lid', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Outer Lid Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('clip on', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Clip On/Flip On Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('hard anodised', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Hard Anodised Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('stainless steel', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Stainless Steel Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('aluminium', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Aluminium Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('triply', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Triply Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('2 litre', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">2 Litre Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('3 litre', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">3 Litre Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('5 litre', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">5 Litre Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('5.5 litre', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">5.5 Litre and Above Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('straight', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Straight Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('handi', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Handi Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('pan', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Pan Pressure Cooker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('pressure', 'pressure-cooker')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Pressure Cooker Collections</button></li>
   </ul>
 </div>
 
@@ -149,28 +218,28 @@ const Footer = () => {
   <h3 className="font-semibold mb-2">Cookware</h3>
   <ul className="space-y-1 text-[13px] whitespace-normal sm:text-nowrap
 ">
-    <li>Non-Stick Cookware</li>
-    <li>Ceramic Non-Stick Cookware</li>
-    <li>Triply Cookware</li>
-    <li>Hard Anodised Cookware</li>
-    <li>Stainless Steel Cookware</li>
-    <li>Cast Iron Cookware</li>
-    <li>Dosa Tawa</li>
-    <li>Roti Tawa</li>
-    <li>Frying Pan</li>
-    <li>Kadai</li>
-    <li>Casserole</li>
-    <li>Idli Maker</li>
-    <li>Paniyarakkal</li>
-    <li>Grill Pan</li>
-    <li>Tadka Pan</li>
-    <li>Appachetty</li>
-    <li>Deep Pot</li>
-    <li>Biryani Pot</li>
-    <li>Milk Pan</li>
-    <li>Sauce Pans</li>
-    <li>Induction Base Cookware</li>
-    <li>Non-Induction Base Cookware</li>
+    <li><button onClick={() => handleFooterLinkClick('non-stick', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Non-Stick Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('ceramic', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Ceramic Non-Stick Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('triply', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Triply Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('hard anodised', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Hard Anodised Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('stainless steel', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Stainless Steel Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('cast iron', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Cast Iron Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('dosa tawa', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Dosa Tawa</button></li>
+    <li><button onClick={() => handleFooterLinkClick('roti tawa', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Roti Tawa</button></li>
+    <li><button onClick={() => handleFooterLinkClick('frying pan', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Frying Pan</button></li>
+    <li><button onClick={() => handleFooterLinkClick('kadai', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Kadai</button></li>
+    <li><button onClick={() => handleFooterLinkClick('casserole', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Casserole</button></li>
+    <li><button onClick={() => handleFooterLinkClick('idli maker', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Idli Maker</button></li>
+    <li><button onClick={() => handleFooterLinkClick('paniyarakkal', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Paniyarakkal</button></li>
+    <li><button onClick={() => handleFooterLinkClick('grill pan', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Grill Pan</button></li>
+    <li><button onClick={() => handleFooterLinkClick('tadka pan', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Tadka Pan</button></li>
+    <li><button onClick={() => handleFooterLinkClick('appachetty', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Appachetty</button></li>
+    <li><button onClick={() => handleFooterLinkClick('deep pot', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Deep Pot</button></li>
+    <li><button onClick={() => handleFooterLinkClick('biryani pot', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Biryani Pot</button></li>
+    <li><button onClick={() => handleFooterLinkClick('milk pan', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Milk Pan</button></li>
+    <li><button onClick={() => handleFooterLinkClick('sauce pans', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Sauce Pans</button></li>
+    <li><button onClick={() => handleFooterLinkClick('induction', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Induction Base Cookware</button></li>
+    <li><button onClick={() => handleFooterLinkClick('non-induction', 'cookware')} className="hover:underline text-left text-white bg-transparent border-none cursor-pointer">Non-Induction Base Cookware</button></li>
   </ul>
 </div>
 
@@ -306,7 +375,7 @@ const Footer = () => {
           <div className="flex justify-between md:px-16 text-white   py-4  items-center">
             <div className="text-[12px]">
               Vardhman Industries ©{new Date().getFullYear()} | All rights
-              reserved
+              reserved | Digital Partner Performdigi Monetize Pvt. Ltd.
             </div>
             <div className="text-[0.5rem] md:text-xs flex space-x-4 ">
               <Link
