@@ -1101,7 +1101,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Blogs from "../Blogs";
 import CategoryMegaMenu from "../header/CategoryMegaMenu";
-
+import ExploreMoreCategories from '../ExploreMoreCategories';
 /* -------------------- IMAGE HELPER -------------------- */
 const getImageSrc = (img) => {
   if (!img) return "/asset/images/dummy-image-square.jpg";
@@ -1832,7 +1832,8 @@ if (Array.isArray(product.images)) {
             </div>
           )}
         </div>
-        
+          <ExploreMoreCategories />
+
           <Blogs />
       </div>
     </div>

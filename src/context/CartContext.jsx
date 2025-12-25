@@ -7,35 +7,59 @@ export const CartContext = createContext();
 
 export function CartProvider({ children }) {
     const [cart, setCart] = useState({});
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Helper function to get user ID
-    const getUserId = async () => {
-  try {
-    const response = await axios.get("/api/me");
-    return response.data?.id || response.data?.user_id;
-  } catch (error) {
-    console.log("User not logged in");
-    return null;
-  }
-};
-
-
-    // Fetch cart data - Updated to match API format
+    // Fetch cart data
     const handleCart = async () => {
         try {
-            const userId = await getUserId();
-            if (!userId) {
-                console.log("No user ID found");
+            setLoading(true);
+            const token = localStorage.getItem("auth_token");
+            
+            if (!token) {
+                console.log("No auth token found - cart not fetched");
+                setLoading(false);
                 return;
             }
 
-            const response = await axios.get(`/api/cart?user_id=${userId}`, {
+            // Bearer token will be added automatically by axios interceptor
+            const response = await axios.get("/api/cart", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 withCredentials: true
             });
-            setCart(response.data);
+            
+            console.log("Cart API response:", response.data);
+            
+            // Extract cart from nested response structure
+            let cartData = { cart: {} };
+            
+            if (response.data?.data?.cart) {
+                // API returns { success: true, data: { cart: {...}, items: [...], total: ... } }
+                // Merge items and total into cart object
+                const cartObj = {
+                    ...response.data.data.cart,
+                    items: response.data.data.items || [],
+                    total: response.data.data.total || 0,
+                    item_count: response.data.data.item_count || 0
+                };
+                cartData = { cart: cartObj };
+            } else if (response.data?.cart) {
+                // If response is { cart: {...} }
+                cartData = { cart: response.data.cart };
+            } else if (response.data?.items) {
+                // If response is directly the cart data
+                cartData = { cart: response.data };
+            }
+            
+            console.log("Setting cart state to:", cartData);
+            setCart(cartData);
         } catch (error) {
-            console.log("Error in fetching Cart Details:", error);
+            console.error("Error in fetching Cart Details:", error.response?.data || error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -45,115 +69,212 @@ export function CartProvider({ children }) {
 
     // Add product to cart
     const handleAddToCart = async (product) => {
-  const user_id = await getUserId();
+        // Check if user is logged in
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+            toast.error("Please login to add products to cart");
+            navigate("/login");
+            return;
+        }
 
-  const product_id = product.product_id || product.id;
-  const price = product.price || product.selling_price;
+        // Extract product_id from multiple possible fields
+        const product_id = product?.product_id || 
+                          product?.id || 
+                          product?.productId ||
+                          product?.sku ||
+                          product?.variant_id;
+        
+        // Extract price from multiple possible fields
+        const price = product?.price || 
+                     product?.selling_price || 
+                     product?.salePrice ||
+                     product?.cost ||
+                     product?.mrp;
+        
+        const quantity = 1;
 
-  const product_variant_id =
-    product.variantId ||
-    product.variant_id ||
-    product.product_variant_id ||
-    (product.variants?.length > 0 ? product.variants[0].id : null);
+        console.log("Adding to cart:", { product_id, price, product });
 
-  if (!user_id) {
-    toast.error("Please login to add products to cart");
-    return;
-  }
+        if (!product_id) {
+            console.error("Cart Error - Missing product_id:", { product });
+            toast.error("Product ID not found");
+            return;
+        }
 
-  if (!product_id || !price || !product_variant_id) {
-    console.error("Cart Error:", { product });
-    toast.error("Product information is incomplete");
-    return;
-  }
+        if (!price) {
+            console.error("Cart Error - Missing price:", { product });
+            toast.error("Product price not available");
+            return;
+        }
 
-  try {
-    const response = await axios.post(
-      "/api/cart/add",
-      {
-        user_id: parseInt(user_id),
-        product_id,
-        product_variant_id,
-        price: parseFloat(price),
-        quantity: 1,
-      },
-      { withCredentials: true }
-    );
+        try {
+            // Bearer token will be added automatically by axios interceptor
+            const response = await axios.post(
+                "/api/cart/add",
+                {
+                    product_id: String(product_id),
+                    quantity,
+                    price: parseFloat(price),
+                },
+                { 
+                    withCredentials: true,
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
 
-    setCart(response.data.cart || response.data);
-    toast.success("Product Added to Cart");
-  } catch (error) {
-    console.error("Add to cart error:", error.response?.data || error);
-    toast.error(error.response?.data?.message || "Failed to add product");
-  }
-};
+            console.log("Add to cart response:", response.data);
+            
+            // Extract cart data from response structure
+            let cartData = { cart: {} };
+            if (response.data?.data?.cart) {
+                // Merge items and total into cart object
+                const cartObj = {
+                    ...response.data.data.cart,
+                    items: response.data.data.items || [],
+                    total: response.data.data.total || 0,
+                    item_count: response.data.data.item_count || 0
+                };
+                cartData = { cart: cartObj };
+            } else if (response.data?.cart) {
+                cartData = { cart: response.data.cart };
+            } else if (response.data?.items) {
+                cartData = { cart: response.data };
+            }
+            
+            console.log("Setting cart to:", cartData);
+            setCart(cartData);
+            toast.success("Product Added to Cart");
+            
+            // Refresh cart to get latest data from server
+            setTimeout(() => handleCart(), 500);
+        } catch (error) {
+            console.error("Add to cart error:", error.response?.data || error);
+            toast.error(error.response?.data?.message || "Failed to add product");
+        }
+    };
 
 
-    // Update cart item quantity - Fixed to match API format
+    // Update cart item quantity
     const handleUpdateCart = async (itemId, quantity) => {
         try {
-            const userId = await getUserId();
-            if (!userId) {
+            const token = localStorage.getItem("auth_token");
+            
+            if (!token) {
                 toast.error("Please login to update cart");
                 return;
             }
 
+            if (!itemId || !quantity || quantity < 1) {
+                toast.error("Invalid quantity");
+                return;
+            }
+
+            // Bearer token will be added automatically by axios interceptor
             const response = await axios.post(
                 `/api/cart/update/${itemId}`,
                 {
-                    user_id: parseInt(userId),
                     quantity: parseInt(quantity)
                 },
-                { withCredentials: true }
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    withCredentials: true
+                }
             );
 
-            if (response.data.message) {
-                toast.error(response.data.message);
-            } else {
-                setCart(response.data);
-                toast.success("Product Quantity Updated");
+            console.log("Update cart response:", response.data);
+            
+            // Extract cart data from response structure
+            let cartData = { cart: {} };
+            if (response.data?.data?.cart) {
+                // Merge items and total into cart object
+                const cartObj = {
+                    ...response.data.data.cart,
+                    items: response.data.data.items || [],
+                    total: response.data.data.total || 0,
+                    item_count: response.data.data.item_count || 0
+                };
+                cartData = { cart: cartObj };
+            } else if (response.data?.cart) {
+                cartData = { cart: response.data.cart };
+            } else if (response.data?.items) {
+                cartData = { cart: response.data };
             }
+            
+            setCart(cartData);
+            toast.success("Product Quantity Updated");
         } catch (error) {
-            console.log("Error While Updating Cart:", error.response?.data || error);
+            console.error("Error While Updating Cart:", error.response?.data || error.message);
             toast.error(error.response?.data?.message || "Failed to update cart");
         }
     };
 
     // Buy now function
     const handleBuyNow = async (product) => {
-        const user_id = await getUserId();
-        const product_id = product.product_id || product.id;
-        const price = product.price || product.selling_price;
-        const product_variant_id = product.variant_id || product.product_variant_id ||
-            (product.variants?.length > 0 ? product.variants[0].id : null) ||
-            product.id;
+        // Extract product_id from multiple possible fields
+        const product_id = product?.product_id || 
+                          product?.id || 
+                          product?.productId ||
+                          product?.sku ||
+                          product?.variant_id;
+        
+        // Extract price from multiple possible fields
+        const price = product?.price || 
+                     product?.selling_price || 
+                     product?.salePrice ||
+                     product?.cost ||
+                     product?.mrp;
+        
+        const quantity = 1;
 
-        if (!user_id) {
-            toast.error("Please login to buy products");
-            return;
-        }
+        console.log("Buy now:", { product_id, price, product });
 
-        if (!product_id || !price || !product_variant_id) {
+        if (!product_id || !price) {
             toast.error("Product information is incomplete");
-            console.error("Missing required fields:", { user_id, product_id, price, product_variant_id, product });
+            console.error("Missing required fields:", { product_id, price, product });
             return;
         }
 
         const cartData = {
-  user_id: parseInt(user_id),
-  product_id: product_id,
-  product_variant_id: product_variant_id, // ✅ MUST
-  price: parseFloat(price),
-  quantity: 1,
-};
-
+            product_id: String(product_id),
+            quantity,
+            price: parseFloat(price),
+        };
 
         try {
+            // Bearer token will be added automatically by axios interceptor
             const response = await axios.post(`/api/cart/add`, cartData, {
                 withCredentials: true
             });
-            setCart(response.data);
+            
+            console.log("Buy now response:", response.data);
+            
+            // Extract cart data from response structure
+            let updatedCart = { cart: {} };
+            if (response.data?.data?.cart) {
+                // Merge items and total into cart object
+                const cartObj = {
+                    ...response.data.data.cart,
+                    items: response.data.data.items || [],
+                    total: response.data.data.total || 0,
+                    item_count: response.data.data.item_count || 0
+                };
+                updatedCart = { cart: cartObj };
+            } else if (response.data?.cart) {
+                updatedCart = { cart: response.data.cart };
+            } else if (response.data?.items) {
+                updatedCart = { cart: response.data };
+            }
+            
+            setCart(updatedCart);
             toast.success("Product Added to cart");
+            
+            // Redirect to checkout
             navigate("/checkout");
         } catch (error) {
             console.log("Error While Adding Product to Cart:", error.response?.data || error);
@@ -161,43 +282,96 @@ export function CartProvider({ children }) {
         }
     };
 
-    // Remove item from cart - Fixed to match API format
+    // Remove item from cart
     const handleRemoveFromCart = async (itemId) => {
         try {
-            const userId = await getUserId();
-            if (!userId) {
+            const token = localStorage.getItem("auth_token");
+            
+            if (!token) {
                 toast.error("Please login to remove items");
                 return;
             }
 
+            // Bearer token will be added automatically by axios interceptor
             const response = await axios.get(
-                `/api/cart/remove/${itemId}?user_id=${userId}`,
-                { withCredentials: true }
+                `/api/cart/remove/${itemId}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true
+                }
             );
-            setCart(response.data);
-            toast.error("Product Removed From Cart");
+            
+            console.log("Remove cart item response:", response.data);
+            
+            // Extract cart data from response structure
+            let cartData = { cart: {} };
+            if (response.data?.data?.cart) {
+                // Merge items and total into cart object
+                const cartObj = {
+                    ...response.data.data.cart,
+                    items: response.data.data.items || [],
+                    total: response.data.data.total || 0,
+                    item_count: response.data.data.item_count || 0
+                };
+                cartData = { cart: cartObj };
+            } else if (response.data?.cart) {
+                cartData = { cart: response.data.cart };
+            } else if (response.data?.items) {
+                cartData = { cart: response.data };
+            }
+            
+            setCart(cartData);
+            toast.success("Product Removed From Cart");
         } catch (error) {
-            console.log("Error While Removing product from Cart:", error);
-            toast.error("Failed to remove product");
+            console.error("Error While Removing product from Cart:", error.response?.data || error.message);
+            toast.error(error.response?.data?.message || "Failed to remove product");
         }
     };
 
     // Clear entire cart
     const handleClearCart = async () => {
         try {
-            const response = await axios.get(`/api/cart/clear`, {
+            const token = localStorage.getItem("auth_token");
+            
+            if (!token) {
+                toast.error("Please login to clear cart");
+                return;
+            }
+
+            // Bearer token will be added automatically by axios interceptor
+            const response = await axios.post(`/api/cart/clear`, {}, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 withCredentials: true
             });
-            setCart(response.data);
-
-            if (response.data.status === "clear") {
-                toast.error("Removed All Items From Cart");
-            } else {
-                toast.error("Empty Cart");
+            
+            console.log("Clear cart response:", response.data);
+            
+            // Extract cart data from response structure
+            let cartData = { cart: {} };
+            if (response.data?.data?.cart) {
+                // Merge items and total into cart object
+                const cartObj = {
+                    ...response.data.data.cart,
+                    items: response.data.data.items || [],
+                    total: response.data.data.total || 0,
+                    item_count: response.data.data.item_count || 0
+                };
+                cartData = { cart: cartObj };
+            } else if (response.data?.cart) {
+                cartData = { cart: response.data.cart };
+            } else if (response.data?.items) {
+                cartData = { cart: response.data };
             }
+            
+            setCart(cartData);
+            toast.success("Removed All Items From Cart");
         } catch (error) {
-            console.log("Error While Clear Cart:", error);
-            toast.error("Failed to clear cart");
+            console.error("Error While Clearing Cart:", error.response?.data || error.message);
+            toast.error(error.response?.data?.message || "Failed to clear cart");
         }
     };
 
@@ -205,6 +379,7 @@ export function CartProvider({ children }) {
         <CartContext.Provider
             value={{
                 cart,
+                loading,
                 handleCart,
                 handleAddToCart,
                 handleBuyNow,

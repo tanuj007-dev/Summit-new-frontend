@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FiShoppingCart, FiTrash2, FiPlus, FiMinus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import axios from "../axiosConfig";
 
 const Cart = () => {
   const {
@@ -9,13 +10,104 @@ const Cart = () => {
     loading,
     handleUpdateCart,
     handleRemoveFromCart,
+    handleClearCart,
     totalItems,
   } = useContext(CartContext);
 
   const imageURL = import.meta.env.VITE_APP_IMAGE_BASE_URL;
+  const [productCache, setProductCache] = useState({});
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
+  // Fetch product details when cart items change
+  useEffect(() => {
+    if (cart?.cart?.items && cart.cart.items.length > 0) {
+      fetchProductsForCart();
+    }
+  }, [cart?.cart?.items]);
+
+  const fetchProductsForCart = async () => {
+    const cartItems = cart?.cart?.items || [];
+    const itemsToFetch = cartItems.filter(
+      item => item.product_id && !productCache[item.product_id]
+    );
+
+    if (itemsToFetch.length === 0) return;
+
+    setLoadingProducts(true);
+    try {
+      // Fetch product details for all items that are not cached
+      const promises = itemsToFetch.map(item =>
+        axios
+          .get(`/api/products/view/${item.product_id}`)
+          .then(response => ({
+            product_id: item.product_id,
+            data: response.data?.data || response.data,
+          }))
+          .catch(error => {
+            console.error(`Error fetching product ${item.product_id}:`, error);
+            return {
+              product_id: item.product_id,
+              data: null,
+            };
+          })
+      );
+
+      const results = await Promise.all(promises);
+      const newCache = { ...productCache };
+
+      results.forEach(result => {
+        if (result.data) {
+          newCache[result.product_id] = result.data;
+        }
+      });
+
+      setProductCache(newCache);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  const getProductDetails = (productId) => {
+    const product = productCache[productId];
+    
+    if (!product) {
+      return { name: "Loading...", image: "/asset/images/dummy-image-square.jpg" };
+    }
+
+    const name = product?.name || product?.product_name || "Product";
+    const image = getImage(product);
+
+    return { name, image };
+  };
+
+  const getImage = (product) => {
+    // Check for S3 presigned URL in image field
+    if (product?.image && product.image.startsWith("http")) {
+      return product.image;
+    }
+    if (product?.images && Array.isArray(product.images) && product.images[0]) {
+      const img = product.images[0];
+      if (typeof img === "string" && img.startsWith("http")) {
+        return img;
+      }
+      if (img?.url && img.url.startsWith("http")) {
+        return img.url;
+      }
+    }
+    if (product?.variants && Array.isArray(product.variants) && product.variants[0]?.image) {
+      const variantImg = product.variants[0].image;
+      if (variantImg.startsWith("http")) {
+        return variantImg;
+      }
+    }
+
+    return "/asset/images/dummy-image-square.jpg";
+  };
 
   const cartItems = cart?.cart?.items || [];
-  const subtotal = cart?.total || 0;
+  const subtotal = cart?.cart?.total || 0;
   const shippingFee = subtotal > 0 ? 100 : 0;
   const total = subtotal + shippingFee;
 
@@ -81,22 +173,19 @@ const Cart = () => {
                   {/* PRODUCT */}
                   <div className="col-span-5 flex items-center">
                     <img
-                      src={
-                        item?.variant?.image
-                          ? item.variant.image.startsWith("http")
-                            ? item.variant.image
-                            : imageURL + item.variant.image
-                          : "/asset/images/dummy-image-square.jpg"
-                      }
+                      src={getProductDetails(item?.product_id)?.image || "/asset/images/dummy-image-square.jpg"}
                       className="w-16 h-16 object-cover rounded mr-4"
-                      alt="product"
+                      alt={getProductDetails(item?.product_id)?.name || "Product"}
+                      onError={(e) => {
+                        e.target.src = "/asset/images/dummy-image-square.jpg";
+                      }}
                     />
                     <div>
                       <h3 className="font-medium">
-                        {item?.variant?.product?.name || "Product"}
+                        {getProductDetails(item?.product_id)?.name || "Product"}
                       </h3>
                       <p className="text-xs text-gray-500">
-                        SKU: {item?.variant?.sku || "N/A"}
+                        SKU: {item?.variant?.sku || item?.sku || "N/A"}
                       </p>
                     </div>
                   </div>
@@ -147,7 +236,15 @@ const Cart = () => {
 
             {/* SUMMARY */}
             <div className="lg:w-1/3 bg-gray-50 rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-4">Summary</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Summary</h2>
+                <button
+                  onClick={handleClearCart}
+                  className="text-sm text-red-600 hover:text-red-800 font-medium"
+                >
+                  Clear Cart
+                </button>
+              </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between">

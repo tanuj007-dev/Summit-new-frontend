@@ -300,34 +300,45 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
   };
 
   const handleAddToCartClick = (product) => {
-    // Get the correct variant ID for cart operations
-    const variantId = product.variant_id || 
-                      product.product_variant_id || 
-                      (product.variants?.length > 0 ? product.variants[0].id : null) ||
-                      product.id || 
-                      product.product_id || 
-                      product.detail_id;
+    // Extract product ID from multiple possible fields
+    const productId = product?.id || 
+                     product?.product_id || 
+                     product?.product_variant_id || 
+                     product?.variant_id ||
+                     product?.detail_id ||
+                     product?.sku;
     
-    console.log("Adding to cart - Product:", product);
-    console.log("Extracted Variant ID:", variantId);
+    // Extract price from multiple possible fields
+    const productPrice = product?.price || 
+                        product?.selling_price || 
+                        product?.detail_price ||
+                        product?.mrp ||
+                        (product?.variants?.length > 0 ? product.variants[0].price : null);
     
-    if (!variantId) {
-      toast.error("Product variant ID not found. Please check product details.");
-      console.error("Product data for debugging:", {
-        id: product.id,
-        product_id: product.product_id,
-        product_variant_id: product.product_variant_id,
-        variant_id: product.variant_id,
-        detail_id: product.detail_id,
-        variants: product.variants,
-        fullProduct: product
-      });
+    console.log("Adding to cart - Product:", { productId, productPrice, product });
+    
+    if (!productId) {
+      toast.error("Product ID not found");
+      console.error("Product data for debugging:", product);
       return;
     }
 
-    // Use CartContext's handleAddToCart which expects product_variant_id
+    if (!productPrice) {
+      toast.error("Product price not available");
+      return;
+    }
+
+    // Create a properly formatted product object for handleAddToCart
+    const formattedProduct = {
+      ...product,
+      product_id: productId,
+      id: productId,
+      price: productPrice,
+      selling_price: productPrice
+    };
+
     try {
-      handleAddToCart(variantId);
+      handleAddToCart(formattedProduct);
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast.error("Failed to add product to cart");
@@ -647,17 +658,41 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
               </button>
               <button 
                 onClick={() => {
-                  const variantId = product.variant_id || 
-                                   product.product_variant_id || 
-                                   (product.variants?.length > 0 ? product.variants[0].id : null) ||
-                                   product.id || 
-                                   product.product_id || 
-                                   product.detail_id;
-                  if (variantId) {
-                    handleBuyNow(variantId);
-                  } else {
-                    toast.error("Product variant ID not found");
+                  // Extract product ID from multiple possible fields
+                  const productId = product?.id || 
+                                   product?.product_id || 
+                                   product?.product_variant_id || 
+                                   product?.variant_id ||
+                                   product?.detail_id ||
+                                   product?.sku;
+                  
+                  // Extract price from multiple possible fields
+                  const productPrice = product?.price || 
+                                      product?.selling_price || 
+                                      product?.detail_price ||
+                                      product?.mrp ||
+                                      (product?.variants?.length > 0 ? product.variants[0].price : null);
+
+                  if (!productId) {
+                    toast.error("Product ID not found");
+                    return;
                   }
+
+                  if (!productPrice) {
+                    toast.error("Product price not available");
+                    return;
+                  }
+
+                  // Create a properly formatted product object
+                  const formattedProduct = {
+                    ...product,
+                    product_id: productId,
+                    id: productId,
+                    price: productPrice,
+                    selling_price: productPrice
+                  };
+
+                  handleBuyNow(formattedProduct);
                 }} 
                 className="text-sm text-[#B91508] border-2 border-[#B91508] rounded-full px-3 py-1 font-semibold hover:text-red-700 transition"
               >

@@ -313,7 +313,7 @@ const About = () => {
 
             <div className="mt-8">
               <Link
-                to="/product"
+                to="/"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-white
                 underline underline-offset-4 transition-all duration-300 group-hover:gap-3">
                 View All Products →

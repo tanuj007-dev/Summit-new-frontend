@@ -293,79 +293,37 @@ const Login = ({ setIsLoggedIn }) => {
   const redirectTo =
     new URLSearchParams(location.search).get("redirectTo") || "/";
 
-  // 🔹 Session token extraction functions
-  const getSessionId = () => {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'summithomeappliances-session') {
-        return value;
-      }
-    }
-    return null;
-  };
-
-  const getPhpSessionId = () => {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'PHPSESSID') {
-        return value;
-      }
-    }
-    return null;
-  };
-
   // 🔹 Check already logged in
-useEffect(() => {
-  const checkAuth = async () => {
-    const token = localStorage.getItem("auth_token");
-    const sessionId = getSessionId();
-    const phpSessionId = getPhpSessionId();
-    
-    if (!token && !sessionId && !phpSessionId) {
-      setCheckingAuth(false);
-      return;
-    }
-
-    try {
-      // Prepare headers with session tokens
-      const headers = {
-        "Content-Type": "application/json",
-      };
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("auth_token");
       
-      // Add auth token if available
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
+      if (!token) {
+        setCheckingAuth(false);
+        return;
       }
-      
-      // Add session cookies to headers
-      const cookies = [];
-      if (phpSessionId) cookies.push(`PHPSESSID=${phpSessionId}`);
-      if (sessionId) cookies.push(`summithomeappliances-session=${sessionId}`);
-      
-      if (cookies.length > 0) {
-        headers["Cookie"] = cookies.join("; ");
+
+      try {
+        // Use stored token to verify login
+        await axios.get("/api/me", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+
+        setIsLoggedIn(true);
+        navigate(redirectTo);
+      } catch (error) {
+        console.log("Token verification failed, showing login form");
+        localStorage.removeItem("auth_token");
+        setCheckingAuth(false);
       }
-      
-      console.log("Auth check headers:", headers);
-      
-      await axios.get("/api/me", {
-        headers,
-        withCredentials: true,
-      });
+    };
 
-      setIsLoggedIn(true);
-      navigate(redirectTo);
-    } catch (error) {
-      console.error("Auth check failed:", error);
-      localStorage.removeItem("auth_token");
-      setCheckingAuth(false);
-    }
-  };
-
-  checkAuth();
-}, [navigate, redirectTo, setIsLoggedIn]);
+    checkAuth();
+  }, [navigate, redirectTo, setIsLoggedIn]);
 
 
 
@@ -377,46 +335,49 @@ useEffect(() => {
     }
 
     try {
-    const res = await axios.post(
-      "/api/login",
-      { email, password }
-    );
-
-    localStorage.setItem("auth_token", res.data.session_token);
-
-    // confirm login with session tokens in headers
-    const sessionId = getSessionId();
-    const phpSessionId = getPhpSessionId();
-    
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${res.data.session_token}`,
-    };
-    
-    // Add session cookies to headers
-    const cookies = [];
-    if (phpSessionId) cookies.push(`PHPSESSID=${phpSessionId}`);
-    if (sessionId) cookies.push(`summithomeappliances-session=${sessionId}`);
-    
-    if (cookies.length > 0) {
-      headers["Cookie"] = cookies.join("; ");
-    }
-    
-    console.log("Login confirmation headers:", headers);
-    
-    await axios.get("/api/me", {
-      headers,
-      withCredentials: true,
-    });
-
-    setIsLoggedIn(true);
-    toast.success("Login successful");
-
-    setTimeout(() => navigate(redirectTo), 800);
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Invalid email or password"
+      const res = await axios.post(
+        "/api/login",
+        { email, password },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
       );
+
+      // Extract and store token
+      const token = res.data.token || res.data.access_token;
+      
+      if (token) {
+        localStorage.setItem("auth_token", token);
+        // Set token in axios default headers for all future requests
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
+
+      // Verify login with /api/me
+      await axios.get("/api/me", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      // Login successful
+      setIsLoggedIn(true);
+      toast.success("Login successful");
+
+      setTimeout(() => navigate(redirectTo), 800);
+    } catch (error) {
+      console.error("Login error:", error);
+
+      if (error.response?.data?.errors) {
+        const firstError = Object.values(error.response.data.errors)[0][0];
+        toast.error(firstError);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Invalid email or password");
+      }
     }
   };
 

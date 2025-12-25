@@ -9,31 +9,6 @@ const AccountsPage = () => {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const navigate = useNavigate();
 
-  /* ------------------ SESSION ID HANDLER ------------------ */
-  const getSessionId = () => {
-    // Extract session ID from cookies
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'summithomeappliances-session') {
-        return value;
-      }
-    }
-    return null;
-  };
-
-  const getPhpSessionId = () => {
-    // Extract PHPSESSID from cookies
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'PHPSESSID') {
-        return value;
-      }
-    }
-    return null;
-  };
-
   /* ------------------ DATA NORMALIZATION ------------------ */
   const normalizeUserData = (apiData) => {
     // Handle different possible data structures from /api/me
@@ -61,34 +36,18 @@ const AccountsPage = () => {
   useEffect(() => {
     const checkAuthAndFetchUserInfo = async () => {
       try {
-        // Debug: Check what cookies are available
-        console.log("All cookies:", document.cookie);
-        console.log("Session cookie:", getSessionId());
-        console.log("PHPSESSID cookie:", getPhpSessionId());
+        const token = localStorage.getItem("auth_token");
         
-        // Get session IDs
-        const sessionId = getSessionId();
-        const phpSessionId = getPhpSessionId();
-        
-        if (!sessionId && !phpSessionId) {
-          throw new Error("No session ID found - please login first");
+        if (!token) {
+          throw new Error("No auth token - please login first");
         }
         
-        console.log("Using session IDs:", { sessionId, phpSessionId });
-        
-        // Prepare headers with PHPSESSID
-        const headers = {
-          "Content-Type": "application/json",
-        };
-        
-        // Add PHPSESSID to headers if available
-        if (phpSessionId) {
-          headers["Cookie"] = `PHPSESSID=${phpSessionId}`;
-        }
-        
-        // Call /api/me with proper headers
-        const response = await axios.get(`/api/me`, {
-          headers,
+        // Call /api/me with Bearer token
+        const response = await axios.get("/api/me", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
           withCredentials: true,
         });
         
@@ -99,8 +58,6 @@ const AccountsPage = () => {
       } catch (error) {
         console.error("Authentication failed:", error);
         console.error("Error response:", error.response);
-        console.error("Error status:", error.response?.status);
-        console.error("Error headers:", error.response?.headers);
         setMsg("Failed to fetch user information. Please login again.");
         // Redirect to login after a delay
         setTimeout(() => {

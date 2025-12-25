@@ -31,12 +31,38 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000",
-  withCredentials: true, // 🔥 VERY IMPORTANT
+  withCredentials: true,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
   },
 });
+
+// Add token to requests if available
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  // Ensure credentials are sent with all requests
+  config.withCredentials = true;
+  return config;
+});
+
+// Handle 401 errors - token might be expired
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token is invalid or expired
+      console.warn("Token expired or invalid, clearing localStorage");
+      localStorage.removeItem("auth_token");
+      // Optionally redirect to login
+      // window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;
 
