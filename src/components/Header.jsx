@@ -473,7 +473,7 @@ const getProductImage = (item) => {
                       className="bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-red-400 transition-all flex flex-col"
                     >
                       {/* Product Image */}
-                      <div className="w-full aspect-square bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 relative">
+                      <div className="w-full aspect-square  flex items-center justify-center overflow-hidden flex-shrink-0 relative">
                         <img
                           src={item.image || item.product_images || '/asset/images/dummy-image-square.jpg'}
                           onError={(e) => {
@@ -516,7 +516,7 @@ const getProductImage = (item) => {
                 <button
                   onClick={() => {
                     setShowMobileSearch(false);
-                    navigate(`/search?query=${encodeURIComponent(searchProduct)}`);
+                    navigate(`/products/all`);
                   }}
                   className="w-full bg-gray-900 text-white py-3 rounded-lg font-bold text-sm mb-4 sticky bottom-0"
                 >
@@ -623,7 +623,7 @@ const getProductImage = (item) => {
             <button
               className="text-sm text-red-600 hover:text-red-700 font-semibold hover:underline"
               onClick={() =>
-                navigate(`/search?query=${encodeURIComponent(searchProduct)}`)
+                navigate(`/products/all`)
               }
             >
               View All →
