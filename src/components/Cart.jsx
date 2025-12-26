@@ -17,6 +17,8 @@ const Cart = () => {
   const imageURL = import.meta.env.VITE_APP_IMAGE_BASE_URL;
   const [productCache, setProductCache] = useState({});
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const [imageErrors, setImageErrors] = useState({});
 
   // Fetch product details when cart items change
   useEffect(() => {
@@ -106,6 +108,17 @@ const Cart = () => {
     return "/asset/images/dummy-image-square.jpg";
   };
 
+  // Handle image load
+  const handleImageLoad = (productId) => {
+    setImageLoadingStates(prev => ({ ...prev, [productId]: true }));
+  };
+
+  // Handle image error
+  const handleImageError = (productId) => {
+    setImageErrors(prev => ({ ...prev, [productId]: true }));
+    setImageLoadingStates(prev => ({ ...prev, [productId]: true }));
+  };
+
   const cartItems = cart?.cart?.items || [];
   const subtotal = cart?.cart?.total || 0;
   const shippingFee = subtotal > 0 ? 100 : 0;
@@ -172,16 +185,26 @@ const Cart = () => {
                 >
                   {/* PRODUCT */}
                   <div className="col-span-5 flex items-center">
-                    <img
-                      src={getProductDetails(item?.product_id)?.image || "/asset/images/dummy-image-square.jpg"}
-                      className="w-16 h-16 object-cover rounded mr-4"
-                      alt={getProductDetails(item?.product_id)?.name || "Product"}
-                      onError={(e) => {
-                        e.target.src = "/asset/images/dummy-image-square.jpg";
-                      }}
-                    />
-                    <div>
-                      <h3 className="font-medium">
+                    {/* Image Container with Skeleton Loading */}
+                    <div className="relative w-16 h-16 bg-gray-200 rounded mr-4 overflow-hidden flex-shrink-0">
+                      {!imageLoadingStates[item?.product_id] && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                      )}
+                      <img
+                        src={imageErrors[item?.product_id] ? "/asset/images/dummy-image-square.jpg" : getProductDetails(item?.product_id)?.image}
+                        className="w-full h-full object-cover rounded"
+                        alt={getProductDetails(item?.product_id)?.name || "Product"}
+                        loading="lazy"
+                        onLoad={() => handleImageLoad(item?.product_id)}
+                        onError={() => handleImageError(item?.product_id)}
+                        style={{
+                          opacity: imageLoadingStates[item?.product_id] ? 1 : 0,
+                          transition: 'opacity 0.3s ease-in-out'
+                        }}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-medium truncate">
                         {getProductDetails(item?.product_id)?.name || "Product"}
                       </h3>
                       <p className="text-xs text-gray-500">

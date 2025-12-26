@@ -1,10 +1,24 @@
 // ✅ Updated CheckoutPage.js (with 8% Tax)
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../axiosConfig';
+import { CartContext } from '../context/CartContext';
 
 const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
   const navigate = useNavigate();
+  const { cart, handleClearCart } = useContext(CartContext);
+
+  // Get cart items from CartContext or props
+  const getCartItems = () => {
+    // Try to get from CartContext first
+    if (cart?.cart?.items && cart.cart.items.length > 0) {
+      return cart.cart.items;
+    }
+    // Fallback to props
+    return cartItems || [];
+  };
+
+  const cartItemsToUse = getCartItems();
 
   const [formValues, setFormValues] = useState({
     fullName: '',
@@ -26,8 +40,8 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
-    if (cartItems.length > 0) {
-      const calculatedSubtotal = cartItems.reduce((sum, item) => {
+    if (cartItemsToUse.length > 0) {
+      const calculatedSubtotal = cartItemsToUse.reduce((sum, item) => {
         return sum + parseFloat(item.price || 0) * (item.quantity || 1);
       }, 0);
 
@@ -40,7 +54,7 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
       setTax(taxAmount);
       setTotal(totalAmount);
     }
-  }, [cartItems]);
+  }, [cartItemsToUse]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,8 +108,8 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
     };
 
     const payload = {
-      cart_items: cartItems.map((item) => ({
-        product_variant_id: item.product_variant_id,
+      cart_items: cartItemsToUse.map((item) => ({
+        product_variant_id: item.product_variant_id || item.variant_id,
         quantity: item.quantity,
         price: parseFloat(item.price),
       })),
@@ -111,16 +125,23 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
 
     setIsPlacingOrder(true);
     try {
-      const res = await axios.post('/place_order.php', payload, {
+      const res = await axios.post('/api/place_order', payload, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       });
 
-      if (res.data.status === 'success') {
-        setCartItems([]);
-        navigate(`/thankyou?order=${res.data.ordered_id}`);
+      if (res.data.status === 'success' || res.data.success) {
+        // Clear cart from CartContext
+        if (handleClearCart) {
+          handleClearCart();
+        }
+        // Also clear from props if setCartItems exists
+        if (setCartItems) {
+          setCartItems([]);
+        }
+        navigate(`/thankyou?order=${res.data.ordered_id || res.data.order_id}`);
       } else {
-        setMessage('❌ Failed: ' + res.data.message);
+        setMessage('❌ Failed: ' + (res.data.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('Order error:', error);
@@ -206,11 +227,11 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
         <div>
           <h2 className="text-xl font-medium mb-4">Order Summary</h2>
           <div className="border rounded-md p-4 space-y-3 bg-gray-50">
-            {cartItems.length > 0 ? (
+            {cartItemsToUse.length > 0 ? (
               <>
-                {cartItems.map((item, index) => (
+                {cartItemsToUse.map((item, index) => (
                   <div key={index} className="flex justify-between text-sm text-gray-800">
-                    <span>{item.name} × {item.quantity}</span>
+                    <span>{item.name || item.product_name || 'Product'} × {item.quantity}</span>
                     <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}

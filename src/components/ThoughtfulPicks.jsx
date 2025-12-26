@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { CartContext } from "../context/CartContext";
 
 /* -------------------- IMAGE OPTIMIZATION -------------------- */
@@ -466,14 +466,30 @@ const ThoughtfulPicks = () => {
                       {/* Buttons */}
                       <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
                         <button
-                          onClick={() => variantId && handleAddToCart(variantId)}
+                          onClick={() => variantId && handleAddToCart({
+                            product_id: item.id,
+                            id: item.id,
+                            name: item.title,
+                            title: item.title,
+                            price: item.price,
+                            image: item.image,
+                            ...item
+                          })}
                           disabled={!variantId}
                           className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Add to Cart
                         </button>
                         <button
-                          onClick={() => variantId && handleBuyNow(variantId)}
+                          onClick={() => variantId && handleBuyNow({
+                            product_id: item.id,
+                            id: item.id,
+                            name: item.title,
+                            title: item.title,
+                            price: item.price,
+                            image: item.image,
+                            ...item
+                          })}
                           disabled={!variantId}
                           className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
