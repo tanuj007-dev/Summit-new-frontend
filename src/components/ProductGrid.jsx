@@ -379,45 +379,51 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
         })}
       </div>
 
-      {/* Results */}
-    
+      {/* Results and Filters */}
+      <div className="border-b pb-2 sm:pb-4 mb-4 sm:mb-6">
+        {/* Results Count */}
+        <div className="flex justify-between items-center mb-3 sm:mb-4 px-2 sm:px-0">
+          <p className="text-xs sm:text-sm text-gray-600">
+            Showing {filteredProducts.length} results
+          </p>
+        </div>
 
-      {/* Filters */}
-      <div className="border-b pb-4 mb-6">
-        <div className="flex flex-wrap items-center justify-center gap-10 text-sm">
+        {/* Filters */}
+        <div className="flex flex-nowrap sm:flex-wrap items-start sm:items-center justify-start sm:justify-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 snap-x snap-mandatory sm:snap-none px-2 sm:px-0">
+        
           {/* Sort By */}
-          <div className="relative">
+          <div className="relative flex-shrink-0 sm:flex-shrink w-max sm:w-auto">
             <button
               onClick={() => setShowFilterDropdown(showFilterDropdown === 'sort' ? null : 'sort')}
-              className="flex items-center gap-2 px-4 py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50"
+              className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50 text-xs sm:text-sm whitespace-nowrap snap-start"
             >
-              <span className="text-gray-600">Sort by:</span>
+              <span className="text-gray-600">Sort:</span>
               <span className="font-medium">
-                {sortBy === "price-low-high" ? "Price: Low to High" : 
-                 sortBy === "price-high-low" ? "Price: High to Low" : "Featured"}
+                {sortBy === "price-low-high" ? "Low" : 
+                 sortBy === "price-high-low" ? "High" : "Featured"}
               </span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showFilterDropdown === 'sort' && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute top-full left-0 right-0 sm:left-auto mt-1 w-screen sm:w-48 bg-white border rounded-lg shadow-lg z-10 sm:left-0">
                 <div className="py-1">
                   <button
                     onClick={() => { setSortBy(""); setShowFilterDropdown(null); }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm"
                   >
                     Featured
                   </button>
                   <button
                     onClick={() => { setSortBy("price-low-high"); setShowFilterDropdown(null); }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm"
                   >
                     Price: Low to High
                   </button>
                   <button
                     onClick={() => { setSortBy("price-high-low"); setShowFilterDropdown(null); }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm"
                   >
                     Price: High to Low
                   </button>
@@ -427,22 +433,22 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
           </div>
 
           {/* Type Filter */}
-          <div className="relative">
+          <div className="relative flex-shrink-0 sm:flex-shrink w-max sm:w-auto">
             <button
               onClick={() => setShowFilterDropdown(showFilterDropdown === 'lid_type' ? null : 'lid_type')}
-              className="flex items-center gap-2 px-4 py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50"
+              className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50 text-xs sm:text-sm whitespace-nowrap snap-start"
             >
               <span className="text-gray-600">Type:</span>
               <span className="font-medium">{getFilterDisplayText('lid_type')}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showFilterDropdown === 'lid_type' && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute top-full left-0 right-0 sm:left-auto mt-1 w-screen sm:w-48 bg-white border rounded-lg shadow-lg z-10 sm:left-0">
                 <div className="py-1 max-h-60 overflow-y-auto">
                   {filterOptions.lid_type?.map((val) => (
-                    <label key={val} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <label key={val} className="flex items-center px-2 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs sm:text-sm">
                       <input
                         type="checkbox"
                         checked={selectedFilters.lid_type.includes(val)}
@@ -458,22 +464,22 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
           </div>
 
           {/* Material Filter */}
-          <div className="relative">
+          <div className="relative flex-shrink-0 sm:flex-shrink w-max sm:w-auto">
             <button
               onClick={() => setShowFilterDropdown(showFilterDropdown === 'material' ? null : 'material')}
-              className="flex items-center gap-2 px-4 py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50"
+              className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50 text-xs sm:text-sm whitespace-nowrap snap-start"
             >
               <span className="text-gray-600">Material:</span>
               <span className="font-medium">{getFilterDisplayText('material')}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showFilterDropdown === 'material' && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute top-full left-0 right-0 sm:left-auto mt-1 w-screen sm:w-48 bg-white border rounded-lg shadow-lg z-10 sm:left-0">
                 <div className="py-1 max-h-60 overflow-y-auto">
                   {filterOptions.material?.map((val) => (
-                    <label key={val} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <label key={val} className="flex items-center px-2 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs sm:text-sm">
                       <input
                         type="checkbox"
                         checked={selectedFilters.material.includes(val)}
@@ -489,22 +495,22 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
           </div>
 
           {/* Size Filter */}
-          <div className="relative">
+          <div className="relative flex-shrink-0 sm:flex-shrink w-max sm:w-auto">
             <button
               onClick={() => setShowFilterDropdown(showFilterDropdown === 'size' ? null : 'size')}
-              className="flex items-center gap-2 px-4 py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50"
+              className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border rounded-full bg-[#E9E9EB] hover:bg-gray-50 text-xs sm:text-sm whitespace-nowrap snap-start"
             >
               <span className="text-gray-600">Size:</span>
               <span className="font-medium">{getFilterDisplayText('size')}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showFilterDropdown === 'size' && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute top-full left-0 right-0 sm:left-auto mt-1 w-screen sm:w-48 bg-white border rounded-lg shadow-lg z-10 sm:left-0">
                 <div className="py-1 max-h-60 overflow-y-auto">
                   {filterOptions.size?.map((val) => (
-                    <label key={val} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <label key={val} className="flex items-center px-2 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs sm:text-sm">
                       <input
                         type="checkbox"
                         checked={selectedFilters.size.includes(val)}
@@ -520,22 +526,22 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
           </div>
 
           {/* Shape Filter */}
-          <div className="relative">
+          <div className="relative flex-shrink-0 sm:flex-shrink w-max sm:w-auto">
             <button
               onClick={() => setShowFilterDropdown(showFilterDropdown === 'shape' ? null : 'shape')}
-              className="flex items-center gap-2 px-4 py-2 border bg-[#E9E9EB] rounded-full hover:bg-gray-50"
+              className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border bg-[#E9E9EB] rounded-full hover:bg-gray-50 text-xs sm:text-sm whitespace-nowrap snap-start"
             >
               <span className="text-gray-600">Shape:</span>
               <span className="font-medium">{getFilterDisplayText('shape')}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showFilterDropdown === 'shape' && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute top-full left-0 right-0 sm:left-auto mt-1 w-screen sm:w-48 bg-white border rounded-lg shadow-lg z-10 sm:left-0">
                 <div className="py-1 max-h-60 overflow-y-auto">
                   {filterOptions.shape?.map((val) => (
-                    <label key={val} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <label key={val} className="flex items-center px-2 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs sm:text-sm">
                       <input
                         type="checkbox"
                         checked={selectedFilters.shape.includes(val)}
@@ -551,22 +557,22 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
           </div>
 
           {/* Bottom Filter */}
-          <div className="relative">
+          <div className="relative flex-shrink-0 sm:flex-shrink w-max sm:w-auto">
             <button
               onClick={() => setShowFilterDropdown(showFilterDropdown === 'bottom_type' ? null : 'bottom_type')}
-              className="flex items-center gap-2 px-4 py-2 border bg-[#E9E9EB] rounded-full hover:bg-gray-50"
+              className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border bg-[#E9E9EB] rounded-full hover:bg-gray-50 text-xs sm:text-sm whitespace-nowrap snap-start"
             >
               <span className="text-gray-600">Bottom:</span>
               <span className="font-medium">{getFilterDisplayText('bottom_type')}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showFilterDropdown === 'bottom_type' && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute top-full left-0 right-0 sm:left-auto mt-1 w-screen sm:w-48 bg-white border rounded-lg shadow-lg z-10 sm:left-0">
                 <div className="py-1 max-h-60 overflow-y-auto">
                   {filterOptions.bottom_type?.map((val) => (
-                    <label key={val} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <label key={val} className="flex items-center px-2 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs sm:text-sm">
                       <input
                         type="checkbox"
                         checked={selectedFilters.bottom_type.includes(val)}
@@ -582,43 +588,38 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2 flex-shrink-0 sm:flex-shrink snap-start">
             <button
               onClick={applyFilters}
-              className="bg-[#B91508] text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors"
+              className="bg-[#B91508] text-white px-2 sm:px-6 py-1.5 sm:py-2 rounded-full hover:bg-red-700 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
             >
               Apply
             </button>
             <button
               onClick={resetFilters}
-              className="border border-gray-300 px-6 py-2 rounded-full hover:bg-gray-50 transition-colors"
+              className="border border-gray-300 px-2 sm:px-6 py-1.5 sm:py-2 rounded-full hover:bg-gray-50 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
             >
               Reset
             </button>
           </div>
-            <div className="flex justify-between items-center  ">
-        <p className="text-sm text-gray-600">
-          {filteredProducts.length} results found
-        </p>
-      </div>
         </div>
       </div>
 
       {/* Product Grid */}
-      <div className="w-full px-4 md:px-10 py-4">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="w-full px-2 sm:px-4 md:px-10 py-4 sm:py-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
         {filteredProducts.map((product, i) => (
           <div
-            className="relative bg-white rounded-md shadow-md p-4 flex flex-col items-center"
+            className="relative bg-white rounded-lg shadow-md p-2 sm:p-3 md:p-4 flex flex-col items-center h-full"
             key={i}
           >
-            <div className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center z-10 shadow-md hover:shadow-lg transition-shadow">
+            <div className="absolute top-2 sm:top-3 right-2 sm:right-3 w-7 sm:w-8 h-7 sm:h-8 bg-white rounded-full flex items-center justify-center z-10 shadow-md hover:shadow-lg transition-shadow">
             <FontAwesomeIcon
               icon={wishlistItems?.includes(parseInt(product.id || product.product_id || product.product_variant_id || product.detail_id)) ? solidHeart : regularHeart}
               style={{
                 color: wishlistItems?.includes(parseInt(product.id || product.product_id || product.product_variant_id || product.detail_id)) ? "#E03B2D" : "#666",
                 cursor: "pointer",
-                fontSize: "16px",
+                fontSize: "14px",
               }}
               onClick={() => handlewishlist && handlewishlist(product.id || product.product_id || product.product_variant_id || product.detail_id)}
               className="hover:scale-110 transition-transform"
@@ -626,33 +627,35 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
             </div>
 
             <Link to={`/product/${product.id || product.product_id || product.product_variant_id || product.detail_id}`}>
-              <LazyImage
-                src={getProductImage(product)}
-                alt={product.name || product.product_name || 'Product'}
-                className="size-60 object-contain rounded-lg mx-auto"
-                onError={(e) => {
-                  e.target.src = '/asset/images/dummy-image-square.jpg';
-                }}
-              />
+              <div className="relative w-full overflow-hidden rounded-lg">
+                <LazyImage
+                  src={getProductImage(product)}
+                  alt={product.name || product.product_name || 'Product'}
+                  className="w-full h-[140px] sm:h-[160px] md:h-[200px] lg:h-[240px] object-cover rounded-lg mx-auto transition-all duration-300 hover:scale-105"
+                  onError={(e) => {
+                    e.target.src = '/asset/images/dummy-image-square.jpg';
+                  }}
+                />
+              </div>
             </Link>
 
             <Link to={`/product/${product.id || product.product_id || product.product_variant_id || product.detail_id}`}>
-              <h2 className="text-md font-semibold mt-3 text-center w-full hover:text-red-600 transition-colors cursor-pointer">
+              <h2 className="text-xs sm:text-sm md:text-base font-semibold mt-2 sm:mt-3 text-center w-full hover:text-red-600 transition-colors cursor-pointer line-clamp-2">
                 {product.name || product.product_name || 'Product'}
               </h2>
             </Link>
-            <p className="text-sm font-semibold mt-1 text-start">
-              <span className="text-sm font-normal text-[#AAAAAA]">From </span>
+            <p className="text-xs sm:text-sm font-semibold mt-1 sm:mt-2 text-center">
+              <span className="text-xs sm:text-sm font-normal text-[#AAAAAA]">From </span>
               {getProductPrice(product) ? (
                 <>Rs. {getProductPrice(product)}</>
               ) : (
                 <span className="text-gray-500">Price not available</span>
               )}
             </p>    
-            <div className="flex justify-around items-center w-full mt-3">
+            <div className="flex justify-center items-center gap-1 sm:gap-2 w-full mt-2 sm:mt-3">
               <button 
                 onClick={() => handleAddToCartClick(product)} 
-                className="text-sm rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer hover:bg-red-700 transition"
+                className="text-xs sm:text-sm rounded-full px-2 sm:px-3 py-1 sm:py-2 text-white bg-[#B91508] cursor-pointer hover:bg-red-700 transition flex-1"
               >
                 Add to cart 
               </button>
@@ -694,7 +697,7 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
 
                   handleBuyNow(formattedProduct);
                 }} 
-                className="text-sm text-[#B91508] border-2 border-[#B91508] rounded-full px-3 py-1 font-semibold hover:text-red-700 transition"
+                className="text-xs sm:text-sm text-[#B91508] border-2 border-[#B91508] rounded-full px-2 sm:px-3 py-1 sm:py-2 font-semibold hover:text-red-700 transition flex-1"
               >
                 Buy Now
               </button>

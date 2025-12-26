@@ -236,7 +236,7 @@ if (Array.isArray(product.images)) {
             {/* Mobile next button */}
             <button
               onClick={() => thumbSlider.current?.slickNext()}
-              className="absolute -right-8 md:-bottom-16 md:left-1/2 top-1/2 md:-translate-y-0 -translate-y-1/2 md:-translate-x-1/2 bg-red-600 text-white p-1 rounded-full z-10"
+              className="absolute -right-8 md:static md:flex md:justify-center md:mt-3 top-1/2 -translate-y-1/2 md:translate-y-0 bg-red-600 text-white p-1 rounded-full z-10 ml-7"
             >
               <FaChevronRight className="md:hidden" />
               <FaChevronDown className="hidden md:block" />
@@ -425,20 +425,34 @@ if (Array.isArray(product.images)) {
 
           </p>
 
-        
-
           {/* Buttons */}
-          <div className="flex mr-2 gap-2 sm:gap-4 mt-4 flex-wrap">
+          <div className="flex gap-2 sm:gap-4 mt-6 flex-wrap">
             <button
-              onClick={() => handleAddToCart(product.product_id)}
-              className="bg-[#B91508] text-white px-6 sm:px-9 py-2 sm:py-3 text-nowrap rounded-full font-semibold text-sm sm:text-base flex-1 sm:flex-none"
+              onClick={() => {
+                handleAddToCart({
+                  product_id: product?.product_id || product?.id,
+                  price: product?.mrp || product?.selling_price,
+                  selling_price: product?.mrp,
+                  product_name: product?.product_name,
+                  image: product?.image,
+                });
+              }}
+              className="bg-[#B91508] text-white px-8 sm:px-12 py-3 sm:py-3 text-nowrap rounded-full font-semibold text-sm sm:text-base hover:bg-[#a21307] transition-all"
             >
               Add to Cart
             </button>
 
             <button
-              onClick={() => handleBuyNow(product.product_id)}
-              className="border border-[#B91508] text-[#B91508] px-6 sm:px-9 py-2 sm:py-3 text-nowrap rounded-full font-semibold text-sm sm:text-base flex-1 sm:flex-none"
+              onClick={() => {
+                handleBuyNow({
+                  product_id: product?.product_id || product?.id,
+                  price: product?.mrp || product?.selling_price,
+                  selling_price: product?.mrp,
+                  product_name: product?.product_name,
+                  image: product?.image,
+                });
+              }}
+              className="border-2 border-[#B91508] text-[#B91508] px-8 sm:px-12 py-3 sm:py-3 text-nowrap rounded-full font-semibold text-sm sm:text-base hover:bg-[#B91508] hover:text-white transition-all"
             >
               Buy Now
             </button>

@@ -120,7 +120,7 @@
 
 // export default AccountsPage;
 import React, { useEffect, useState } from "react";
-import { FaPencilAlt, FaMapMarkerAlt, FaUser, FaShoppingBag, FaAddressBook, FaCreditCard, FaLock, FaSignOutAlt, FaTruck, FaHeadset, FaWallet, FaCamera } from "react-icons/fa";
+import { FaUser, FaArrowLeft, FaShoppingBag, FaAddressBook, FaCreditCard, FaLock, FaSignOutAlt, FaTruck, FaHeadset, FaWallet, FaCamera, FaGlobe, FaUsers, FaQuestionCircle, FaChevronRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 
@@ -128,9 +128,17 @@ const AccountsPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [msg, setMsg] = useState("");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    contact: '',
+    gender: 'Male'
+  });
+  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
 
-  /* ------------------ DATA NORMALIZATION ------------------ */
   const normalizeUserData = (apiData) => {
     if (!apiData) return null;
     if (apiData.data && typeof apiData.data === 'object') {
@@ -169,6 +177,13 @@ const AccountsPage = () => {
         });
         const normalizedData = normalizeUserData(response.data);
         setUserInfo(normalizedData);
+        setFormData({
+          firstName: normalizedData.firstName,
+          lastName: normalizedData.lastName,
+          email: normalizedData.email,
+          contact: normalizedData.contact,
+          gender: normalizedData.gender
+        });
       } catch (error) {
         setMsg("Failed to fetch user information. Please login again.");
         setTimeout(() => {
@@ -180,6 +195,44 @@ const AccountsPage = () => {
     };
     checkAuthAndFetchUserInfo();
   }, [navigate]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      setIsSaving(true);
+      const token = localStorage.getItem("auth_token");
+      await axios.put("/api/me", {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        contact: formData.contact,
+        gender: formData.gender
+      }, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      alert("Profile updated successfully!");
+      setShowEditForm(false);
+    } catch (error) {
+      alert("Failed to update profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    navigate("/login");
+  };
 
   if (isCheckingAuth) {
     return (
@@ -199,126 +252,89 @@ const AccountsPage = () => {
 
   if (!userInfo) return null;
 
+  // Menu items for the profile
+  const menuItems = [
+    { icon: FaUser, label: 'Edit Profile', action: () => setShowEditForm(true) },
+    { icon: FaCreditCard, label: 'Payment Method', action: () => navigate('/payment-methods') },
+    { icon: FaGlobe, label: 'Language', action: () => navigate('/language') },
+    { icon: FaShoppingBag, label: 'Order History', action: () => navigate('/orders') },
+    { icon: FaUsers, label: 'Invite Friends', action: () => navigate('/invite-friends') },
+    { icon: FaQuestionCircle, label: 'Help Center', action: () => navigate('/help-center') },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-12">
-      {/* Breadcrumb & Header */}
-      <div className="bg-white border-b border-gray-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="text-sm text-gray-500 mb-2">
-            <span className="hover:text-gray-700 cursor-pointer">Home</span> / <span className="text-gray-900 font-medium">My Account</span>
-          </nav>
-          <h1 className="text-2xl font-bold text-gray-900">My Account</h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      
+      {/* Header with Back Button */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-20">
+        <div className="flex items-center gap-4 px-4 sm:px-6 lg:px-8 py-4">
+          <button 
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <FaArrowLeft size={20} className="text-gray-700" />
+          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Profile</h1>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* Left Sidebar */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <div className="space-y-2">
-              <div className="flex items-center p-4 bg-yellow-400 text-gray-900 rounded-xl font-bold shadow-sm transition-all">
-                <FaUser className="mr-3" /> Personal Information
-              </div>
-              <div className="flex items-center p-4 bg-white text-gray-600 rounded-xl hover:bg-gray-100 cursor-pointer transition-all">
-                <FaShoppingBag className="mr-3 text-gray-400" /> My Orders
-              </div>
-              <div className="flex items-center p-4 bg-white text-gray-600 rounded-xl hover:bg-gray-100 cursor-pointer transition-all">
-                <FaAddressBook className="mr-3 text-gray-400" /> Manage Address
-              </div>
-              <div className="flex items-center p-4 bg-white text-gray-600 rounded-xl hover:bg-gray-100 cursor-pointer transition-all">
-                <FaCreditCard className="mr-3 text-gray-400" /> Payment Method
-              </div>
-              <div className="flex items-center p-4 bg-white text-gray-600 rounded-xl hover:bg-gray-100 cursor-pointer transition-all">
-                <FaLock className="mr-3 text-gray-400" /> Password Manager
-              </div>
-              <div className="flex items-center p-4 bg-white text-red-500 rounded-xl hover:bg-red-50 cursor-pointer transition-all mt-4">
-                <FaSignOutAlt className="mr-3" /> Logout
-              </div>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 text-center mb-6">
+          {/* Profile Image with Status */}
+          <div className="relative inline-block mb-6">
+            <div className="w-28 sm:w-32 h-28 sm:h-32 rounded-full overflow-hidden border-4 border-gray-50 shadow-md">
+              <img 
+                src="/asset/images/user.png" 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=" + userInfo.name }}
+              />
             </div>
-          </aside>
+            <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white shadow-md"></div>
+          </div>
 
-          {/* Right Content Area */}
-          <main className="flex-grow">
-            <div className="bg-white rounded-2xl shadow-soft border border-gray-100 p-6 md:p-10">
-              
-              {/* Profile Image Section */}
-              <div className="flex flex-col items-center mb-10">
-                <div className="relative group">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-50 shadow-inner">
-                    <img 
-                      src="/asset/images/user.png" 
-                      alt="Profile" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=" + userInfo.name }}
-                    />
-                  </div>
-                  <button className="absolute bottom-1 right-1 bg-green-500 text-white p-2 rounded-full border-4 border-white shadow-lg hover:bg-green-600 transition-colors">
-                    <FaCamera size={14} />
-                  </button>
-                </div>
-                <h3 className="mt-4 text-xl font-bold text-gray-800">{userInfo.name}</h3>
-                <p className="text-gray-500 text-sm">{userInfo.email}</p>
-              </div>
-
-              {/* Form Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-gray-700">First Name *</label>
-                  <input 
-                    type="text" 
-                    defaultValue={userInfo.firstName}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-gray-700">Last Name *</label>
-                  <input 
-                    type="text" 
-                    defaultValue={userInfo.lastName}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-gray-700">Email Address *</label>
-                  <input 
-                    type="email" 
-                    defaultValue={userInfo.email}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-gray-700">Phone Number *</label>
-                  <input 
-                    type="text" 
-                    defaultValue={userInfo.contact}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="flex flex-col gap-2 md:col-span-2">
-                  <label className="text-sm font-semibold text-gray-700">Gender *</label>
-                  <select 
-                    defaultValue={userInfo.gender}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all appearance-none bg-white"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mt-10 flex justify-center">
-                <button className="px-10 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full shadow-lg transition-transform active:scale-95">
-                  Update Changes
-                </button>
-              </div>
-            </div>
-          </main>
+          {/* User Info */}
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{userInfo.name}</h2>
+          <p className="text-gray-600 text-sm sm:text-base">{userInfo.email}</p>
         </div>
 
-        {/* Bottom Feature Section */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-gray-200 pt-12">
+        {/* Menu List */}
+        <div className="space-y-2 mb-8">
+          {menuItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={item.action}
+              className="w-full flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                  <item.icon size={20} className="text-gray-700 sm:text-xl" />
+                </div>
+                <span className="text-gray-800 font-medium text-sm sm:text-base">{item.label}</span>
+              </div>
+              <FaChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </button>
+          ))}
+        </div>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all group mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <FaSignOutAlt size={20} className="text-red-600 sm:text-xl" />
+            </div>
+            <span className="text-red-600 font-medium text-sm sm:text-base">Logout</span>
+          </div>
+          <FaChevronRight size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
+        </button>
+
+        {/* Bottom Features - Desktop Only */}
+        <div className="hidden sm:grid grid-cols-3 gap-8 border-t border-gray-200 pt-12">
           <div className="flex flex-col items-center text-center p-4">
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
               <FaTruck className="text-2xl text-green-600" />
@@ -342,6 +358,97 @@ const AccountsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-lg sm:shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Edit Profile</h2>
+              <button 
+                onClick={() => setShowEditForm(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 max-h-[80vh] overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs sm:text-sm font-semibold text-gray-700">First Name *</label>
+                  <input 
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Last Name *</label>
+                  <input 
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Email Address *</label>
+                  <input 
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Phone Number *</label>
+                  <input 
+                    type="text"
+                    name="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Gender *</label>
+                  <select 
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all appearance-none bg-white text-sm"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-8 flex gap-3">
+                <button 
+                  onClick={() => setShowEditForm(false)}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-full hover:bg-gray-50 transition-all text-sm"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleUpdateProfile}
+                  disabled={isSaving}
+                  className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold rounded-full shadow-lg transition-transform active:scale-95 text-sm"
+                >
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
