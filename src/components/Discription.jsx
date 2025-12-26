@@ -2,14 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 const Discription = () => {
   return (
-    <div className="bg-[#F5F5F7]  w-full p-4 py-8 md:py-5 md:px-16 items-center flex flex-col md:flex-row md:space-x-20">
+    <div className="bg-[#F5F5F7]  w-full p-4 py-8 md:py-16 md:px-16 items-center flex flex-col md:flex-row md:space-x-20">
       {/* Text first */}
          {/* Image second */}
       <div className="w-full md:w-[35%] flex justify-start items-center mt-6 md:mt-0">
         <img 
           src="/asset/images/Gallery/Pressure Cooker.png" 
           alt="Cookware"
-          className="w-full h-[50%] max-w-[380px] rounded-lg shadow-md"
+          className="w-full h-[50%] max-w-[400px] rounded-lg shadow-md"
         />
       </div>
       <div className="flex flex-col space-y-2 sm:space-y-6 mt-8  md:w-[50%]">

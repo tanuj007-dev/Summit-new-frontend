@@ -115,14 +115,38 @@ useEffect(() => {
       withCredentials: true,
     })
     .then((res) => {
-  console.log("PRODUCT API 👉", res.data);
-  setProduct(res.data); // 🔥 DIRECT
-  // Generate random review count between 100-200
-  const randomReviews = Math.floor(Math.random() * (200 - 100 + 1)) + 100;
-  setReviewCount(randomReviews);
-})
-
-    .catch(() => setProduct(null))
+      console.log("PRODUCT API 👉", res.data);
+      
+      // Handle both old and new API response structures
+      let productData = res.data;
+      
+      // If response is wrapped in data property
+      if (res.data?.data) {
+        productData = res.data.data;
+      }
+      
+      // Ensure product_id exists (either from id or product_id field)
+      if (productData && !productData.product_id && productData.id) {
+        productData.product_id = productData.id;
+      }
+      
+      // If variants exist but no images array, create images from variants
+      if (productData?.variants && Array.isArray(productData.variants) && !productData.images) {
+        productData.images = productData.variants
+          .map(v => v.image)
+          .filter(img => img && img.startsWith('http')); // Only include S3 presigned URLs
+      }
+      
+      setProduct(productData);
+      
+      // Generate random review count between 100-200
+      const randomReviews = Math.floor(Math.random() * (200 - 100 + 1)) + 100;
+      setReviewCount(randomReviews);
+    })
+    .catch((err) => {
+      console.error("Product fetch error:", err);
+      setProduct(null);
+    })
     .finally(() => setLoading(false));
 }, [product_id]);
   
@@ -134,11 +158,27 @@ useEffect(() => {
 
   /* -------------------- LOADING / ERROR -------------------- */
   if (loading) {
-    return <div className="text-center py-20">Loading product...</div>;
+    return (
+      <div className="text-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+        <p>Loading product...</p>
+      </div>
+    );
   }
 
- if (!product || !product.product_id) {
-  return <div className="text-center py-20">Product not found</div>;
+ if (!product) {
+  console.error("Product is null or undefined");
+  return <div className="text-center py-20 text-red-600">Product not found. Product ID: {product_id}</div>;
+}
+
+// Ensure product has an ID
+if (!product.product_id && product.id) {
+  product.product_id = product.id;
+}
+
+if (!product.product_id) {
+  console.error("Product missing product_id:", product);
+  return <div className="text-center py-20 text-red-600">Invalid product data</div>;
 }
 
 
@@ -146,21 +186,45 @@ useEffect(() => {
   /* -------------------- IMAGES COLLECTION -------------------- */
 const allImages = [];
 
+// Add main product image (S3 presigned URL)
 if (product.image) {
   allImages.push({
     id: "main",
-    src: product.image,
+    src: getImageSrc(product.image),
   });
 }
 
+// Add variant images if available
+if (Array.isArray(product.variants)) {
+  // Add unique variant images
+  const variantImages = new Set();
+  product.variants.forEach((variant, index) => {
+    if (variant.image && variant.image.startsWith('http')) {
+      // Use variant detail_id if available, otherwise use index
+      const imageId = variant.detail_id ? `variant-${variant.detail_id}` : `variant-${index}`;
+      if (!variantImages.has(variant.image)) {
+        variantImages.add(variant.image);
+        allImages.push({
+          id: imageId,
+          src: getImageSrc(variant.image),
+        });
+      }
+    }
+  });
+}
+
+// Add additional images array if available
 if (Array.isArray(product.images)) {
   product.images.forEach((img, index) => {
     allImages.push({
       id: `img-${index}`,
-      src: img,
+      src: getImageSrc(img),
     });
   });
 }
+
+console.log('📷 All Images Collected:', allImages);
+console.log('📦 Product Data:', product);
 
 
    
@@ -191,68 +255,77 @@ if (Array.isArray(product.images)) {
       <CategoryMegaMenu />
       {/* Breadcrumb */}
       <div className="text-xs py-2 mb-3 bg-red-50 font-bold">
-        Home / {product.master_category} /{" "}
-        <span className="text-[#B91508]">{product.product_name}</span>
+        Home / {product.category?.name || product.master_category || 'Products'} /{" "}
+        <span className="text-[#B91508]">{product.name || product.product_name}</span>
       </div>
 
       <div className="flex mt-6 sm:mt-12 flex-col md:flex-row gap-4 md:gap-8">
         {/* ================= IMAGES ================= */}
         <div className="md:w-1/2 flex flex-col md:flex-row gap-2 md:gap-4">
-          {/* Thumbnails - Vertical on desktop, horizontal on mobile */}
-          <div className="order-2 md:order-1 w-full md:w-16 lg:w-[90px] relative md:max-h-[300px] lg:max-h-[450px] h-20 md:h-auto">
-            {/* Mobile prev button */}
-            <button
-              onClick={() => thumbSlider.current?.slickPrev()}
-              className="absolute -left-8 md:-top-8 md:left-1/2 top-1/2 md:-translate-y-0 -translate-y-1/2 md:-translate-x-1/2 bg-red-600 text-white p-1 rounded-full z-10"
-            >
-              <FaChevronLeft className="md:hidden" />
-              <FaChevronUp className="hidden md:block" />
-            </button>
+          {allImages.length === 0 ? (
+            <div className="w-full h-96 bg-gray-200 flex items-center justify-center rounded">
+              <div className="text-center">
+                <p className="text-gray-600 mb-2">No images available</p>
+                <p className="text-sm text-gray-500">Product: {product.name || product.product_name}</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Thumbnails - Vertical on desktop, horizontal on mobile */}
+              <div className="order-2 md:order-1 w-full md:w-16 lg:w-[90px] relative md:max-h-[300px] lg:max-h-[450px] h-20 md:h-auto">
+                {/* Mobile prev button */}
+                <button
+                  onClick={() => thumbSlider.current?.slickPrev()}
+                  className="absolute -left-8 md:-top-8 md:left-1/2 top-1/2 md:-translate-y-0 -translate-y-1/2 md:-translate-x-1/2 bg-red-600 text-white p-1 rounded-full z-10"
+                >
+                  <FaChevronLeft className="md:hidden" />
+                  <FaChevronUp className="hidden md:block" />
+                </button>
 
-            <Slider ref={thumbSlider} {...thumbSettings}>
-              {allImages.map((img) => (
-                <div key={img.id} className="p-1 cursor-pointer">
-                  <div className="relative">
-                    {!imageLoadingStates[img.id] && (
-                      <div className="absolute inset-0 bg-gray-200 animate-pulse rounded" />
-                    )}
-                    <img
-                      src={getOptimizedImageSrc(img.src, 150, 60)}
-                      alt={`Thumbnail ${img.id}`}
-                      className="border rounded w-full h-16 md:h-16 lg:h-20 object-cover"
-                      loading="lazy"
-                      onLoad={() => handleImageLoad(img.id)}
-                      onError={() => handleImageError(img.id)}
-                      style={{ 
-                        opacity: imageLoadingStates[img.id] ? 1 : 0,
-                        transition: 'opacity 0.3s ease-in-out'
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </Slider>
+                <Slider ref={thumbSlider} {...thumbSettings}>
+                  {allImages.map((img) => (
+                    <div key={img.id} className="p-1 cursor-pointer">
+                      <div className="relative">
+                        {!imageLoadingStates[img.id] && (
+                          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded" />
+                        )}
+                        <img
+                          src={getOptimizedImageSrc(img.src, 150, 60)}
+                          alt={`Thumbnail ${img.id}`}
+                          className="border rounded w-full h-16 md:h-16 lg:h-20 object-cover"
+                          loading="lazy"
+                          onLoad={() => handleImageLoad(img.id)}
+                          onError={() => handleImageError(img.id)}
+                          style={{ 
+                            opacity: imageLoadingStates[img.id] ? 1 : 0,
+                            transition: 'opacity 0.3s ease-in-out'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
 
-            {/* Mobile next button */}
-            <button
-              onClick={() => thumbSlider.current?.slickNext()}
-              className="absolute -right-8 md:static md:flex md:justify-center md:mt-3 top-1/2 -translate-y-1/2 md:translate-y-0 bg-red-600 text-white p-1 rounded-full z-10 ml-7"
-            >
-              <FaChevronRight className="md:hidden" />
-              <FaChevronDown className="hidden md:block" />
-            </button>
-          </div>
+                {/* Mobile next button */}
+                <button
+                  onClick={() => thumbSlider.current?.slickNext()}
+                  className="absolute -right-8 md:static md:flex md:justify-center md:mt-3 top-1/2 -translate-y-1/2 md:translate-y-0 bg-red-600 text-white p-1 rounded-full z-10 ml-7"
+                >
+                  <FaChevronRight className="md:hidden" />
+                  <FaChevronDown className="hidden md:block" />
+                </button>
+              </div>
 
-          {/* Main Image */}
-          <div className="order-1 md:order-2 relative w-full max-w-xl ">
-            <button
-              onClick={() => mainSlider.current?.slickPrev()}
-              className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-red-600 text-white p-1 sm:p-2 rounded-full z-10"
-            >
-              <FaChevronLeft />
-            </button>
+              {/* Main Image */}
+              <div className="order-1 md:order-2 relative w-full max-w-xl ">
+                <button
+                  onClick={() => mainSlider.current?.slickPrev()}
+                  className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-red-600 text-white p-1 sm:p-2 rounded-full z-10"
+                >
+                  <FaChevronLeft />
+                </button>
 
-            <button
+                <button
               onClick={() => mainSlider.current?.slickNext()}
               className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-red-600 text-white p-1 sm:p-2 rounded-full z-10"
             >
@@ -301,6 +374,8 @@ if (Array.isArray(product.images)) {
               </div>
             )}
           </div>
+            </>
+          )}
         </div>
 
         {/* ================= DETAILS ================= */}

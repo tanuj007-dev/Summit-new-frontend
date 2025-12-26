@@ -350,7 +350,7 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
       {/* Add MegaMenu at the top */}
       <CategoryMegaMenu />
       
-      <h2 className="text-center text-xl font-semibold my-6">Shop By Category</h2>
+      {/* <h2 className="text-center text-xl font-semibold my-6">Shop By Category</h2> */}
 
       {/* Category Icons */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
@@ -382,11 +382,7 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
       {/* Results and Filters */}
       <div className="border-b pb-2 sm:pb-4 mb-4 sm:mb-6">
         {/* Results Count */}
-        <div className="flex justify-between items-center mb-3 sm:mb-4 px-2 sm:px-0">
-          <p className="text-xs sm:text-sm text-gray-600">
-            Showing {filteredProducts.length} results
-          </p>
-        </div>
+        
 
         {/* Filters */}
         <div className="flex flex-nowrap sm:flex-wrap items-start sm:items-center justify-start sm:justify-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 snap-x snap-mandatory sm:snap-none px-2 sm:px-0">
@@ -602,6 +598,11 @@ const CategoryPage = ({isLoggedIn,wishlist,handlewishlist}) => {
               Reset
             </button>
           </div>
+            <div className="flex justify-between mt-4 items-center mb-3 sm:mb-4 px-2 sm:px-0">
+          <p className="text-xs sm:text-sm text-gray-600">
+            Showing {filteredProducts.length} results
+          </p>
+        </div>
         </div>
       </div>
 

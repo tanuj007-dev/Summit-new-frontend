@@ -287,6 +287,7 @@ const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -325,8 +326,6 @@ const Login = ({ setIsLoggedIn }) => {
     checkAuth();
   }, [navigate, redirectTo, setIsLoggedIn]);
 
-
-
   // 🔹 Login handler
   const handleLogin = async () => {
     if (!email || !password) {
@@ -334,6 +333,7 @@ const Login = ({ setIsLoggedIn }) => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const res = await axios.post(
         "/api/login",
@@ -378,55 +378,166 @@ const Login = ({ setIsLoggedIn }) => {
       } else {
         toast.error("Invalid email or password");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (checkingAuth) {
     return (
-      <div className="login-container">
-        <p className="loading-text">Checking login status...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-gray-600 font-semibold">Checking login status...</p>
       </div>
     );
   }
 
   return (
-    <main className="login-container">
-      <aside className="image-section" />
+    <div className="min-h-screen">
+      {/* Desktop Layout - Image Left, Form Right */}
+      <div className="hidden md:grid md:grid-cols-2 min-h-screen">
+        {/* Left Section - Image */}
+        <div 
+          className="bg-cover bg-center relative"
+          style={{
+            backgroundImage: "url('/asset/images/login.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="absolute inset-0 bg-black opacity-30"></div>
+        </div>
 
-      <section className="form-section">
-        <div className="form-card">
-          <h2>Welcome Back!</h2>
+        {/* Right Section - Login Form */}
+        <div className="bg-white flex flex-col justify-center items-center p-8">
+          <div className="w-full max-w-md">
+            <h2 className="text-4xl font-bold text-red-600 text-center mb-8">
+              Welcome Back!
+            </h2>
 
-          <div className="input-group">
-            <label>Email Address</label>
+            {/* Email Input */}
+            <div className="mb-6">
+              <label className="block text-red-600 font-semibold mb-3 text-sm">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="Rohini, Delhi-110034"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 font-medium"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="mb-8">
+              <label className="block text-red-600 font-semibold mb-3 text-sm">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 font-medium"
+              />
+            </div>
+
+            {/* Login Button */}
+            <button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className={`w-full py-3 rounded-lg font-bold text-lg text-white transition-all mb-6 ${
+                isLoading
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-600 hover:bg-red-700 active:scale-95'
+              }`}
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+
+            {/* Register Link */}
+            <p className="text-center text-red-600 font-semibold">
+              Don't have an account?{' '}
+              <Link to="/register" className="hover:underline">
+                Register
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Layout - Only Form */}
+      <div className="md:hidden min-h-screen bg-white flex flex-col justify-center items-center p-6">
+        <div className="w-full max-w-sm">
+          <div className="mb-8 text-center">
+            <img 
+              src="/asset/images/LogoS.png" 
+              alt="Summit Logo" 
+              className="w-20 mx-auto mb-4"
+            />
+          </div>
+
+          <h2 className="text-3xl font-bold text-red-600 text-center mb-8">
+            Welcome Back!
+          </h2>
+
+          {/* Email Input */}
+          <div className="mb-5">
+            <label className="block text-red-600 font-semibold mb-2 text-sm">
+              Email Address
+            </label>
             <input
               type="email"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+              className="w-full px-4 py-2.5 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 text-sm"
             />
           </div>
 
-          <div className="input-group">
-            <label>Password</label>
+          {/* Password Input */}
+          <div className="mb-6">
+            <label className="block text-red-600 font-semibold mb-2 text-sm">
+              Password
+            </label>
             <input
               type="password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+              className="w-full px-4 py-2.5 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 text-sm"
             />
           </div>
 
-          <button className="btn-login" onClick={handleLogin}>
-            Login
+          {/* Login Button */}
+          <button
+            onClick={handleLogin}
+            disabled={isLoading}
+            className={`w-full py-2.5 rounded-lg font-bold text-white transition-all mb-4 ${
+              isLoading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-red-600 hover:bg-red-700 active:scale-95'
+            }`}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
 
-          <Link className="register-link" to="/register">
-            Don't have an account? Register
-          </Link>
+          {/* Register Link */}
+          <p className="text-center text-red-600 font-semibold text-sm">
+            Don't have an account?{' '}
+            <Link to="/register" className="hover:underline">
+              Register
+            </Link>
+          </p>
         </div>
-      </section>
+      </div>
 
       <ToastContainer position="top-right" autoClose={3000} />
-    </main>
+    </div>
   );
 };
 

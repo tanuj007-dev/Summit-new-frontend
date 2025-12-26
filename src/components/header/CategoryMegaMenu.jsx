@@ -1,146 +1,4 @@
-// import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-// import axios from "axios";
-// import { FaChevronDown } from "react-icons/fa";
 
-// const CategoryMegaMenu = () => {
-//   const [menuData, setMenuData] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [hoveredMain, setHoveredMain] = useState(null);
-//   const [hoveredSub, setHoveredSub] = useState(null);
-//   const [hoveredSeries, setHoveredSeries] = useState(null);
-//   const [hoveredOption, setHoveredOption] = useState(null);
-
-//   useEffect(() => {
-//     const fetchMenuData = async () => {
-//       try {
-//         setLoading(true);
-//         const response = await axios.get("https://api.summithomeappliance.com/php_controllar/controllers/getMegaMenu.php");
-//         setMenuData(response.data);
-//         setError(null);
-//       } catch (err) {
-//         console.error("Menu fetch error:", err);
-//         setError("Failed to load menu data");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchMenuData();
-//   }, []);
-
-//   return (
-//     <div className="category-nav  hidden lg:flex items-center justify-center space-x-2 mt-2 text-sm font-medium pb-2">
-
-//       {/* Static Categories */}
-//       {[
-//         { name: "Cookware", img: "Cookware.png", link: "category/cookware" },
-//         { name: "Gas Stove", img: "GasStove.png", link: "category/gas-stove" },
-//         { name: "Gas Tandoor", img: "GasTandoor.png", link: "category/gas-tandoor" },
-//         { name: "Mixer Grinder", img: "MixerGrinder.png", link: "category/mixer-grinder" },
-//         { name: "Pressure Cooker", img: "PressureCooker.png", link: "category/Pressure-Cooker" },
-//         { name: "Steam Cookware", img: "steam.png", link: "category/steam-cookware" },
-//         { name: "Others", img: "other.png", link: "category/others" },
-//       ].map((item, index) => (
-//         <div key={index} className="relative group">
-//           <div className="relative flex flex-col items-center group-hover:translate-y-[6px] transition-all duration-150">
-//             <Link to={`/${item.link}`}>
-//               <div className="flex items-center space-x-1 cursor-pointer text-black px-3 py-1 hover:text-red-700">
-//                 <img src={`/asset/images/${item.img}`} alt={item.name} className="w-10 h-6" />
-//                 <span>{item.name}</span>
-//                 <FaChevronDown className="ml-1 text-xs text-gray-400" />
-//               </div>
-//             </Link>
-//           </div>
-//         </div>
-//       ))}
-
-//       {/* Dynamic Mega Menu */}
-//       {menuData.map((main) => (
-//         <div
-//           key={main.id}
-//           className="relative group"
-//           onMouseEnter={() => setHoveredMain(main.id)}
-//           onMouseLeave={() => {
-//             setHoveredMain(null);
-//             setHoveredSub(null);
-//             setHoveredSeries(null);
-//             setHoveredOption(null);
-//           }}
-//         >
-//           {hoveredMain === main.id && (
-//             <div className="absolute top-full z-50 bg-[#FAFAFC] p-6 border border-gray-200 space-x-6 mega-menu flex left-1/2 -translate-x-1/2 w-[950px] shadow-lg">
-//               {/* Column 1: Subcategories */}
-//               <div className="w-1/4 space-y-3 border-r pr-4">
-//                 {main.sub_categories?.map((sub) => (
-//                   <div
-//                     key={sub.id}
-//                     className="cursor-pointer group"
-//                     onMouseEnter={() => setHoveredSub(sub.id)}
-//                   >
-//                     <h4 className="font-semibold text-gray-800 text-sm">
-//                       <Link to={`/products/${main.id}/${sub.id}`}>{sub.name}</Link>
-//                     </h4>
-//                   </div>
-//                 ))}
-//               </div>
-
-//               {/* Column 2: Series + Options */}
-//               <div className="w-1/2 space-y-4 border-r border-gray-200 px-6">
-//                 {main.sub_categories
-//                   ?.filter((sub) => sub.id === hoveredSub)
-//                   .flatMap((sub) =>
-//                     sub.series?.map((ser) => (
-//                       <div key={ser.id}>
-//                         <h4 className="font-semibold text-sm text-gray-900">
-//                           <Link to={`/products/${main.id}/${sub.id}/${ser.id}`}>{ser.name}</Link>
-//                         </h4>
-//                         <ul className="space-y-1">
-//                           {ser.options?.map((opt) => (
-//                             <li key={opt.id}>
-//                               <Link to={`/products/${main.id}/${sub.id}/${ser.id}/${opt.id}`}>
-//                                 {opt.name}
-//                               </Link>
-//                             </li>
-//                           ))}
-//                         </ul>
-//                       </div>
-//                     ))
-//                   )}
-//               </div>
-
-//               {/* Column 3: Sizes */}
-//               <div className="w-1/4 pl-2 space-y-2">
-//                 {main.sub_categories
-//                   ?.filter((sub) => sub.id === hoveredSub)
-//                   .flatMap((sub) =>
-//                     sub.series
-//                       ?.filter((ser) => ser.id === hoveredSeries)
-//                       .flatMap((ser) =>
-//                         ser.options
-//                           ?.filter((opt) => opt.id === hoveredOption)
-//                           .flatMap((opt) =>
-//                             opt.sizes?.map((size, index) => (
-//                               <div key={index} className="text-sm text-gray-700 hover:text-red-600">
-//                                 <Link to={`/products/${main.id}/${sub.id}/${ser.id}/${opt.id}/${size}`}>
-//                                   {size}
-//                                 </Link>
-//                               </div>
-//                             ))
-//                           )
-//                       )
-//                   )}
-//               </div>
-//             </div>
-//           )}
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default CategoryMegaMenu;
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -721,14 +579,33 @@ const CategoryMegaMenu = () => {
                         <img
                           src={`/asset/images/${
                             sub.name === "Inner Lid"
-                              ? "cooker1"
+                              ? "inner"
                               : sub.name === "Outer Lid"
-                              ? "cooker2"
+                              ? "outter"
                               : sub.name === "2 Burner"
-                              ? "S2BC"
+                              ? "2b"
                               : sub.name === "3 Burner"
-                              ? "S3BTC"
-                              : "pressurecooker"
+                              ? "3b"
+                              : sub.name === 'Aluminium'
+                              ? "tandoor"
+                              : sub.name === 'Iron'
+                              ? "tandoor"
+                              : sub.name === "450 Watt"
+                              ? "450"
+                              : sub.name === "750 Watt"
+                              ? "750"
+                              : sub.name === "1000 Watt"
+                              ? "1000"
+                              : sub.name === "Tawa"
+                              ? "tawa"
+                              : sub.name === "Kadai"
+                              ? "kadai"
+                              : sub.name === "Frypan"
+                              ? "frypan"
+                              : sub.name === "Idli Cooker"
+                              ? "idli"
+                              : "pressure_cooker"
+                              
                           }.jpg`}
                           alt={sub.name}
                           className="w-12 h-12 object-contain"

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../axiosConfig';
 import { CartContext } from '../context/CartContext';
-
+import { FaShippingFast } from "react-icons/fa";
 const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
   const navigate = useNavigate();
   const { cart, handleClearCart } = useContext(CartContext);
@@ -199,8 +199,8 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
   };
 
   return (
-    <div className="px-4 md:px-16 py-8 bg-white text-gray-800">
-      <h1 className="text-3xl font-semibold mb-6 border-b pb-3">Checkout</h1>
+    <div className="px-2 md:px-16 py-8 bg-white text-gray-800">
+      <h1 className=" flex text-3xl font-semibold mb-6 border-b gap-2 pb-3">Checkout<span className='mt-1 text-[#DC2B1C]'><FaShippingFast /></span></h1>
 
       <div className="grid md:grid-cols-2 gap-8 mb-10">
         {/* Billing Info */}
@@ -225,7 +225,7 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
 
         {/* Order Summary + Payment */}
         <div>
-          <h2 className="text-xl font-medium mb-4">Order Summary</h2>
+          <h2 className="text-xl font-medium ml-4 sm:ml-0 mb-4">Order Summary</h2>
           <div className="border rounded-md p-4 space-y-3 bg-gray-50">
             {cartItemsToUse.length > 0 ? (
               <>
