@@ -1,5 +1,5 @@
 // import axios from 'axios';
-// const baseUrl = 'https://mediumblue-finch-130496.hostingersite.com';
+// const baseUrl = 'https://api.summithomeappliance.com';
 // const axiosInstance = axios.create({
 //   baseURL: baseUrl, // Change to your actual API
 //   headers: {
@@ -30,7 +30,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://mediumblue-finch-130496.hostingersite.com",
+  baseURL: "https://api.summithomeappliance.com",
   withCredentials: true,
   headers: {
     Accept: "application/json",

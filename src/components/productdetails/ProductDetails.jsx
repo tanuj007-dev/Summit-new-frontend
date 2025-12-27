@@ -110,7 +110,7 @@ useEffect(() => {
   setLoading(true);
 
   axios
-    .get(`https://mediumblue-finch-130496.hostingersite.com/api/products/view/${product_id}`, {
+    .get(`https://api.summithomeappliance.com/api/products/view/${product_id}`, {
       headers: { Accept: "application/json" },
       withCredentials: true,
     })
