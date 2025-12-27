@@ -214,7 +214,7 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
                           currentProduct?.category || 
                           'all';
 
-        const response = await axios.get("http://127.0.0.1:8000/api/products/view", {
+        const response = await axios.get("https://mediumblue-finch-130496.hostingersite.com/api/products/view", {
           params: { search: searchQuery.toLowerCase() },
           withCredentials: true, // REQUIRED for session cookie
         });

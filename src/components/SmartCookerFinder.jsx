@@ -278,7 +278,7 @@ const SmartCookerFinder = () => {
         params.net_quantity = filters.net_quantity;
       }
 
-      const response = await axios.get("http://127.0.0.1:8000/api/products/view", {
+      const response = await axios.get("https://mediumblue-finch-130496.hostingersite.com/api/products/view", {
         params: params,
         withCredentials: true, // REQUIRED for session cookie
       });
@@ -447,7 +447,7 @@ const SmartCookerFinder = () => {
         params.bottom_type = filters.bottom_type;
       }
 
-      const response = await axios.get("http://127.0.0.1:8000/api/products/view", {
+      const response = await axios.get("https://mediumblue-finch-130496.hostingersite.com/api/products/view", {
         params: params,
         withCredentials: true,
       });
@@ -540,7 +540,7 @@ const SmartCookerFinder = () => {
           page: defaultFilters.page,
         };
 
-        const response = await axios.get("http://127.0.0.1:8000/api/products/view", {
+        const response = await axios.get("https://mediumblue-finch-130496.hostingersite.com/api/products/view", {
           params: params,
           withCredentials: true,
         });

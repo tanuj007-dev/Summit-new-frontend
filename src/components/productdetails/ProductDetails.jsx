@@ -110,7 +110,7 @@ useEffect(() => {
   setLoading(true);
 
   axios
-    .get(`http://127.0.0.1:8000/api/products/view/${product_id}`, {
+    .get(`https://mediumblue-finch-130496.hostingersite.com/api/products/view/${product_id}`, {
       headers: { Accept: "application/json" },
       withCredentials: true,
     })

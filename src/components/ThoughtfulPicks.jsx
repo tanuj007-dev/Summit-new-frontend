@@ -199,7 +199,7 @@ const ThoughtfulPicks = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://127.0.0.1:8000/api/products/view", {
+        const response = await axios.get("https://mediumblue-finch-130496.hostingersite.com/api/products/view", {
           params: { search: "all" },
           withCredentials: true, // REQUIRED for session cookie
         });

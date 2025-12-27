@@ -85,7 +85,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
       console.log('🔍 Searching for:', query);
       
       // Use fetch with proper cookie handling
-      const response = await fetch(`http://127.0.0.1:8000/api/search?search=${encodeURIComponent(query)}`, {
+      const response = await fetch(`https://mediumblue-finch-130496.hostingersite.com/api/search?search=${encodeURIComponent(query)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
