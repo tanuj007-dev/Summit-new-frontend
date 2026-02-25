@@ -1,0 +1,22 @@
+.marquee1 {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.marquee-content1 {
+  display: inline-flex;
+  animation: scroll-left 30s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}

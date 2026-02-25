@@ -1,0 +1,556 @@
+// import React, { useState, useEffect } from "react";
+// import axios from "../axiosConfig";
+// import { Link, useLocation, useNavigate } from "react-router-dom";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// const Login = ({ setIsLoggedIn }) => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [loading, setLoading] = useState(true);
+//   const [sessionId, setSessionId] = useState("");
+
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const redirectTo =
+//     new URLSearchParams(location.search).get("redirectTo") || "/";
+
+//   /* ------------------ SESSION ID HANDLER ------------------ */
+//   const getSessionId = () => {
+//     // Extract session ID from cookies or localStorage
+//     const cookies = document.cookie.split(';');
+//     for (let cookie of cookies) {
+//       const [name, value] = cookie.trim().split('=');
+//       if (name === 'summithomeappliances-session') {
+//         return value;
+//       }
+//     }
+//     return null;
+//   };
+
+//   const getUserInfoWithSession = async (sessionIdParam = null) => {
+//     try {
+//       const sessionToUse = sessionIdParam || getSessionId();
+//       if (!sessionToUse) {
+//         throw new Error("No session ID available");
+//       }
+
+//       // Call /api/me endpoint with session ID
+//       const response = await axios.get(`/api/me?session_id=${sessionToUse}`, {
+//         headers: { "Content-Type": "application/json" },
+//         withCredentials: true,
+//       });
+
+//       return response.data;
+//     } catch (error) {
+//       console.error("Error fetching user info with session:", error);
+//       throw error;
+//     }
+//   };
+
+//   /* ------------------ PAGE STYLES ------------------ */
+//   useEffect(() => {
+//     const style = document.createElement("style");
+//     style.innerHTML = `
+//       * { box-sizing: border-box; }
+//       body, html, #root {
+//         margin: 0; padding: 0; height: 100%;
+//         font-family: 'Poppins', sans-serif;
+//         background-color: #121212;
+//         color: #eee;
+//       }
+//       .login-container { display: flex; min-height: 100vh; width: 100%; }
+//       .image-section {
+//         flex: 1;
+//         background-image: url('/asset/images/login.jpg');
+//         background-size: cover;
+//         background-position: center;
+//         filter: brightness(0.75);
+//       }
+//       .form-section {
+//         flex: 1;
+//         display: flex;
+//         justify-content: center;
+//         align-items: center;
+//         background-color: #fafafc;
+//         padding: 2.5rem 3rem;
+//       }
+//       .form-card {
+//         width: 100%;
+//         max-width: 420px;
+//         background: #fafafc;
+//         border-radius: 14px;
+//         padding: 2rem 2.5rem;
+//         box-shadow: 0 8px 24px rgb(221 42 29 / 27%);
+//         text-align: center;
+//       }
+//       .form-card h2 {
+//         margin-bottom: 2rem;
+//         font-weight: 700;
+//         font-size: 2.25rem;
+//         color: #dd2a1d;
+//       }
+//       .input-group { margin-bottom: 1.5rem; text-align: left; }
+//       .input-group label {
+//         margin-bottom: 0.5rem;
+//         font-weight: 600;
+//         color: #dd2a1d;
+//         display: block;
+//       }
+//       .input-group input {
+//         width: 100%;
+//         padding: 0.75rem 1rem;
+//         border-radius: 10px;
+//         border: 2px solid #333;
+//         background: #eee;
+//         color: #333;
+//       }
+//       .input-group input:focus {
+//         outline: none;
+//         border-color: #dd2a1d;
+//       }
+//       .btn-login {
+//         width: 100%;
+//         padding: 1rem 0;
+//         background-color: #dd2a1d;
+//         border: none;
+//         border-radius: 10px;
+//         font-weight: 700;
+//         font-size: 1.15rem;
+//         color: #fff;
+//         cursor: pointer;
+//       }
+//       .btn-login:hover { background-color: #e04d00; }
+//       .register-link {
+//         margin-top: 1.25rem;
+//         display: block;
+//         color: #dd2a1d;
+//         font-weight: 600;
+//         text-decoration: none;
+//       }
+//       .loading-text {
+//         color: #dd2a1d;
+//         font-weight: 600;
+//         font-size: 1.3rem;
+//         text-align: center;
+//         margin-top: 2rem;
+//       }
+//       @media (max-width: 768px) {
+//         .login-container { flex-direction: column; }
+//         .image-section { height: 250px; }
+//         .form-section { padding: 2rem 1.5rem; }
+//         .form-card {
+//           padding: 1.5rem;
+//           box-shadow: none;
+//           border-radius: 0;
+//         }
+//       }
+//     `;
+//     document.head.appendChild(style);
+//     return () => document.head.removeChild(style);
+//   }, []);
+
+//   /* ------------------ LOGIN STATUS CHECK ------------------ */
+//   useEffect(() => {
+//     const checkLoginStatus = async () => {
+//       try {
+//         // Try the new /api/me endpoint with session ID
+//         const currentSessionId = getSessionId();
+//         if (currentSessionId) {
+//           const userInfo = await getUserInfoWithSession(currentSessionId);
+//           if (userInfo) {
+//             navigate("/");
+//             return;
+//           }
+//         }
+
+//         // Fallback to direct /api/me call
+//         await axios.get("/api/me", { withCredentials: true });
+//         navigate("/");
+//       } catch (meError) {
+//         // If /api/me fails, set loading to false to show login form
+//         console.error("Authentication check failed:", meError);
+//         setLoading(false);
+//       }
+//     };
+//     checkLoginStatus();
+//   }, [navigate]);
+
+//   /* ------------------ LOGIN HANDLER ------------------ */
+//   const handleLogin = async () => {
+//     if (!email || !password) {
+//       toast.error("Please fill in all fields!");
+//       return;
+//     }
+
+//     try {
+//       // Perform login
+//       await axios.post(
+//         "/api/login",
+//         { email, password },
+//         {
+//           headers: { "Content-Type": "application/json" },
+//           withCredentials: true,
+//         }
+//       );
+
+//       // After successful login, try to get user info with session
+//       try {
+//         const currentSessionId = getSessionId();
+//         if (currentSessionId) {
+//           const userInfo = await getUserInfoWithSession(currentSessionId);
+//           console.log("User info from /api/me:", userInfo);
+//         }
+//       } catch (sessionError) {
+//         console.warn("Could not fetch user info with session, but login succeeded");
+//       }
+
+//       setIsLoggedIn(true);
+//       toast.success("Login successful");
+
+//       setTimeout(() => {
+//         navigate(redirectTo);
+//       }, 1000);
+//     } catch (error) {
+//       console.error("Login error:", error);
+
+//       if (error.response?.data?.errors) {
+//         const firstError = Object.values(error.response.data.errors)[0][0];
+//         toast.error(firstError);
+//       } else if (error.response?.data?.message) {
+//         toast.error(error.response.data.message);
+//       } else {
+//         toast.error("Invalid email or password");
+//       }
+//     }
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="login-container">
+//         <p className="loading-text">Checking login status...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <main className="login-container">
+//       <aside className="image-section" />
+
+//       <section className="form-section">
+//         <div className="form-card">
+//           <h2>Welcome Back!</h2>
+
+//           <div className="input-group">
+//             <label>Email Address</label>
+//             <input
+//               type="email"
+//               placeholder="you@example.com"
+//               value={email}
+//               onChange={(e) => setEmail(e.target.value)}
+//             />
+//           </div>
+
+//           <div className="input-group">
+//             <label>Password</label>
+//             <input
+//               type="password"
+//               placeholder="Your password"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//             />
+//           </div>
+
+//           <button className="btn-login" type="button" onClick={handleLogin}>
+//             Login
+//           </button>
+
+//           <Link className="register-link" to="/register">
+//             Don't have an account? Register
+//           </Link>
+//         </div>
+//       </section>
+
+//       <ToastContainer position="top-right" autoClose={3000} />
+//     </main>
+//   );
+// };
+
+// export default Login;
+import React, { useState, useEffect } from "react";
+import axios from "../axiosConfig";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const Login = ({ setIsLoggedIn }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo =
+    new URLSearchParams(location.search).get("redirectTo") || "/";
+
+  // 🔹 Check already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("auth_token");
+
+      if (!token) {
+        setCheckingAuth(false);
+        return;
+      }
+
+      try {
+        // Use stored token to verify login
+        await axios.get("/api/me", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+
+        setIsLoggedIn(true);
+        navigate(redirectTo);
+      } catch (error) {
+        console.log("Token verification failed, showing login form");
+        localStorage.removeItem("auth_token");
+        setCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate, redirectTo, setIsLoggedIn]);
+
+  // 🔹 Login handler
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        "/api/login",
+        { email, password },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      // Extract and store token
+      const token = res.data.token || res.data.access_token;
+
+      if (token) {
+        localStorage.setItem("auth_token", token);
+        // Set token in axios default headers for all future requests
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
+
+      // Verify login with /api/me
+      await axios.get("/api/me", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      // Login successful
+      setIsLoggedIn(true);
+      toast.success("Login successful");
+
+      setTimeout(() => navigate(redirectTo), 800);
+    } catch (error) {
+      console.error("Login error:", error);
+
+      if (error.response?.data?.errors) {
+        const firstError = Object.values(error.response.data.errors)[0][0];
+        toast.error(firstError);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Invalid email or password");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (checkingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-gray-600 font-semibold">Checking login status...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen">
+      {/* Desktop Layout - Image Left, Form Right */}
+      <div className="hidden md:grid md:grid-cols-2 min-h-screen">
+        {/* Left Section - Image */}
+        <div
+          className="bg-cover bg-center relative"
+          style={{
+            backgroundImage: "url('/asset/images/login.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="absolute inset-0 bg-black opacity-30"></div>
+        </div>
+
+        {/* Right Section - Login Form */}
+        <div className="bg-white flex flex-col justify-center items-center p-8">
+          <div className="w-full max-w-md">
+            <h2 className="text-4xl font-bold text-red-600 text-center mb-8">
+              Welcome Back!
+            </h2>
+
+            {/* Email Input */}
+            <div className="mb-6">
+              <label className="block text-red-600 font-semibold mb-3 text-sm">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 font-medium"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="mb-8">
+              <label className="block text-red-600 font-semibold mb-3 text-sm">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 font-medium"
+              />
+            </div>
+
+            {/* Login Button */}
+            <button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className={`w-full py-3 rounded-lg font-bold text-lg text-white transition-all mb-6 ${isLoading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-red-600 hover:bg-red-700 active:scale-95'
+                }`}
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+
+            {/* Register Link */}
+            <p className="text-center text-red-600 font-semibold">
+              Don't have an account?{' '}
+              <Link to="/register" className="hover:underline">
+                Register
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Layout - Only Form */}
+      <div className="md:hidden min-h-screen bg-[#fcfcfc] flex flex-col items-center px-4 py-12 relative overflow-hidden">
+        {/* Decorative elements for mobile */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-red-50 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+
+        <div className="w-full max-w-sm relative z-10">
+          <div className="mb-5 text-center">
+            <Link to="/">
+              <img
+                src="/asset/images/LogoS.png"
+                alt="Summit Logo"
+                className="w-24 mx-auto mb-6 drop-shadow-sm"
+              />
+            </Link>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              Welcome <span className="text-red-600">Back</span>
+            </h2>
+            <p className="text-gray-500 mt-2 text-sm font-medium">Log in to your Summit account</p>
+          </div>
+
+          <div className="bg-white p-8 rounded-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100">
+            {/* Email Input */}
+            <div className="mb-5">
+              <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="mb-4">
+              <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
+              />
+            </div>
+
+            <div className="flex justify-end mb-6">
+              <button type="button" className="text-[11px] font-bold text-red-600 uppercase tracking-wider hover:underline">
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Login Button */}
+            <button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all mb-6 ${isLoading
+                ? 'bg-gray-300 cursor-not-allowed shadow-none'
+                : 'bg-red-600 hover:bg-black active:scale-95 shadow-red-200'
+                }`}
+            >
+              {isLoading ? 'Processing...' : 'Sign In'}
+            </button>
+
+            {/* Register Link */}
+            <div className="text-center">
+              <span className="text-gray-400 text-sm font-medium">New to Summit?</span>{' '}
+              <Link to="/register" className="text-red-600 font-bold text-sm hover:underline ml-1">
+                Register Now
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ToastContainer position="top-right" autoClose={2000} />
+    </div>
+  );
+};
+
+export default Login;
