@@ -11,6 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import axiosInstance from "../axiosConfig";
 import { ToastContainer } from "react-toastify";
+import deskFooterBg from "./assets/deskfooter.png";
 
 // Helper function to convert footer link text to search-friendly format
 const convertToSearchTerm = (text) => {
@@ -30,44 +31,67 @@ const DesktopFooter = () => {
   useEffect(() => {
     axiosInstance
       .get("/")
-      .then((res) => setFooterData(res.data || []))
+      .then((res) => {
+        const data = res?.data;
+        setFooterData(Array.isArray(data) ? data : []);
+      })
       .catch((err) => console.error("Footer menu fetch error:", err));
   }, []);
 
   return (
     <footer className="hidden md:block">
-      <div className="relative flex flex-wrap md:flex-nowrap space-x-0 md:space-x-25 bg-[url('/asset/images/FooterMountains.webp')] md:bg-[length:100%_100%] bg-center bg-no-repeat h-[53vh] px-16 py-12 overflow-hidden">
+      <div
+        className="relative flex flex-wrap md:flex-nowrap space-x-0 md:space-x-25 md:bg-[length:100%_100%] bg-center bg-no-repeat h-[53vh] px-16 py-12 overflow-hidden bg-cover"
+        style={{ backgroundImage: `url("${deskFooterBg}")` }}
+      >
         {/* Dark gradient overlay from left to right */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent pointer-events-none"></div>
 
         {/* Content on top of overlay */}
-        <div className="relative z-10">
-          <img
-            src="/asset/images/Logo.webp"
-            alt=""
-            className="w-26"
-          />
-        </div>
-        <div className="relative z-10 flex md:justify-between break-words sm:space-x-0 mt-5 w-full">
-          <div className="text-white break-words max-w-xs">
-            <h1 className="text-[18px] font-semibold">Contact Us</h1>
+        <div className="relative z-10 flex break-words sm:space-x-0 mt-5 w-full items-start">
+          {/* Useful Links shifted to Left */}
+          <div className="text-white order-1">
+            <h1 className="text-[18px] font-semibold">Useful Links</h1>
+            <ul className="text-[15px] space-y-2 mt-4">
+              <li>
+                <Link to="/blogs">Blogs</Link>
+              </li>
+              <li><Link to='/about'>About Us</Link> </li>
+              <li>
+                <Link to="/shipping-policy">Shipping Policy</Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy">Privacy & Policy</Link>
+              </li>
+              <li>
+                <Link to="/terms-conditions">Terms & Conditions</Link>
+              </li>
+              <li>
+                <Link to="/refund-policy">Return & Refund Policy</Link>
+              </li>
+              <li>
+                <Link to="/grievance-redressal">Grievance Redressal</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Us in Middle */}
+          <div className="text-white break-words max-w-xs order-2">
+            <h1 className="text-[18px] font-semibold text-center md:text-left">Contact Us</h1>
             <div className="text-[15px] space-x-3 space-y-3 mt-4">
               <p className="flex items-center gap-2">
-                {" "}
                 <a href="">
                   <FiPhoneCall />
                 </a>
                 1800 419 6048
               </p>
               <p className="flex items-center gap-2">
-                {" "}
                 <a href="">
                   <FaEnvelope />
                 </a>
                 customercare@summithomeappliance.com
               </p>
               <p className="flex gap-2">
-                {" "}
                 <a href="">
                   <FaMapMarkerAlt className="mt-1" />
                 </a>
@@ -77,35 +101,9 @@ const DesktopFooter = () => {
               </p>
             </div>
           </div>
-          <div className="text-white order-1 md:order-2 -mt-6 md:mt-0">
-            <h1 className=" text-[18px] font-semibold">Useful Links</h1>
-            <ul className="text-[15px] space-y-2 mt-4">
-              <li>
-                <Link to="/blogs">Blogs</Link>
-              </li>
-              <li><Link to='/about'>About Us</Link> </li>
-              <li>
-                {" "}
-                <Link to="/shipping-policy">Shipping Policy</Link>{" "}
-              </li>
-              <li>
-                {" "}
-                <Link to="/privacy-policy">Privacy & Policy</Link>{" "}
-              </li>
-              <li>
-                {" "}
-                <Link to="/terms-conditions">Terms & Conditions</Link>{" "}
-              </li>
-              <li>
-                {" "}
-                <Link to="/refund-policy">Return & Refund Policy</Link>{" "}
-              </li>
-              <li>
-                {" "}
-                <Link to="/grievance-redressal">Grievance Redressal</Link>{" "}
-              </li>
-            </ul>
-          </div>
+
+          {/* Logo shifted to bottom Right with extra nudge (shifted up slightly) */}
+
         </div>
       </div>
 
@@ -114,7 +112,7 @@ const DesktopFooter = () => {
         {/* Blurred Background Image */}
         <div className="absolute inset-0">
           <img
-            src="/asset/images/FooterMountains.webp"
+            src={deskFooterBg}
             alt="Background"
             className="w-full h-full object-cover blur-2xl scale-110"
           />
@@ -215,10 +213,10 @@ const DesktopFooter = () => {
         </div>
       </div>
       <div className="">
-        <div className=" px-4 md:px-16 bg-gray-800 text-white ">
+        <div className=" px-4 md:px-16 bg-[#941007] text-white ">
           {/* <div className="flex text-[0.7rem] md:text-xs px-1 md:px-16 justify-between md:pb-2 pb-6 pt-6 ">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-xs md:text-sm">
-                {footerData.slice(0, 4).map((main) => (
+                {(Array.isArray(footerData) ? footerData : []).slice(0, 4).map((main) => (
                   <div key={main.id}>
                     <h2 className="text-sm font-semibold ">
                       <Link

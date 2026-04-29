@@ -18,14 +18,14 @@ const FeedbackProduct = ({ product_id, isLoggedIn }) => {
             onClick={() => setActiveTab(tab)}
             className="relative md:px-12 px-2 py-2 cursor-pointer"
           >
-            <div className={`${activeTab === tab ? "text-red-700" : ""}`}>
+            <div className={`${activeTab === tab ? "text-[#941007]" : ""}`}>
               {tab}
             </div>
             {/* Red underline on active tab, full gray underline already exists */}
             <div
               className={
                 activeTab === tab
-                  ? "absolute bottom-[-1px] left-0 right-0 h-1 bg-red-700"
+                  ? "absolute bottom-[-1px] left-0 right-0 h-1 bg-[#941007]"
                   : "absolute bottom-[-1px] left-0 right-0 h-1 bg-gray-300"
               }
             />

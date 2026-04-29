@@ -70,7 +70,7 @@
 //         <div
 //           className={`px-3 py-1 rounded-full cursor-pointer text-xs ${
 //             selectedPrice === "all"
-//               ? "bg-[#B91508] text-white"
+//               ? "bg-[#941007] text-white"
 //               : "bg-[#E9E9EB] text-[#545455]"
 //           }`}
 //           onClick={() => setSelectedPrice("all")}
@@ -83,7 +83,7 @@
 //             onClick={() => setSelectedPrice(range.value)}
 //             className={`px-3 py-1 rounded-full cursor-pointer text-xs ${
 //               selectedPrice === range.value
-//                 ? "bg-[#B91508] text-white"
+//                 ? "bg-[#941007] text-white"
 //                 : "bg-[#E9E9EB] text-[#545455]"
 //             }`}
 //           >
@@ -101,7 +101,7 @@
 //       <div className="flex items-center w-full">
 //         <button
 //           onClick={scrollLeft}
-//           className="px-2 py-1 text-white bg-[#B91508] rounded-full mr-2"
+//           className="px-2 py-1 text-white bg-[#941007] rounded-full mr-2"
 //         >
 //           ◀
 //         </button>
@@ -135,12 +135,12 @@
 //                  </Link>
 
 //                   <div className="flex justify-between w-full mt-3 px-2">
-//                     <button onClick={()=>handleAddToCart(item)} className="text-xs rounded-full px-2 py-1 text-white bg-[#B91508]">
+//                     <button onClick={()=>handleAddToCart(item)} className="text-xs rounded-full px-2 py-1 text-white bg-[#941007]">
 //                       Add to cart
 //                     </button>
 //                     <button
 //                       onClick={() => buyNowHandle(item)}
-//                       className="text-xs text-[#B91508] font-semibold"
+//                       className="text-xs text-[#941007] font-semibold"
 //                     >
 //                       Buy Now
 //                     </button>
@@ -152,7 +152,7 @@
 
 //         <button
 //           onClick={scrollRight}
-//           className="px-2 py-1 text-white bg-[#B91508] rounded-full ml-2"
+//           className="px-2 py-1 text-white bg-[#941007] rounded-full ml-2"
 //         >
 //           ▶
 //         </button>

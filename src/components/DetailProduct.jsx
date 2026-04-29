@@ -268,7 +268,7 @@
 //     <>
 //       <div className="text-xs mb-2 py-2 bg-red-50 px-16 font-bold">
 //         Home / {selectedProduct.product_category} /{" "}
-//         {selectedProduct.product_sub_category} / <span className="text-[#B91508]">{selectedProduct.name}</span>
+//         {selectedProduct.product_sub_category} / <span className="text-[#941007]">{selectedProduct.name}</span>
 //       </div>
 //       <div className="md:px-16 px-4 ">
 //         <div className="w-full flex flex-col items- md:flex-row pb-10 gap-10">
@@ -318,37 +318,37 @@
 
 //             <div className="w-full flex justify-between items-center">
 //               <div>
-//                 <span className="bg-[#B91508] text-white py-1 px-3 text-sm mr-1">
+//                 <span className="bg-[#941007] text-white py-1 px-3 text-sm mr-1">
 //                   Fine
 //                 </span>
-//                 <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+//                 <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
 //                   Prime
 //                 </span>
-//                 <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+//                 <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
 //                   Supreme
 //                 </span>
-//                 <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+//                 <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
 //                   Heavy
 //                 </span>
-//                 <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+//                 <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
 //                   Ultimate
 //                 </span>
-//                 {/* <span className="bg-[#B91508] text-white py-1 px-3 text-sm">
+//                 {/* <span className="bg-[#941007] text-white py-1 px-3 text-sm">
 //                 Blacko
 //               </span>
-//               <span className="bg-[#B91508] text-white py-1 px-3 text-sm">
+//               <span className="bg-[#941007] text-white py-1 px-3 text-sm">
 //                 Desire
 //               </span>
-//               <span className="bg-[#B91508] text-white py-1 px-3 text-sm">
+//               <span className="bg-[#941007] text-white py-1 px-3 text-sm">
 //                 Elite
 //               </span> */}
 //               </div>
 //               <div className="flex items-center gap-0.5">
-//                 <FaStar className="text-[#B91508]" />
-//                 <FaStar className="text-[#B91508]" />
-//                 <FaStar className="text-[#B91508]" />
-//                 <FaStar className="text-[#B91508]" />
-//                 <FaStar className="text-[#B91508]" />
+//                 <FaStar className="text-[#941007]" />
+//                 <FaStar className="text-[#941007]" />
+//                 <FaStar className="text-[#941007]" />
+//                 <FaStar className="text-[#941007]" />
+//                 <FaStar className="text-[#941007]" />
 //                 <span className="ml-3">0 reviews</span>{" "}
 //                 {/* Copy button */}
 //                 <div className="relative inline-block">
@@ -392,7 +392,7 @@
 //                   ₹   <span className="line-through decoration-2">{selectedProduct.price}</span>
 
 //                 </span>
-//                 <span className="bg-[#F5F5F7] rounded-sm text-[#B91508] px-2 py-0.5 font-semibold">
+//                 <span className="bg-[#F5F5F7] rounded-sm text-[#941007] px-2 py-0.5 font-semibold">
 //                   50% Off{selectedProduct.product_discount}{" "}
 //                   {selectedProduct.product_discount_type}
 //                 </span>
@@ -423,7 +423,7 @@
 //                     <p
 //                       onClick={() => setSelectedWeight(item.size)} // This updates the selected item
 //                       className={`${selectedWeight === item.size
-//                         ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]" // Red background when clicked
+//                         ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]" // Red background when clicked
 //                         : "bg-[#F5F5F7] text-[#636365]" // Default background
 //                         } rounded-sm px-2 py-0.5 font-semibold`}
 //                     >
@@ -441,7 +441,7 @@
 //                 <p className="font-semibold mb-2">Shape:</p>
 //                 <span
 //                   className={`${selectshape === "plain"
-//                     ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]"
+//                     ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]"
 //                     : "bg-[#F5F5F7] text-[#636365]"
 //                     }  rounded-md  px-2 py-0.5 font-semibold cursor-pointer`}
 //                   onClick={() => {
@@ -453,7 +453,7 @@
 //                 </span>
 //                 <span
 //                   className={`${selectshape == "pan"
-//                     ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]"
+//                     ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]"
 //                     : "bg-[#F5F5F7] text-[#636365]"
 //                     }bg-[#F5F5F7]  rounded-md text-[#636365] px-2 py-0.5 font-semibold ml-2 cursor-pointer`}
 //                   onClick={() => {
@@ -476,7 +476,7 @@
 //                           hanlderInduction();
 //                         }}
 //                         className={`${selectBottom === filter
-//                           ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]"
+//                           ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]"
 //                           : "bg-[#F5F5F7] text-[#636365]"
 //                           }bg-[#F5F5F7]  rounded-md text-[#636365] px-2 py-0.5 font-semibold ml-2 cursor-pointer`}
 //                       >
@@ -492,11 +492,11 @@
 //             <div className="mt-3 flex md:justify- gap-5">
 //               <button
 //                 onClick={() => handleAddToCart(originalProduct)}
-//                 className="bg-[#B91508] hover:bg-[#a21307] active:bg-[#7e0f06] text-white border border-[#B91508] px-8 md:px-15 py-2 font-semibold rounded-full cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 transform transition-all duration-150"
+//                 className="bg-[#941007] hover:bg-[#a21307] active:bg-[#7e0f06] text-white border border-[#941007] px-8 md:px-15 py-2 font-semibold rounded-full cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 transform transition-all duration-150"
 //               >
 //                 Add to cart
 //               </button>
-//               <button onClick={() => buyNowHandle(originalProduct)} className=" rounded-full  border-1 text-[#B91508]  border-[#B91508] px-8 md:px-15 py-2 font-semibold cursor-pointer">
+//               <button onClick={() => buyNowHandle(originalProduct)} className=" rounded-full  border-1 text-[#941007]  border-[#941007] px-8 md:px-15 py-2 font-semibold cursor-pointer">
 //                 Buy Now
 //               </button>
 //             </div>
@@ -537,7 +537,7 @@
 //                     onChange={(e) => setPincode(e.target.value)}
 //                   />
 //                   <button
-//                     className="rounded-lg border border-[#B91508] text-[#B91508] p-2 font-semibold"
+//                     className="rounded-lg border border-[#941007] text-[#941007] p-2 font-semibold"
 //                     onClick={handleCheck}
 //                   >
 //                     Check Now
@@ -550,7 +550,7 @@
 
 
 //                 {error && (
-//                   <div className="text-red-600 font-semibold">{error}</div>
+//                   <div className="text-[#941007] font-semibold">{error}</div>
 //                 )}
 
 //                 {estimatedDate && !error && (
@@ -670,14 +670,14 @@
 //                 onClick={() => setActiveTab(tab)}
 //                 className="relative md:px-12 px-2 py-2 cursor-pointer"
 //               >
-//                 <div className={`${activeTab === tab ? "text-red-700" : ""}`}>
+//                 <div className={`${activeTab === tab ? "text-[#941007]" : ""}`}>
 //                   {tab}
 //                 </div>
 //                 {/* Red underline on active tab, full gray underline already exists */}
 //                 <div
 //                   className={
 //                     activeTab === tab
-//                       ? "absolute bottom-[-1px] left-0 right-0 h-1 bg-red-700"
+//                       ? "absolute bottom-[-1px] left-0 right-0 h-1 bg-[#941007]"
 //                       : "absolute bottom-[-1px] left-0 right-0 h-1 bg-gray-300"
 //                   }
 //                 />
@@ -832,7 +832,7 @@
 
 
 //                         <div className="">
-//                           <img className="w-[50px] h-[50px] inline shadow border-1 border-red-500 rounded-full p-1 m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Stainless_Steel_/variant_104/1753786981_6888aa65ad1f1.jpg" alt="variant" />
+//                           <img className="w-[50px] h-[50px] inline shadow border-1 border-[#941007] rounded-full p-1 m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Stainless_Steel_/variant_104/1753786981_6888aa65ad1f1.jpg" alt="variant" />
 //                           <img className="w-[50px] h-[50px] inline shadow rounded-full m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Aluminium/variant_114/1753788865_6888b1c1ef007.jpg" alt="variant" />
 //                           <img className="w-[50px] h-[50px] inline shadow rounded-full m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Stainless_Steel_/variant_104/1753786981_6888aa65ad1f1.jpg" alt="variant" />
 //                           <img className="w-[50px] h-[50px] inline shadow rounded-full m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Aluminium/variant_114/1753788865_6888b1c1ef007.jpg" alt="variant" />
@@ -845,18 +845,18 @@
 //                           <span className="font-normal text-[#3e3e3e]">
 //                             M.R.P: 2000 {" "}
 //                           </span>
-//                           Rs. <span className="text-[#B91508] font-bold">{Math.floor(item.price)}</span>
+//                           Rs. <span className="text-[#941007] font-bold">{Math.floor(item.price)}</span>
 //                         </p>
 //                         <div className="flex justify-between w-full mt-3 px-2">
-//                           <button className="w-30 rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer  font-semibold mr-1"
+//                           <button className="w-30 rounded-full px-3 py-1 text-white bg-[#941007] cursor-pointer  font-semibold mr-1"
 //                           >
 //                             Buy Now
 //                           </button>
 //                           <button
-//                             className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#B91508] cursor-pointer ml-1 text-center"
+//                             className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#941007] cursor-pointer ml-1 text-center"
 //                           >
 //                             <div className="flex items-center justify-center">
-//                               <span className="inline text-[#B91508]">Cart</span> <FaCartPlus className="mx-1 text-[#B91508]" />
+//                               <span className="inline text-[#941007]">Cart</span> <FaCartPlus className="mx-1 text-[#941007]" />
 //                             </div>
 
 //                           </button>
@@ -1294,7 +1294,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
     <>
       <div className="text-xs mb-2 py-2 bg-red-50 px-16 font-bold">
         Home / {selectedProduct.product_category} /{" "}
-        {selectedProduct.product_sub_category} / <span className="text-[#B91508]">{selectedProduct.name}</span>
+        {selectedProduct.product_sub_category} / <span className="text-[#941007]">{selectedProduct.name}</span>
       </div>
       <div className="md:px-16 px-4 ">
         <div className="w-full flex flex-col items- md:flex-row pb-10 gap-10">
@@ -1344,37 +1344,37 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
 
             <div className="w-full flex justify-between items-center">
               <div>
-                <span className="bg-[#B91508] text-white py-1 px-3 text-sm mr-1">
+                <span className="bg-[#941007] text-white py-1 px-3 text-sm mr-1">
                   Fine
                 </span>
-                <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+                <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
                   Prime
                 </span>
-                <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+                <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
                   Supreme
                 </span>
-                <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+                <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
                   Heavy
                 </span>
-                <span className="bg-[#B91508] text-white py-1 px-3 text-sm m-1">
+                <span className="bg-[#941007] text-white py-1 px-3 text-sm m-1">
                   Ultimate
                 </span>
-                {/* <span className="bg-[#B91508] text-white py-1 px-3 text-sm">
+                {/* <span className="bg-[#941007] text-white py-1 px-3 text-sm">
                 Blacko
               </span>
-              <span className="bg-[#B91508] text-white py-1 px-3 text-sm">
+              <span className="bg-[#941007] text-white py-1 px-3 text-sm">
                 Desire
               </span>
-              <span className="bg-[#B91508] text-white py-1 px-3 text-sm">
+              <span className="bg-[#941007] text-white py-1 px-3 text-sm">
                 Elite
               </span> */}
               </div>
               <div className="flex items-center gap-0.5">
-                <FaStar className="text-[#B91508]" />
-                <FaStar className="text-[#B91508]" />
-                <FaStar className="text-[#B91508]" />
-                <FaStar className="text-[#B91508]" />
-                <FaStar className="text-[#B91508]" />
+                <FaStar className="text-[#941007]" />
+                <FaStar className="text-[#941007]" />
+                <FaStar className="text-[#941007]" />
+                <FaStar className="text-[#941007]" />
+                <FaStar className="text-[#941007]" />
                 <span className="ml-3">0 reviews</span>{" "}
                 {/* Copy button */}
                 <div className="relative inline-block">
@@ -1418,7 +1418,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                   ₹   <span className="line-through decoration-2">{selectedProduct.price}</span>
 
                 </span>
-                <span className="bg-[#F5F5F7] rounded-sm text-[#B91508] px-2 py-0.5 font-semibold">
+                <span className="bg-[#F5F5F7] rounded-sm text-[#941007] px-2 py-0.5 font-semibold">
                   50% Off{selectedProduct.product_discount}{" "}
                   {selectedProduct.product_discount_type}
                 </span>
@@ -1449,7 +1449,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                     <p
                       onClick={() => setSelectedWeight(item.size)} // This updates the selected item
                       className={`${selectedWeight === item.size
-                        ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]" // Red background when clicked
+                        ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]" // Red background when clicked
                         : "bg-[#F5F5F7] text-[#636365]" // Default background
                         } rounded-sm px-2 py-0.5 font-semibold`}
                     >
@@ -1467,7 +1467,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                 <p className="font-semibold mb-2">Shape:</p>
                 <span
                   className={`${selectshape === "plain"
-                    ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]"
+                    ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]"
                     : "bg-[#F5F5F7] text-[#636365]"
                     }  rounded-md  px-2 py-0.5 font-semibold cursor-pointer`}
                   onClick={() => {
@@ -1479,7 +1479,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                 </span>
                 <span
                   className={`${selectshape == "pan"
-                    ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]"
+                    ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]"
                     : "bg-[#F5F5F7] text-[#636365]"
                     }bg-[#F5F5F7]  rounded-md text-[#636365] px-2 py-0.5 font-semibold ml-2 cursor-pointer`}
                   onClick={() => {
@@ -1502,7 +1502,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                           hanlderInduction();
                         }}
                         className={`${selectBottom === filter
-                          ? "bg-[#B915080D] text-[#B91508] border-1 border-[#B91508]"
+                          ? "bg-[#9410070D] text-[#941007] border-1 border-[#941007]"
                           : "bg-[#F5F5F7] text-[#636365]"
                           }bg-[#F5F5F7]  rounded-md text-[#636365] px-2 py-0.5 font-semibold ml-2 cursor-pointer`}
                       >
@@ -1518,11 +1518,11 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
             <div className="mt-3 flex md:justify- gap-5">
               <button
                 onClick={() => handleAddToCart(selectedProduct)}
-                className="bg-[#B91508] hover:bg-[#a21307] active:bg-[#7e0f06] text-white border border-[#B91508] px-8 md:px-15 py-2 font-semibold rounded-full cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 transform transition-all duration-150"
+                className="bg-[#941007] hover:bg-[#a21307] active:bg-[#7e0f06] text-white border border-[#941007] px-8 md:px-15 py-2 font-semibold rounded-full cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 transform transition-all duration-150"
               >
                 Add to cart
               </button>
-              <button onClick={() => buyNowHandle(selectedProduct)} className=" rounded-full  border-1 text-[#B91508]  border-[#B91508] px-8 md:px-15 py-2 font-semibold cursor-pointer">
+              <button onClick={() => buyNowHandle(selectedProduct)} className=" rounded-full  border-1 text-[#941007]  border-[#941007] px-8 md:px-15 py-2 font-semibold cursor-pointer">
                 Buy Now
               </button>
             </div>
@@ -1563,7 +1563,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                     onChange={(e) => setPincode(e.target.value)}
                   />
                   <button
-                    className="rounded-lg border border-[#B91508] text-[#B91508] p-2 font-semibold"
+                    className="rounded-lg border border-[#941007] text-[#941007] p-2 font-semibold"
                     onClick={handleCheck}
                   >
                     Check Now
@@ -1576,7 +1576,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
 
 
                 {error && (
-                  <div className="text-red-600 font-semibold">{error}</div>
+                  <div className="text-[#941007] font-semibold">{error}</div>
                 )}
 
                 {estimatedDate && !error && (
@@ -1696,14 +1696,14 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                 onClick={() => setActiveTab(tab)}
                 className="relative md:px-12 px-2 py-2 cursor-pointer"
               >
-                <div className={`${activeTab === tab ? "text-red-700" : ""}`}>
+                <div className={`${activeTab === tab ? "text-[#941007]" : ""}`}>
                   {tab}
                 </div>
                 {/* Red underline on active tab, full gray underline already exists */}
                 <div
                   className={
                     activeTab === tab
-                      ? "absolute bottom-[-1px] left-0 right-0 h-1 bg-red-700"
+                      ? "absolute bottom-[-1px] left-0 right-0 h-1 bg-[#941007]"
                       : "absolute bottom-[-1px] left-0 right-0 h-1 bg-gray-300"
                   }
                 />
@@ -1858,7 +1858,7 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
 
 
                         <div className="">
-                          <img className="w-[50px] h-[50px] inline shadow border-1 border-red-500 rounded-full p-1 m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Stainless_Steel_/variant_104/1753786981_6888aa65ad1f1.jpg" alt="variant" />
+                          <img className="w-[50px] h-[50px] inline shadow border-1 border-[#941007] rounded-full p-1 m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Stainless_Steel_/variant_104/1753786981_6888aa65ad1f1.jpg" alt="variant" />
                           <img className="w-[50px] h-[50px] inline shadow rounded-full m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Aluminium/variant_114/1753788865_6888b1c1ef007.jpg" alt="variant" />
                           <img className="w-[50px] h-[50px] inline shadow rounded-full m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Stainless_Steel_/variant_104/1753786981_6888aa65ad1f1.jpg" alt="variant" />
                           <img className="w-[50px] h-[50px] inline shadow rounded-full m-1" src="https://api.summithomeappliance.com/php_admin_panel/variant_images/Pressure_Cooker/Outer_Lid/Aluminium/variant_114/1753788865_6888b1c1ef007.jpg" alt="variant" />
@@ -1871,18 +1871,18 @@ const DetailProduct = ({ user, setaddcart, addToCart, buyNowHandle, isLoggedIn }
                           <span className="font-normal text-[#3e3e3e]">
                             M.R.P: 2000 {" "}
                           </span>
-                          Rs. <span className="text-[#B91508] font-bold">{Math.floor(item.price)}</span>
+                          Rs. <span className="text-[#941007] font-bold">{Math.floor(item.price)}</span>
                         </p>
                         <div className="flex justify-between w-full mt-3 px-2">
-                          <button className="w-30 rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer  font-semibold mr-1"
+                          <button className="w-30 rounded-full px-3 py-1 text-white bg-[#941007] cursor-pointer  font-semibold mr-1"
                           >
                             Buy Now
                           </button>
                           <button
-                            className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#B91508] cursor-pointer ml-1 text-center"
+                            className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#941007] cursor-pointer ml-1 text-center"
                           >
                             <div className="flex items-center justify-center">
-                              <span className="inline text-[#B91508]">Cart</span> <FaCartPlus className="mx-1 text-[#B91508]" />
+                              <span className="inline text-[#941007]">Cart</span> <FaCartPlus className="mx-1 text-[#941007]" />
                             </div>
 
                           </button>

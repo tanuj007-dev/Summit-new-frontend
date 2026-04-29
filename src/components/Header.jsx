@@ -5,12 +5,16 @@ import {
   FaRegHeart,
   FaWhatsapp,
   FaChevronDown,
+  FaFire,
+  FaUtensils,
+  FaFacebookF,
+  FaInstagram,
+  FaYoutube
 } from "react-icons/fa";
 import { IoHomeOutline } from "react-icons/io5";
-import { MdLockOutline } from "react-icons/md";
+import { MdLockOutline, MdWaves, MdOutlineLocalPhone, MdSearch, MdOutlineBlender } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { MdOutlineLocalPhone } from "react-icons/md";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { IoGiftOutline } from "react-icons/io5";
 import { LiaCertificateSolid } from "react-icons/lia";
@@ -26,11 +30,29 @@ import AccountsPage from "./AccountsPage";
 import Orders from "./Orders";
 import { useNavigate } from "react-router-dom";
 import axios from '.././axiosConfig';
+import { downloadProductCatalog } from "../utils/productCatalog";
 //  import CategoryMegaMenu from  '../components/header/CategoryMegaMenu.jsx'
 import { CartContext } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { RxCross1 } from "react-icons/rx";
 import Marquee from "./marquee/Marquee";
-import { MdSearch } from "react-icons/md";
+import blogIcon from './assets/mnav/blog.png';
+import cookwareIcon from './assets/mnav/cookware.png';
+import gasTandoorIcon from './assets/mnav/gas tandoor.png';
+import homeIcon from './assets/mnav/home (1).png';
+import mixerIcon from './assets/mnav/mixer (1).png';
+import pressureCookerIcon from './assets/mnav/pressure-cooker (2).png';
+import steamCookwareIcon from './assets/mnav/steam cookware.png';
+import stoveIcon from './assets/mnav/stove.png';
+import accountIcon from './assets/mnav/account main.png';
+import catalogueIcon from './assets/mnav/catalogue.png';
+import grievanceIcon from './assets/mnav/gravience redressal.png';
+import wishlistIcon from './assets/mnav/wishlist.png';
+import cartIcon from './assets/mnav/shopping-cart.png';
+import contactIcon from './assets/mnav/contact.png';
+import aboutIcon from './assets/mnav/about.png';
+import newLogo from './assets/Untitled design (51).png';
+
 const Header = ({ addcart, isLoggedIn, handlelogout }) => {
   const [hide, setHide] = useState(true);
   const [activeindex, setActive] = useState(null);
@@ -52,20 +74,23 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
   }, []);
   const items = [
     "Home",
-    "Best Seller",
-    "New Arrivals",
+
+
     "Pressure Cooker",
+    "Gas Tandoor",
+    "Steam Cookware",
+    "Cookware",
+    "Gas Stove",
+    "Mixer Grinder",
 
-    "Contact US",
-    "About Us",
-
-    "ACCOUNT MAIN",
-    // "ORDERS HISTORY",
-    "MY WISHLIST",
-    // "PROFILE SETTING",
-    // "TRANSACTION",
-    "MY CART",
+    "Account Main",
+    "My Wishlist",
+    "My Cart",
     "Product Catalogue",
+    "Grievance Redressal",
+    "Blogs",
+    "Contact Us",
+    "About Us",
   ];
   const [searchProduct, setSearchProduct] = useState('');
   const [searchProductData, setSearchProductData] = useState([]);
@@ -204,11 +229,15 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
 
 
   const { totalItems } = useContext(CartContext);
+  const { wishlist } = useWishlist();
 
-
+  const catalogLoginUrl = () =>
+    `/login?catalog=1&redirectTo=${encodeURIComponent(
+      `${window.location.pathname}${window.location.search}`
+    )}`;
 
   return (
-    <div className="relative">
+    <div className="relative z-[95]">
       <Marquee />
       <header
         className=" hidden  md:flex justify-between items-center bg-[#F0F0F2] font-[Helvetica Now Display]  p-4 px-16 text-black "
@@ -217,11 +246,18 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
         <div className="flex gap-6 items-center text-sm w-96">
           <p>
             {isLoggedIn ? (
-              <a target="_blank" href="/asset/pdf/Summit Catalog 2025 cooker  Editable.pdf" rel="noreferrer">Product Catalogue</a>
+              <button
+                type="button"
+                onClick={() => void downloadProductCatalog()}
+                className="cursor-pointer hover:underline bg-transparent border-0 p-0 font-inherit text-inherit"
+              >
+                Product Catalogue
+              </button>
             ) : (
               <button
-                onClick={() => navigate("/login?redirectTo=" + encodeURIComponent(window.location.pathname))}
-                className="hover:underline text-left"
+                type="button"
+                onClick={() => navigate(catalogLoginUrl())}
+                className="hover:underline text-left bg-transparent border-0 p-0 font-inherit text-inherit cursor-pointer"
               >
                 Product Catalogue
               </button>
@@ -252,22 +288,21 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
         </div>
       </header>
 
-      {/* Mobile Sidebar Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-gradient-to-b from-white via-gray-50 to-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[9999] md:hidden overflow-y-auto flex flex-col ${hide ? 'translate-x-full' : 'translate-x-0'
+        className={`fixed font-gotham top-0 right-0 h-full w-full sm:w-96 bg-white/70 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 ease-in-out z-[9999] md:hidden overflow-y-auto flex flex-col ${hide ? 'translate-x-full' : 'translate-x-0'
           }`}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-red-600 to-red-700 text-white p-4 flex items-center justify-between shadow-md">
+        <div className="sticky top-0 bg-white/90 backdrop-blur-md z-10 text-white p-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <img src="/asset/images/Logo.png" alt="Summit" className="size-12" />
+            <div className="w-28 h-14   rounded-full flex  justify-center">
+              <img src={newLogo} alt="Summit" className="h-16 w-26 object-contain" />
             </div>
 
           </div>
           <button
             onClick={() => setHide(true)}
-            className="text-white hover:bg-red-800 p-1 rounded-full transition-colors"
+            className="text-white bg-[#941007] p-1 rounded-full transition-colors"
           >
             <RxCross1 className="text-2xl" />
           </button>
@@ -275,23 +310,30 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
 
         {/* Menu Items */}
         <nav className="flex-1 p-4 space-y-1">
-          <ul className=" text-[20px] space-y-2">
+          <ul className=" text-[20px] space-y-1">
             {items.map((item, i) => {
               const routeMap = {
                 "Home": "/",
-                "Best Seller": "/",
+
                 "New Arrivals": "/",
-                "Pressure Cooker": "/",
-                "Contact US": "/contact",
+                "Pressure Cooker": "/products/pressure-cooker",
+                "Gas Tandoor": "/products/gas-tandoor",
+                "Steam Cookware": "/products/steam-cookware",
+                "Cookware": "/products/cookware",
+                "Gas Stove": "/products/gas-stove",
+                "Mixer Grinder": "/products/mixer-grinder",
+                "Contact Us": "/contact",
                 "About Us": "/about",
-                "ACCOUNT MAIN": isLoggedIn
+                "Account Main": isLoggedIn
                   ? "/accountsPage"
                   : "/login?redirectTo=" + encodeURIComponent("/accountsPage"),
-                "MY CART": "/cart",
-                "MY WISHLIST": "/wishlist",
+                "My Cart": "/cart",
+                "My Wishlist": "/wishlist",
+                "Grievance Redressal": "/grievance-redressal",
+                "Blogs": "/all-blogs",
               };
 
-              if (item === "MY CART") {
+              if (item === "My Cart") {
                 return (
                   <Link
                     key={i}
@@ -301,19 +343,19 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                       setHide(true);
                     }}
                   >
-                    <li className="py-3 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all flex items-center justify-between font-medium border-l-4 border-transparent hover:border-red-600">
+                    <li className="py-2.5 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all flex items-center justify-between font-medium border-l-4 border-transparent hover:border-[#941007]">
                       <span className="flex items-center gap-3">
-                        <FiShoppingCart className="text-red-600" />
+                        <img src={cartIcon} alt="" className="w-9 h-9 object-contain" />
                         {item}
                       </span>
-                      <span className="bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                      <span className="bg-[#941007] text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
                         {totalItems}
                       </span>
                     </li>
                   </Link>
                 );
               }
-              if (item === "MY WISHLIST") {
+              if (item === "My Wishlist") {
                 return (
                   <Link
                     key={i}
@@ -323,9 +365,16 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                       setHide(true);
                     }}
                   >
-                    <li className="py-3 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-red-600 flex items-center gap-3">
-                      <FaRegHeart className="text-red-600" />
-                      {item}
+                    <li className="py-3 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-[#941007] flex items-center justify-between gap-3">
+                      <span className="flex items-center gap-3">
+                        <img src={wishlistIcon} alt="" className="w-9 h-9 object-contain" />
+                        {item}
+                      </span>
+                      {wishlist.length > 0 && (
+                        <span className="bg-[#941007] text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                          {wishlist.length}
+                        </span>
+                      )}
                     </li>
                   </Link>
                 );
@@ -337,16 +386,16 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                     key={i}
                     onClick={() => {
                       if (isLoggedIn) {
-                        window.open("/asset/pdf/Summit Catalog 2025 cooker  Editable.pdf", "_blank");
+                        void downloadProductCatalog();
                       } else {
-                        navigate("/login?redirectTo=" + encodeURIComponent(window.location.pathname));
+                        navigate(catalogLoginUrl());
                       }
                       setActive(i);
                       setHide(true);
                     }}
                   >
-                    <li className="py-3 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-red-600 flex items-center gap-3">
-                      <span className="text-red-600 text-xl"><IoDocumentTextOutline /></span>
+                    <li className="py-2.5 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-[#941007] flex items-center gap-3">
+                      <img src={catalogueIcon} alt="" className="w-9 h-9 object-contain" />
                       {item}
                     </li>
                   </div>
@@ -363,14 +412,23 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                       setHide(true);
                     }}
                   >
-                    <li className="py-3  px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-red-600 flex items-center gap-3">
-                      {item === "Home" && <span className="text-red-600 text-lg"><IoHomeOutline size={22} /></span>}
-                      {item === "Best Seller" && <span className="text-red-600 text-lg"><LiaCertificateSolid size={22} /></span>}
-                      {item === "New Arrivals" && <span className="text-red-600 text-lg"><IoGiftOutline size={22} /></span>}
-                      {item === "Pressure Cooker" && <span className="text-red-600 text-lg"><GiRiceCooker size={22} /></span>}
-                      {item === "Contact US" && <span className="text-red-600 text-lg"><MdOutlineLocalPhone size={22} /></span>}
-                      {item === "About Us" && <span className="text-red-600 text-lg"><AiOutlineInfoCircle size={22} /></span>}
-                      {item === "ACCOUNT MAIN" && <span className="text-red-600 text-lg"><CgProfile size={22} /></span>}
+                    <li className="py-3  px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-[#941007] flex items-center gap-3">
+                      {item === "Home" && <img src={homeIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "New Arrivals" && <span className="text-[#941007] text-lg"><IoGiftOutline size={28} /></span>}
+                      {item === "Pressure Cooker" && <img src={pressureCookerIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Gas Tandoor" && <img src={gasTandoorIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Steam Cookware" && <img src={steamCookwareIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Cookware" && <img src={cookwareIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Gas Stove" && <img src={stoveIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Mixer Grinder" && <img src={mixerIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Contact Us" && <img src={contactIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "About Us" && <img src={aboutIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Account Main" && <img src={accountIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "My Wishlist" && <img src={wishlistIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "My Cart" && <img src={cartIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Product Catalogue" && <img src={catalogueIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Grievance Redressal" && <img src={grievanceIcon} alt="" className="w-9 h-9 object-contain" />}
+                      {item === "Blogs" && <img src={blogIcon} alt="" className="w-9 h-9 object-contain" />}
                       {item}
                     </li>
                   </Link>
@@ -379,7 +437,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               return (
                 <div key={i}>
                   <li
-                    className="py-3 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-red-600"
+                    className="py-2.5 px-4 text-gray-700 hover:bg-red-50 rounded-lg cursor-pointer transition-all font-medium border-l-4 border-transparent hover:border-[#941007]"
                     onClick={() => {
                       setActive(i);
                       setHide(true);
@@ -392,6 +450,25 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
             })}
           </ul>
         </nav>
+
+        {/* Social Media Icons */}
+        <div className="p-4 border-t border-gray-100 flex flex-col items-center">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Follow Us</p>
+          <div className="flex items-center justify-center gap-6">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#941007] hover:bg-[#941007] hover:text-white transition-all">
+              <FaFacebookF size={20} />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#941007] hover:bg-[#941007] hover:text-white transition-all">
+              <FaInstagram size={20} />
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#941007] hover:bg-[#941007] hover:text-white transition-all">
+              <FaYoutube size={20} />
+            </a>
+            <a href="https://wa.me/919990555161" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#941007] hover:bg-[#941007] hover:text-white transition-all">
+              <FaWhatsapp size={20} />
+            </a>
+          </div>
+        </div>
 
         {/* Login/Logout Button */}
         <div className="sticky bottom-0  bg-white border-t border-gray-200 p-4 shadow-lg">
@@ -408,18 +485,18 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               }
             }}
             className={`w-full py-3 rounded-lg font-bold text-white transition-all flex items-center justify-center gap-2 ${isLoggedIn
-              ? 'bg-[#DD2B1C] hover:bg-[#DD2B1C]'
-              : 'bg-[#DD2B1C] hover:bg-[#DD2B1C]'
+              ? 'bg-[#941007] hover:bg-[#941007]'
+              : 'bg-[#941007] hover:bg-[#941007]'
               }`}
           >
             {isLoggedIn ? (
               <>
-                <span className="text-white text-[20px]"><MdLockOutline /></span>
+                <span className="text-white bg-[#941007] text-[20px]"><MdLockOutline /></span>
                 <p> LOG OUT</p>
               </>
             ) : (
               <>
-                <span className="text-white text-[20px]"><MdLockOutline /></span>
+                <span className="text-white bg-[#941007] text-[20px]"><MdLockOutline /></span>
                 <p> LOG IN</p>
               </>
             )}
@@ -430,16 +507,16 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
       {/* Overlay */}
       {!hide && (
         <div
-
+          className="fixed inset-0 bg-black/20 backdrop-blur-md z-[9998] md:hidden"
           onClick={() => setHide(true)}
         />
       )}
 
       {/* Mobile Search Modal */}
       {showMobileSearch && (
-        <div className="fixed inset-0 bg-white z-[10000] md:hidden flex flex-col">
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-xl z-[10000] md:hidden flex flex-col">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center gap-3">
+          <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-200 p-4 flex items-center gap-3">
             <button
               onClick={() => {
                 setShowMobileSearch(false);
@@ -452,7 +529,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
             <input
               type="search"
               placeholder="Search products..."
-              className="flex-1 bg-gray-100 rounded-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="flex-1 bg-gray-100 rounded-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#941007]"
               value={searchProduct}
               onChange={(e) => setSearchProduct(e.target.value)}
               autoFocus
@@ -476,7 +553,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               </div>
             ) : isSearchLoading ? (
               <div className="flex flex-col items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-2"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#941007] mb-2"></div>
                 <p className="text-gray-500 text-sm">Searching...</p>
               </div>
             ) : searchProductData.length === 0 ? (
@@ -487,7 +564,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               <>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-bold">Search Results</h2>
-                  <p className="text-sm text-gray-600">Found <span className="text-red-600 font-semibold">{searchProductData.length}</span></p>
+                  <p className="text-sm text-gray-600">Found <span className="text-[#941007] font-semibold">{searchProductData.length}</span></p>
                 </div>
 
                 {/* Products Grid */}
@@ -498,9 +575,10 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                       onClick={() => {
                         setShowMobileSearch(false);
                         setSearchProduct('');
-                        navigate(`/product-details/${item.id || item.sno}`);
+                        const productId = item.id || item.sno || item.product_id || item.detail_id;
+                        navigate(`/product-details/${productId}`);
                       }}
-                      className="bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-red-400 transition-all flex flex-col"
+                      className="bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-[#941007] transition-all flex flex-col"
                     >
                       {/* Product Image */}
                       <div className="w-full aspect-square  flex items-center justify-center overflow-hidden flex-shrink-0 relative">
@@ -513,7 +591,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                           className="w-full h-full object-contain p-2"
                         />
                         {item.discount && (
-                          <div className="absolute top-1 right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                          <div className="absolute top-1 right-1 bg-[#941007] text-white text-xs font-bold px-1.5 py-0.5 rounded">
                             {item.discount}%
                           </div>
                         )}
@@ -528,7 +606,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                           {item.description || item.product_description || 'Quality product for your kitchen'}
                         </p>
                         <div className="flex items-center gap-1 pt-2 border-t border-gray-200">
-                          <p className="text-sm font-bold text-red-600">
+                          <p className="text-sm font-bold text-[#941007]">
                             ₹{item.price || item.product_price || item.mrp || 'N/A'}
                           </p>
                           {(item.mrp && item.price && item.mrp !== item.price) && (
@@ -559,7 +637,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
       )}
 
       {/* -----------------------Header End---------------------------------- */}
-      <nav className="px-2 py-1.5 md:px-16  md:pt-5 bg-[#FAFAFC]">
+      <nav className="px-2 py-1.5 md:px-16 md:pt-5 bg-[#FAFAFC]/80 backdrop-blur-md sticky top-0 z-[1000] border-b border-gray-200/50">
         {/* ---------------------first nav bar--------------------- */}
         <div className="flex  items-center justify-between  w-full h-16">
           <div className="flex w-full space-x-5   md:w-[60%]">
@@ -567,9 +645,9 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               <Link to={"/"}>
                 {" "}
                 <img
-                  src="/asset/images/LogoS.png"
-                  alt=""
-                  className="md:w-24 "
+                  src={newLogo}
+                  alt="Summit"
+                  className="md:w-24 object-contain"
                 />
               </Link>
             </div>
@@ -577,7 +655,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
             <div className="md:hidden flex justify-between w-full">
               <div>
                 <Link to={"/"}>
-                  <img src="/asset/images/LogoS.png" alt="" className="w-16" />
+                  <img src={newLogo} alt="Summit" className="w-16 object-contain" />
                 </Link>
               </div>
               <div className="flex items-center  space-x-4">
@@ -594,7 +672,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                   >
                     <ShoppingCartOutlinedIcon className="" />
                     {totalItems > 0 && (
-                      <div className="text-white bg-red-700 text-xs absolute top-0 right-0 rounded-full px-1">
+                      <div className="text-white bg-[#941007] text-xs absolute top-0 right-0 rounded-full px-1">
                         {totalItems}
                       </div>
                     )}
@@ -616,7 +694,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               <input
                 type="search"
                 placeholder="Search for products"
-                className="bg-white rounded-full w-full py-2 pl-10 pr-4 text-sm placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="bg-white rounded-full w-full py-2 pl-10 pr-4 text-sm placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#941007]"
                 value={searchProduct}
                 onChange={(e) => setSearchProduct(e.target.value)}
               />
@@ -629,7 +707,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                   {isSearchLoading ? (
                     <div className="w-full flex justify-center items-center py-8">
                       <div className="flex flex-col items-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mb-2"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#941007] mb-2"></div>
                         <p className="text-gray-500 text-sm">Searching...</p>
                       </div>
                     </div>
@@ -645,13 +723,13 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                       <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
                         <p className="text-sm text-gray-700 font-semibold">
                           Found{" "}
-                          <span className="text-red-600">
+                          <span className="text-[#941007]">
                             {searchProductData.length}
                           </span>{" "}
                           results
                         </p>
                         <button
-                          className="text-sm text-red-600 hover:text-red-700 font-semibold hover:underline"
+                          className="text-sm text-[#941007] hover:text-[#941007] font-semibold hover:underline"
                           onClick={() =>
                             navigate(`/products/all`)
                           }
@@ -665,11 +743,11 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                         {searchProductData.slice(0, 6).map((item, i) => (
                           <Link
                             key={i}
-                            to={`/product-details/${item.id}`}
+                            to={`/product-details/${item.id || item.sno || item.product_id || item.detail_id}`}
                             onClick={() => setSearchProduct("")}
                             className="block group"
                           >
-                            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-200 hover:border-red-400 flex flex-col h-full">
+                            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-200 hover:border-[#941007] flex flex-col h-full">
 
                               {/* Image */}
                               <div className="relative w-full h-44  flex items-center justify-center">
@@ -688,7 +766,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
 
                               {/* Details */}
                               <div className="p-3 flex flex-col flex-grow">
-                                <h3 className="text-sm font-bold text-gray-900 line-clamp-2 mb-2 group-hover:text-red-600">
+                                <h3 className="text-sm font-bold text-gray-900 line-clamp-2 mb-2 group-hover:text-[#941007]">
                                   {item.name || item.product_name || "Product"}
                                 </h3>
 
@@ -699,7 +777,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                                 </p>
 
                                 <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
-                                  <p className="text-base font-bold text-red-600">
+                                  <p className="text-base font-bold text-[#941007]">
                                     ₹
                                     {item.price ||
                                       item.product_price ||
@@ -708,7 +786,7 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
                                   </p>
                                 </div>
 
-                                <p className="text-xs text-red-600 font-semibold mt-2">
+                                <p className="text-xs text-[#941007] font-semibold mt-2">
                                   View Details →
                                 </p>
                               </div>
@@ -750,12 +828,23 @@ const Header = ({ addcart, isLoggedIn, handlelogout }) => {
               Track Shipment
             </Link>
             <Link
+              to={"/wishlist"}
+              className="relative bg-[#F1F1F1] rounded-full p-2 text-gray-950 font-normal hover:bg-gray-200 transition-colors"
+            >
+              <FaRegHeart size={20} />
+              {wishlist.length > 0 && (
+                <div className="text-white bg-[#941007] text-[10px] absolute -top-1 -right-1 rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {wishlist.length}
+                </div>
+              )}
+            </Link>
+            <Link
               to={"/Cart"}
               className="relative bg-[#F1F1F1] rounded-full p-2 text-gray-950 font-normal"
             >
               <ShoppingCartOutlinedIcon className="" />
               {totalItems > 0 && (
-                <div className="text-white bg-red-700 text-xs absolute top-0 right-0 rounded-full px-1">
+                <div className="text-white bg-[#941007] text-xs absolute top-0 right-0 rounded-full px-1">
                   {totalItems}
                 </div>
               )}

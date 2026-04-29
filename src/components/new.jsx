@@ -138,8 +138,8 @@ const CategoryMegaMenu = () => {
           name: "Inner Lid",
           series: [
             {
-              id: "alluminium",
-              name: "Alluminium",
+              id: "aluminium",
+              name: "Aluminium",
               options: [
                 { id: "Fine", name: "Fine", sizes: ["1L", "2L", "3L", "5L"] },
                 { id: "Prime", name: "Prime", sizes: ["3L", "5L", "5.5L"] },
@@ -149,8 +149,8 @@ const CategoryMegaMenu = () => {
               ],
             },
             {
-              id: "hard-anodized-alluminium",
-              name: "Hard Anodized Alluminium",
+              id: "hard-anodized-aluminium",
+              name: "Hard Anodized Aluminium",
               options: [
                 { id: "Blacko", name: "Blacko", sizes: ["2L", "3L", "3.5L", "5L", "5.5L", "6.5L"] },
               ],
@@ -831,7 +831,7 @@ const CategoryMegaMenu = () => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <span className="text-xs text-gray-700 text-center whitespace-nowrap group-hover:text-red-600 transition-colors">
+              <span className="text-xs text-gray-700 text-center whitespace-nowrap group-hover:text-[#941007] transition-colors">
                 {main.name}
               </span>
             </button>
@@ -862,8 +862,8 @@ const CategoryMegaMenu = () => {
             <button
               onClick={(e) => handleCategoryClick(main.name.toLowerCase(), main.name, e)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 ${hoveredMain === main.id
-                ? "text-red-600 bg-red-50/50"
-                : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
+                ? "text-[#941007] bg-red-50/50"
+                : "text-gray-700 hover:text-[#941007] hover:bg-gray-50"
                 }`}
               onMouseEnter={() => {
                 setHoveredMain(main.id);
@@ -902,7 +902,7 @@ const CategoryMegaMenu = () => {
                 />
               </div>
               <span className=" tracking-tight">{main.name}</span>
-              <FaChevronDown className={`text-[16px] transition-transform duration-300 ${hoveredMain === main.id ? 'rotate-180 text-red-500' : 'text-gray-400'}`} />
+              <FaChevronDown className={`text-[16px] transition-transform duration-300 ${hoveredMain === main.id ? 'rotate-180 text-[#941007]' : 'text-gray-400'}`} />
             </button>
 
             {/* MEGA MENU */}
@@ -955,7 +955,7 @@ const CategoryMegaMenu = () => {
                       key={sub.id}
                       onClick={(e) => handleCategoryClick(sub.name.toLowerCase(), sub.name, e)}
                       className={`w-full group/sub flex items-center p-3 transition-all duration-300 ${hoveredSub === sub.id
-                        ? "bg-red-50/50 border-l-4 border-red-500 rounded-r-xl"
+                        ? "bg-red-50/50 border-l-4 border-[#941007] rounded-r-xl"
                         : "hover:bg-gray-50 border-l-4 border-transparent rounded-xl"
                         }`}
                       onMouseEnter={() => {
@@ -1015,7 +1015,7 @@ const CategoryMegaMenu = () => {
                         />
                       </div>
                       <div className="ml-4 text-left">
-                        <h4 className={`font-bold text-[15px] transition-colors duration-300 ${hoveredSub === sub.id ? "text-red-600" : "text-gray-800"}`}>
+                        <h4 className={`font-bold text-[15px] transition-colors duration-300 ${hoveredSub === sub.id ? "text-[#941007]" : "text-gray-800"}`}>
                           {sub.name}
                         </h4>
                         <p className="text-[11px] text-gray-500 font-medium opacity-70 mt-0.5">Explore Range</p>
@@ -1064,7 +1064,7 @@ const CategoryMegaMenu = () => {
                                               <button
                                                 key={`${o.id}-${item}-${i}`}
                                                 onClick={(e) => handleCategoryClick(String(searchTerm).toLowerCase(), searchTerm, e)}
-                                                className="flex items-center justify-center px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-red-600 hover:text-white transition-all duration-300 font-bold text-xs shadow-sm border border-gray-100 hover:border-red-600 hover:shadow-lg active:scale-95"
+                                                className="flex items-center justify-center px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-[#941007] hover:text-white transition-all duration-300 font-bold text-xs shadow-sm border border-gray-100 hover:border-[#941007] hover:shadow-lg active:scale-95"
                                               >
                                                 {item}
                                               </button>

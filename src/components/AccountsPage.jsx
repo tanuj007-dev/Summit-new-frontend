@@ -1,132 +1,24 @@
-// import React, { useEffect, useState } from "react";
-// import { FaPencilAlt, FaMapMarkerAlt } from "react-icons/fa";
-// import { useNavigate } from "react-router-dom";
-// import axios from "../axiosConfig";
-
-// const AccountsPage = () => {
-//   const [userInfo, setUserInfo] = useState(null);
-//   const [msg, setMsg] = useState("");
-//   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-//   const navigate = useNavigate();
-
-//   /* ------------------ DATA NORMALIZATION ------------------ */
-//   const normalizeUserData = (apiData) => {
-//     // Handle different possible data structures from /api/me
-//     if (!apiData) return null;
-    
-//     // If the API returns data in a nested structure
-//     if (apiData.data && typeof apiData.data === 'object') {
-//       return {
-//         name: apiData.data.name || apiData.data.user?.name || 'User',
-//         email: apiData.data.email || apiData.data.user?.email || 'No email',
-//         contact: apiData.data.contact || apiData.data.phone || apiData.data.mobile || 'No contact',
-//         address: apiData.data.address || apiData.data.user?.address || 'No address set'
-//       };
-//     }
-    
-//     // If the API returns flat data structure
-//     return {
-//       name: apiData.name || apiData.user?.name || 'User',
-//       email: apiData.email || apiData.user?.email || 'No email',
-//       contact: apiData.contact || apiData.phone || apiData.mobile || 'No contact',
-//       address: apiData.address || apiData.user?.address || 'No address set'
-//     };
-//   };
-
-//   useEffect(() => {
-//     const checkAuthAndFetchUserInfo = async () => {
-//       try {
-//         const token = localStorage.getItem("auth_token");
-        
-//         if (!token) {
-//           throw new Error("No auth token - please login first");
-//         }
-        
-//         // Call /api/me with Bearer token
-//         const response = await axios.get("/api/me", {
-//           headers: {
-//             "Authorization": `Bearer ${token}`,
-//             "Content-Type": "application/json",
-//           },
-//           withCredentials: true,
-//         });
-        
-//         console.log("User info from /api/me:", response.data);
-//         const normalizedData = normalizeUserData(response.data);
-//         console.log("Normalized user data:", normalizedData);
-//         setUserInfo(normalizedData);
-//       } catch (error) {
-//         console.error("Authentication failed:", error);
-//         console.error("Error response:", error.response);
-//         setMsg("Failed to fetch user information. Please login again.");
-//         // Redirect to login after a delay
-//         setTimeout(() => {
-//           navigate("/login?redirectTo=" + encodeURIComponent("/accountsPage"));
-//         }, 2000);
-//       } finally {
-//         setIsCheckingAuth(false);
-//       }
-//     };
-
-//     checkAuthAndFetchUserInfo();
-//   }, [navigate]);
-
-//   if (isCheckingAuth) {
-//     return <p>Checking authentication...</p>;
-//   }
-
-//   if (msg) {
-//     return <p style={{ color: "red" }}>{msg}</p>;
-//   }
-
-//   if (!userInfo) {
-//     return <p>Loading your info...</p>;
-//   }
-
-//   return (
-//     <div className="">
-//       <div className="flex items-center">
-//         <div>
-//           <img src="/asset/images/user.png" alt="" className="w-22 mt-1" />
-//         </div>
-//         <div>
-//           <h2 className="text-base font-semibold text-gray-600">
-//             Hey, {userInfo.name}
-//           </h2>
-//           <p className="flex text-gray-500 text-sm">
-//             Email: {userInfo.email}, Phone: {userInfo.contact}{" "}
-//             <FaPencilAlt className="ml-3" />
-//           </p>
-//         </div>
-//       </div>
-//       <div className="border-t border-gray-300 mt-2 w-full" />
-//       <div className="py-5">
-//         <div className=" border border-gray-300 bg-gray-100 w-1/3 h-18 rounded-md flex flex-col items-center justify-center">
-//           <p className="flex items-center text-gray-500">
-//             <FaMapMarkerAlt className="text-gray-400" /> {userInfo.address}
-//           </p>
-//         </div>
-//         <div className="border border-gray-300 bg-gray-100 w-1/6 mt-5 rounded-md flex flex-col items-center justify-center">
-//           <p className="flex items-center text-gray-500 py-1 text-sm ">
-//             + ADD NEW ADDRESS
-//           </p>
-//         </div>
-//       </div>
-
-//       <div className="border-t border-gray-300 mt-2 w-full" />
-//     </div>
-//   );
-// };
-
-// export default AccountsPage;
 import React, { useEffect, useState } from "react";
-import { FaUser, FaArrowLeft, FaShoppingBag, FaAddressBook, FaCreditCard, FaLock, FaSignOutAlt, FaTruck, FaHeadset, FaWallet, FaCamera, FaGlobe, FaUsers, FaQuestionCircle, FaChevronRight } from "react-icons/fa";
+import { 
+  FaUser, 
+  FaArrowLeft, 
+  FaShoppingBag, 
+  FaCreditCard, 
+  FaSignOutAlt, 
+  FaGlobe, 
+  FaUsers, 
+  FaQuestionCircle, 
+  FaChevronRight,
+  FaEdit,
+  FaShieldAlt
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AccountsPage = () => {
   const [userInfo, setUserInfo] = useState(null);
-  const [msg, setMsg] = useState("");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showEditForm, setShowEditForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -141,67 +33,50 @@ const AccountsPage = () => {
 
   const normalizeUserData = (apiData) => {
     if (!apiData) return null;
-    if (apiData.data && typeof apiData.data === 'object') {
-      return {
-        name: apiData.data.name || apiData.data.user?.name || 'User',
-        firstName: (apiData.data.name || apiData.data.user?.name || '').split(' ')[0] || '',
-        lastName: (apiData.data.name || apiData.data.user?.name || '').split(' ').slice(1).join(' ') || '',
-        email: apiData.data.email || apiData.data.user?.email || '',
-        contact: apiData.data.contact || apiData.data.phone || apiData.data.mobile || '',
-        address: apiData.data.address || apiData.data.user?.address || 'No address set',
-        gender: apiData.data.gender || 'Male'
-      };
-    }
+    const user = apiData.data || apiData.user || apiData;
     return {
-      name: apiData.name || apiData.user?.name || 'User',
-      firstName: (apiData.name || apiData.user?.name || '').split(' ')[0] || '',
-      lastName: (apiData.name || apiData.user?.name || '').split(' ').slice(1).join(' ') || '',
-      email: apiData.email || apiData.user?.email || '',
-      contact: apiData.contact || apiData.phone || apiData.mobile || '',
-      address: apiData.address || apiData.user?.address || 'No address set',
-      gender: apiData.gender || 'Male'
+      name: user.name || 'User',
+      firstName: (user.name || '').split(' ')[0] || '',
+      lastName: (user.name || '').split(' ').slice(1).join(' ') || '',
+      email: user.email || '',
+      contact: user.contact || user.phone || user.mobile || '',
+      address: user.address || 'No address set',
+      gender: user.gender || 'Male'
     };
   };
 
   useEffect(() => {
-    const checkAuthAndFetchUserInfo = async () => {
+    const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem("auth_token");
-        if (!token) throw new Error("No auth token - please login first");
+        if (!token) throw new Error("No token");
         const response = await axios.get("/api/me", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: { "Authorization": `Bearer ${token}` },
           withCredentials: true,
         });
-        const normalizedData = normalizeUserData(response.data);
-        setUserInfo(normalizedData);
+        const normalized = normalizeUserData(response.data);
+        setUserInfo(normalized);
         setFormData({
-          firstName: normalizedData.firstName,
-          lastName: normalizedData.lastName,
-          email: normalizedData.email,
-          contact: normalizedData.contact,
-          gender: normalizedData.gender
+          firstName: normalized.firstName,
+          lastName: normalized.lastName,
+          email: normalized.email,
+          contact: normalized.contact,
+          gender: normalized.gender
         });
       } catch (error) {
-        setMsg("Failed to fetch user information. Please login again.");
-        setTimeout(() => {
-          navigate("/login?redirectTo=" + encodeURIComponent("/accountsPage"));
-        }, 2000);
+        console.error("Auth error:", error);
+        toast.error("Session expired. Please login again.");
+        setTimeout(() => navigate("/login"), 2000);
       } finally {
         setIsCheckingAuth(false);
       }
     };
-    checkAuthAndFetchUserInfo();
+    fetchUserInfo();
   }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleUpdateProfile = async () => {
@@ -214,16 +89,19 @@ const AccountsPage = () => {
         contact: formData.contact,
         gender: formData.gender
       }, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Authorization": `Bearer ${token}` },
         withCredentials: true,
       });
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
+      setUserInfo(prev => ({ 
+        ...prev, 
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        contact: formData.contact 
+      }));
       setShowEditForm(false);
     } catch (error) {
-      alert("Failed to update profile. Please try again.");
+      toast.error("Failed to update profile.");
     } finally {
       setIsSaving(false);
     }
@@ -231,218 +109,225 @@ const AccountsPage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
-    navigate("/login");
+    toast.info("Logged out successfully");
+    setTimeout(() => navigate("/login"), 1000);
   };
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500 animate-pulse font-medium">Checking authentication...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#941007]/20 border-t-[#941007] rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium">Loading your profile...</p>
+        </div>
       </div>
     );
   }
 
-  if (msg) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-red-500 font-medium bg-red-50 px-6 py-3 rounded-lg shadow-sm border border-red-100">{msg}</p>
-      </div>
-    );
-  }
-
-  if (!userInfo) return null;
-
-  // Menu items for the profile
-  const menuItems = [
-    { icon: FaUser, label: 'Edit Profile', action: () => setShowEditForm(true) },
-    { icon: FaCreditCard, label: 'Payment Method', action: () => navigate('/payment-methods') },
-    { icon: FaGlobe, label: 'Language', action: () => navigate('/language') },
-    { icon: FaShoppingBag, label: 'Order History', action: () => navigate('/orders') },
-    { icon: FaUsers, label: 'Invite Friends', action: () => navigate('/invite-friends') },
-    { icon: FaQuestionCircle, label: 'Help Center', action: () => navigate('/help-center') },
+  const sections = [
+    {
+      title: "Account Settings",
+      items: [
+        { icon: FaUser, label: 'Edit Profile', desc: 'Update your personal details', action: () => setShowEditForm(true), color: 'text-blue-500', bg: 'bg-blue-50' },
+        { icon: FaCreditCard, label: 'Payment Methods', desc: 'Manage your cards and wallets', action: () => navigate('/payment-methods'), color: 'text-purple-500', bg: 'bg-purple-50' },
+        { icon: FaGlobe, label: 'Language', desc: 'English (US)', action: () => navigate('/language'), color: 'text-emerald-500', bg: 'bg-emerald-50' },
+      ]
+    },
+    {
+      title: "Activity",
+      items: [
+        { icon: FaShoppingBag, label: 'Order History', desc: 'View and track your orders', action: () => navigate('/orders'), color: 'text-orange-500', bg: 'bg-orange-50' },
+        { icon: FaUsers, label: 'Invite Friends', desc: 'Get $20 for every referral', action: () => navigate('/invite-friends'), color: 'text-pink-500', bg: 'bg-pink-50' },
+      ]
+    },
+    {
+      title: "Support & Security",
+      items: [
+        { icon: FaShieldAlt, label: 'Privacy & Security', desc: 'Manage password and 2FA', action: () => navigate('/security'), color: 'text-indigo-500', bg: 'bg-indigo-50' },
+        { icon: FaQuestionCircle, label: 'Help Center', desc: 'FAQs and contact support', action: () => navigate('/help-center'), color: 'text-cyan-500', bg: 'bg-cyan-50' },
+      ]
+    }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-[#F9FAFB] pb-20">
+      <ToastContainer position="top-right" autoClose={2000} />
       
-      {/* Header with Back Button */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div className="flex items-center gap-4 px-4 sm:px-6 lg:px-8 py-4">
-          <button 
-            onClick={() => navigate(-1)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <FaArrowLeft size={20} className="text-gray-700" />
-          </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Profile</h1>
-        </div>
+      {/* Dynamic Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#941007]/5 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] -left-[10%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        
-        {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 text-center mb-6">
-          {/* Profile Image with Status */}
-          <div className="relative inline-block mb-6">
-            <div className="w-28 sm:w-32 h-28 sm:h-32 rounded-full overflow-hidden border-4 border-gray-50 shadow-md">
-              <img 
-                src="/asset/images/user.webp" 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-                onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=" + userInfo.name }}
-              />
-            </div>
-            <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white shadow-md"></div>
-          </div>
+      {/* Sticky Header */}
+      <nav className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+          <button 
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-all active:scale-90"
+          >
+            <FaArrowLeft className="text-gray-600" />
+          </button>
+          <span className="font-bold text-gray-900">Account</span>
+          <button 
+            onClick={handleLogout}
+            className="p-2 text-[#941007] hover:bg-red-50 rounded-full transition-all active:scale-90"
+            title="Logout"
+          >
+            <FaSignOutAlt />
+          </button>
+        </div>
+      </nav>
 
-          {/* User Info */}
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{userInfo.name}</h2>
-          <p className="text-gray-600 text-sm sm:text-base">{userInfo.email}</p>
+      <main className="relative z-10 max-w-2xl mx-auto px-4 pt-8 text-left">
+        
+        {/* Premium Profile Card */}
+        <div className="relative group mb-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#941007]/10 to-blue-500/10 rounded-[32px] blur-2xl opacity-50 transition-opacity group-hover:opacity-100" />
+          <div className="relative bg-white/70 backdrop-blur-xl border border-white/40 rounded-[32px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center overflow-hidden">
+            
+            {/* Online Status Avatar */}
+            <div className="relative inline-block mb-4">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-tr from-[#941007] to-red-400">
+                <div className="w-full h-full rounded-full bg-white p-1">
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userInfo?.name)}&background=f3f4f6&color=374151&bold=true&size=128`} 
+                    alt="Avatar" 
+                    className="w-full h-full rounded-full object-cover shadow-inner"
+                  />
+                </div>
+              </div>
+              <span className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full shadow-sm animate-pulse" />
+            </div>
+
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">{userInfo?.name}</h2>
+            <p className="text-gray-500 font-medium text-sm mb-6">{userInfo?.email}</p>
+            
+            <button 
+              onClick={() => setShowEditForm(true)}
+              className="inline-flex items-center gap-2 px-5 py-2 bg-gray-900 text-white rounded-full text-sm font-bold shadow-xl shadow-gray-200 hover:bg-black transition-all active:scale-95"
+            >
+              <FaEdit className="text-xs" /> Edit Profile
+            </button>
+          </div>
         </div>
 
-        {/* Menu List */}
-        <div className="space-y-2 mb-8">
-          {menuItems.map((item, index) => (
-            <button
-              key={index}
-              onClick={item.action}
-              className="w-full flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition-all group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                  <item.icon size={20} className="text-gray-700 sm:text-xl" />
-                </div>
-                <span className="text-gray-800 font-medium text-sm sm:text-base">{item.label}</span>
+        {/* Account Options Sections */}
+        <div className="space-y-10">
+          {sections.map((section, sIdx) => (section.items && section.items.length > 0) && (
+            <div key={sIdx} className="space-y-4">
+              <h3 className="px-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+                {section.title}
+              </h3>
+              <div className="space-y-3">
+                {section.items.map((item, iIdx) => (
+                  <button
+                    key={iIdx}
+                    onClick={item.action}
+                    className="w-full flex items-center justify-between p-4 bg-white border border-gray-100 rounded-[24px] shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all group"
+                  >
+                    <div className="flex items-center gap-4 text-left">
+                      <div className={`w-12 h-12 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110`}>
+                        <item.icon size={20} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-sm sm:text-base">{item.label}</h4>
+                        <p className="text-gray-400 text-xs sm:text-sm font-medium">{item.desc}</p>
+                      </div>
+                    </div>
+                    <div className="p-2 bg-gray-50 rounded-full text-gray-300 group-hover:text-gray-900 group-hover:bg-gray-100 transition-all">
+                      <FaChevronRight size={12} />
+                    </div>
+                  </button>
+                ))}
               </div>
-              <FaChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
-            </button>
+            </div>
           ))}
         </div>
 
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all group mb-8"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
-              <FaSignOutAlt size={20} className="text-red-600 sm:text-xl" />
-            </div>
-            <span className="text-red-600 font-medium text-sm sm:text-base">Logout</span>
-          </div>
-          <FaChevronRight size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
-        </button>
-
-        {/* Bottom Features - Desktop Only */}
-        <div className="hidden sm:grid grid-cols-3 gap-8 border-t border-gray-200 pt-12">
-          <div className="flex flex-col items-center text-center p-4">
-            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-              <FaTruck className="text-2xl text-green-600" />
-            </div>
-            <h4 className="font-bold text-gray-800">Free Shipping</h4>
-            <p className="text-sm text-gray-500 mt-1">On all orders above $99</p>
-          </div>
-          <div className="flex flex-col items-center text-center p-4">
-            <div className="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mb-4">
-              <FaWallet className="text-2xl text-yellow-600" />
-            </div>
-            <h4 className="font-bold text-gray-800">Flexible Payment</h4>
-            <p className="text-sm text-gray-500 mt-1">Multiple secure payment options</p>
-          </div>
-          <div className="flex flex-col items-center text-center p-4">
-            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-              <FaHeadset className="text-2xl text-green-600" />
-            </div>
-            <h4 className="font-bold text-gray-800">24x7 Support</h4>
-            <p className="text-sm text-gray-500 mt-1">Get help anytime, anywhere</p>
-          </div>
+        {/* Footer */}
+        <div className="mt-12 pt-8 border-t border-gray-100 text-center">
+          <p className="text-gray-400 text-xs font-medium mb-4 uppercase tracking-widest">Summit Home Appliances v2.4.0</p>
+          <button 
+            onClick={handleLogout}
+            className="px-8 py-3 text-[#941007] font-bold text-sm rounded-full hover:bg-red-50 transition-colors active:scale-95"
+          >
+            Sign Out
+          </button>
         </div>
-      </div>
+      </main>
 
-      {/* Edit Profile Modal */}
+      {/* Glass Edit Modal */}
       {showEditForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-lg sm:shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-bold text-gray-900">Edit Profile</h2>
-              <button 
-                onClick={() => setShowEditForm(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div 
+            className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" 
+            onClick={() => setShowEditForm(false)} 
+          />
+          <div className="relative w-full sm:max-w-md bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+            <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between">
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">Edit Details</h2>
+              <button onClick={() => setShowEditForm(false)} className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900">
                 ✕
               </button>
             </div>
 
-            <div className="p-6 max-h-[80vh] overflow-y-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs sm:text-sm font-semibold text-gray-700">First Name *</label>
+            <div className="p-8 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 pl-1">First Name</label>
                   <input 
-                    type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
+                    className="w-full px-4 py-3 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#941007] focus:bg-white outline-none transition-all text-sm font-semibold"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Last Name *</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 pl-1">Last Name</label>
                   <input 
-                    type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
+                    className="w-full px-4 py-3 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#941007] focus:bg-white outline-none transition-all text-sm font-semibold"
                   />
-                </div>
-                <div className="flex flex-col gap-2 sm:col-span-2">
-                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Email Address *</label>
-                  <input 
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
-                  />
-                </div>
-                <div className="flex flex-col gap-2 sm:col-span-2">
-                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Phone Number *</label>
-                  <input 
-                    type="text"
-                    name="contact"
-                    value={formData.contact}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all text-sm"
-                  />
-                </div>
-                <div className="flex flex-col gap-2 sm:col-span-2">
-                  <label className="text-xs sm:text-sm font-semibold text-gray-700">Gender *</label>
-                  <select 
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-100 focus:border-green-500 outline-none transition-all appearance-none bg-white text-sm"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
                 </div>
               </div>
 
-              <div className="mt-8 flex gap-3">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 pl-1">Email Address</label>
+                <input 
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#941007] focus:bg-white outline-none transition-all text-sm font-semibold"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 pl-1">Phone Number</label>
+                <input 
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#941007] focus:bg-white outline-none transition-all text-sm font-semibold"
+                />
+              </div>
+
+              <div className="pt-4 flex gap-3">
                 <button 
                   onClick={() => setShowEditForm(false)}
-                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-full hover:bg-gray-50 transition-all text-sm"
+                  className="flex-1 py-4 text-gray-500 font-bold text-sm hover:bg-gray-50 rounded-2xl transition-all"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleUpdateProfile}
                   disabled={isSaving}
-                  className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold rounded-full shadow-lg transition-transform active:scale-95 text-sm"
+                  className="flex-[2] py-4 bg-[#941007] text-white font-bold text-sm rounded-2xl shadow-xl shadow-red-100 hover:bg-black transition-all disabled:bg-gray-300 active:scale-95"
                 >
-                  {isSaving ? "Saving..." : "Save"}
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </div>

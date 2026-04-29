@@ -1,7 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight, FaArrowRight, FaTrophy } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaArrowRight, FaTrophy, FaShoppingCart, FaCartPlus } from "react-icons/fa";
 import { CartContext } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
 import axiosInstance from "../axiosConfig";
 
 /* -------------------- IMAGE OPTIMIZATION -------------------- */
@@ -19,7 +23,7 @@ const Trends = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [trendingProductIds, setTrendingProductIds] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(5);
 
@@ -33,8 +37,10 @@ const Trends = () => {
   const [touchStartTime, setTouchStartTime] = useState(0);
 
   const containerRef = useRef(null);
-  const minSwipeDistance = 20; // Reduced for easier swiping
-  const velocityThreshold = 0.3; // pixels per millisecond
+  const touchStartXRef = useRef(0);
+  const minSwipeDistance = 20;
+  const velocityThreshold = 0.3;
+  const dragThreshold = 8; // px movement before treating as drag (keeps button taps as clicks)
 
   // Image loading optimization states
   const [imageLoadingStates, setImageLoadingStates] = useState({});
@@ -62,15 +68,16 @@ const Trends = () => {
   }, []);
 
   const { handleAddToCart, handleBuyNow } = useContext(CartContext);
+  const { addToWishlist, isInWishlist } = useWishlist();
 
   const categories = [
-    "all",
-    "cookware",
-    "pressure cooker",
-    "steam cookware",
-    "gas stove",
-    "gas tandoor",
-    "mixer grinder",
+    "All",
+    "Cookware",
+    "Pressure Cooker",
+    "Steam Cookware",
+    "Gas Stove",
+    "Gas Tandoor",
+    "Mixer Grinder",
   ];
 
   // Pressure Cooker: show only these product_id values when filter is active
@@ -237,9 +244,9 @@ const Trends = () => {
                   const base = import.meta.env.VITE_APP_API_BASE_URL ?? "https://api.summithomeappliance.com";
                   const fallback = await axios.get(`${base}/api/products/view`, { params: { search: "all" }, withCredentials: true });
                   viewData = parseViewBody(fallback.data);
-                } catch (_) {}
+                } catch (_) { }
               }
-            } catch (_) {}
+            } catch (_) { }
             const viewByProductId = new Map();
             const hasImageOrPrice = (obj) =>
               (obj?.image || obj?.images?.length || obj?.variants?.[0]?.image) ||
@@ -372,11 +379,13 @@ const Trends = () => {
     fetchProducts();
   }, []);
 
+
   /* ---------------- FILTERING ---------------- */
   const filteredProducts = products.filter(p => {
-    if (selectedCategory === 'all') return true;
+    if (selectedCategory.toLowerCase() === "all") return true;
     const cat = selectedCategory.toLowerCase();
 
+    
     // Pressure cooker: render only products with these product_id values
     if (cat === 'pressure cooker') {
       const pid = p.product?.product_id ?? p.id ?? '';
@@ -434,50 +443,53 @@ const Trends = () => {
     return 0;
   });
 
-  /* ---------------- SLIDER LOGIC ---------------- */
-  const maxIndex = Math.max(0, filteredProducts.length - itemsPerView);
+  /* ---------------- SLIDER LOGIC (native scroll like SmartCookerFinder) ---------------- */
+  const scrollContainerRef = useRef(null);
 
   const nextSlide = () => {
-    setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
-  };
-  const prevSlide = () => {
-    setCurrentIndex(prev => (prev <= 0 ? maxIndex : prev - 1));
+    const el = scrollContainerRef.current;
+    if (!el || filteredProducts.length <= itemsPerView) return;
+    el.scrollBy({ left: el.clientWidth, behavior: "smooth" });
   };
 
-  // Touch handlers for mobile swipe
+  const prevSlide = () => {
+    const el = scrollContainerRef.current;
+    if (!el || filteredProducts.length <= itemsPerView) return;
+    el.scrollBy({ left: -el.clientWidth, behavior: "smooth" });
+  };
+
+  // Touch handlers – only start drag after threshold so button taps register as clicks
   const handleTouchStart = (e) => {
-    setTouchStartX(e.touches[0].clientX);
-    setTouchEndX(e.touches[0].clientX);
+    const x = e.touches[0].clientX;
+    touchStartXRef.current = x;
+    setTouchStartX(x);
+    setTouchEndX(x);
     setTouchStartTime(Date.now());
-    setIsSwiping(true);
     setDragOffset(0);
   };
 
   const handleTouchMove = (e) => {
-    if (!isSwiping) return;
     const currentX = e.touches[0].clientX;
+    const startX = touchStartXRef.current;
+    const move = currentX - startX;
+    if (!isSwiping) {
+      if (Math.abs(move) > dragThreshold) setIsSwiping(true);
+      else return;
+    }
+    e.preventDefault();
     setTouchEndX(currentX);
-    const offset = (currentX - touchStartX) * 1.2; // 1.2x multiplier for more sensitive drag
-    setDragOffset(offset);
+    setDragOffset(move);
   };
 
   const handleTouchEnd = () => {
     if (!isSwiping) return;
-
     const distance = touchStartX - touchEndX;
     const timeElapsed = Date.now() - touchStartTime;
-    const velocity = Math.abs(distance) / timeElapsed;
-
-    // Check velocity for fast swipes or distance for slower swipes
+    const velocity = timeElapsed > 0 ? Math.abs(distance) / timeElapsed : 0;
     const isLeftSwipe = distance > minSwipeDistance || (velocity > velocityThreshold && distance > 5);
     const isRightSwipe = distance < -minSwipeDistance || (velocity > velocityThreshold && distance < -5);
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-
+    if (isLeftSwipe) nextSlide();
+    else if (isRightSwipe) prevSlide();
     setTouchStartX(0);
     setTouchEndX(0);
     setTouchStartTime(0);
@@ -540,34 +552,41 @@ const Trends = () => {
 
 
   return (
-    <section className="w-full bg-white py-16 px-4 sm:px-6 lg:px-12 relative overflow-hidden">
+    <section className="font-gotham w-full bg-white py-16 px-4 sm:px-6 lg:px-12 relative overflow-hidden">
       {/* Background Decor (Optional) */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-50 -z-10 translate-x-1/2 -translate-y-1/2"></div>
 
-      {/* ===== Header ===== */}
-      <div className="flex flex-col items-center text-center mb-12">
-        <span className="text-[#B91508] font-bold text-sm tracking-widest uppercase mb-2">Our Best Sellers</span>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
-          Trending Kitchen Essentials
+      {/* ===== Header (mobile-first type scale + spacing) ===== */}
+      <div className="text-center mb-10 sm:mb-14 md:mb-16 px-3 sm:px-4 max-w-5xl mx-auto">
+        <span className="inline-block text-[#941007] text-[11px] sm:text-sm font-bold tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-2 opacity-90 px-1">
+          Our Best Sellers
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-black tracking-tight text-balance max-w-[min(100%,40rem)] mx-auto mb-3 sm:mb-0 leading-[1.12] sm:leading-tight px-1">
+          Trending Kitchen Appliances
         </h2>
-        <div className="w-16 h-1 bg-[#B91508] rounded-full"></div>
+        <p className="text-[#636365] text-[13px] sm:text-base md:text-[18px] font-semibold max-w-md sm:max-w-2xl mx-auto px-2 sm:px-4 mb-2 sm:mb-0 leading-snug">
+          Quality Built for the Modern Chef
+        </p>
+        <p className="text-gray-400 text-[12px] sm:text-[14px] md:text-[16px] max-w-3xl sm:max-w-4xl mx-auto leading-relaxed px-2 sm:px-4 text-pretty">
+          Elevating every meal with precision, durability, and unmatched performance.
+        </p>
       </div>
 
       {/* ===== Minimal Tabs ===== */}
       <div className="w-full overflow-x-auto scrollbar-hide mb-8 sm:mb-10 px-4 -mx-4 sm:mx-0 sm:px-0">
         <div className="flex flex-nowrap sm:flex-wrap items-center sm:justify-center gap-3 sm:gap-4 min-w-max sm:min-w-0 px-1 sm:px-0">
           {categories.map((cat, i) => {
-            const active = selectedCategory === cat;
+            const active = selectedCategory.toLowerCase() === cat.toLowerCase();
             return (
               <button
                 key={i}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 transform flex-shrink-0 
+                className={`font-arial-tabs px-5 py-2.5 rounded-full transition-all duration-300 flex-shrink-0
                     ${active
-                    ? "bg-[#B91508] text-white shadow-lg shadow-red-200 scale-105"
+                    ? "bg-[#941007] text-white shadow-[0_4px_14px_rgba(148,16,7,0.25)] border-0"
                     : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"}`}
               >
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                {cat}
               </button>
             )
           })}
@@ -579,72 +598,64 @@ const Trends = () => {
 
         {loading ? (
           <div className="h-96 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B91508]"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#941007]"></div>
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-gray-400">
             <p>No products found in this category.</p>
-            <button onClick={() => setSelectedCategory('all')} className="mt-4 text-[#B91508] underline">View All</button>
+            <button type="button" onClick={() => setSelectedCategory("All")} className="mt-4 text-[#941007] underline">View All</button>
           </div>
         ) : (
           <>
             {/* Navigation Arrows (Desktop) */}
             <button
               onClick={prevSlide}
-              className="hidden lg:flex absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#B91508] hover:scale-110 transition-all duration-300"
+              className="hidden lg:flex absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#941007] hover:scale-110 transition-all duration-300"
             >
               <FaChevronLeft size={18} />
             </button>
             <button
               onClick={nextSlide}
-              className="hidden lg:flex absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#B91508] hover:scale-110 transition-all duration-300"
+              className="hidden lg:flex absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#941007] hover:scale-110 transition-all duration-300"
             >
               <FaChevronRight size={18} />
             </button>
 
-            {/* Slider Window */}
+            {/* Slider – native scroll + snap (same as SmartCookerFinder on mobile) */}
             <div
-              className="overflow-hidden py-4 -mx-4 px-4"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseLeave}
-              style={{ 
-                touchAction: 'pan-y pinch-zoom',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                userSelect: 'none'
+              ref={scrollContainerRef}
+              className="w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory py-2 -mx-1 sm:-mx-4 px-1 sm:px-4 scrollbar-hide"
+              style={{
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none"
+              }}
+              onScroll={() => {
+                const el = scrollContainerRef.current;
+                if (!el) return;
+                const pageWidth = el.clientWidth;
+                const idx = pageWidth > 0 ? Math.round(el.scrollLeft / pageWidth) : 0;
+                const next = Math.min(Math.max(0, idx), Math.max(0, filteredProducts.length - itemsPerView));
+                setCurrentIndex((prev) => (prev === next ? prev : next));
               }}
             >
               <div
                 className="flex"
-                style={{
-                  transform: `translateX(calc(-${currentIndex * (100 / itemsPerView)}% + ${dragOffset}px))`,
-                  transition: (isDragging || isSwiping) ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                  willChange: 'transform'
-                }}
+                style={{ width: `${(100 * filteredProducts.length) / itemsPerView}%` }}
               >
                 {filteredProducts.map((item, index) => (
                   <div
                     key={item.id}
-                    className={`flex-shrink-0 px-2 sm:px-3 ${itemsPerView === 5
-                      ? "w-1/5"
-                      : itemsPerView === 3
-                        ? "w-1/3"
-                        : itemsPerView === 2
-                          ? "w-1/2" // Mobile 2 cols
-                          : "w-full"
-                      }`}
+                    className="shrink-0 px-2 sm:px-3 snap-start"
+                    style={{ flexBasis: `${100 / filteredProducts.length}%` }}
                   >
-                    {/* CARD */}
-                    <div className="group/card flex flex-col h-full bg-white transition-transform duration-300 hover:shadow-lg rounded-lg overflow-hidden border border-transparent hover:border-gray-200">
+                    {/* CARD — mobile matches SmartCookerFinder reference (vertical tile + pill CTAs) */}
+                    <div className="group/card flex flex-col h-full bg-white transition-shadow duration-300 hover:shadow-lg rounded-2xl sm:rounded-lg overflow-hidden border border-gray-100 sm:border-transparent shadow-sm hover:border-gray-200">
 
                       {/* IMAGE SECTION */}
-                      <div className="relative aspect-square w-full bg-[#FAFAFA] overflow-hidden">
-                        <Link to={`/product-details/${item.id}`} className="block w-full h-full">
-                          <div className="w-full h-full relative p-4 flex items-center justify-center">
+                      <div className="relative aspect-square w-full bg-[#FAFAFA] overflow-hidden border-b border-gray-100">
+                        <Link to={`/product-details/${item.id || item.sno || item.product_id || item.detail_id}`} className="block w-full h-full">
+                          <div className="w-full h-full relative p-3 sm:p-4 flex items-center justify-center">
                             {!imageLoadingStates[item.id] && (
                               <div className="absolute inset-0 bg-gray-100 animate-pulse" />
                             )}
@@ -656,45 +667,64 @@ const Trends = () => {
                               className={`w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105 ${imageLoadingStates[item.id] ? 'opacity-100' : 'opacity-0'}`}
                               onLoad={() => handleImageLoad(item.id)}
                               onError={() => handleImageError(item.id)}
-                            />
+                           />
                           </div>
                         </Link>
+                        {/* Wishlist Icon */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addToWishlist(item.product || item);
+                          }}
+                          className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform duration-300 group-hover/card:bg-white"
+                        >
+                          <FontAwesomeIcon
+                            icon={isInWishlist(item.id || item.product_id) ? solidHeart : regularHeart}
+                            className={isInWishlist(item.id || item.product_id) ? "text-red-600" : "text-gray-400"}
+                            style={{ fontSize: "14px" }}
+                          />
+                        </button>
+
                       </div>
 
-                      {/* CONTENT SECTION */}
-                      <div className="p-3 flex flex-col flex-grow text-left">
+                      {/* CONTENT SECTION – product details: Gotham only */}
+                      <div className="font-gotham p-3 flex flex-col flex-grow text-left">
 
                         {/* Title */}
-                        <h3 className="font-bold text-gray-900 text-[13px] sm:text-[15px] leading-snug line-clamp-2 min-h-[2.5rem] mb-1">
+                        <p className="font-bold font-gotham text-gray-900 text-xs sm:text-[18px] leading-snug line-clamp-2 min-h-0 sm:min-h-[2.5rem] mb-1.5 uppercase tracking-tight sm:normal-case sm:tracking-normal">
                           {item.title}
-                        </h3>
+                        </p>
 
                         {/* Best Seller / Stats */}
-                        <div className="flex items-center gap-1.5 mb-1.5 text-[10px] sm:text-xs text-gray-500">
-                          <span className="flex items-center gap-1 font-bold text-[#B91508]">
-                            <FaTrophy className="text-[#B91508]" /> BESTSELLER
+                        <div className="flex items-center gap-1 sm:gap-1.5 mb-2 text-[9px] sm:text-xs text-gray-500 flex-wrap">
+                          <span className="flex items-center gap-0.5 font-bold text-[#941007] uppercase tracking-wide shrink-0">
+                            <FaTrophy className="text-[#941007] shrink-0" size={10} />
+                            BESTSELLER
                           </span>
-                          <span className="hidden sm:inline w-0.5 h-3 bg-gray-300"></span>
-                          <span className="truncate hidden sm:block">1k+ bought</span>
+                          <span className="text-gray-300 select-none shrink-0" aria-hidden>
+                            |
+                          </span>
+                          <span className="truncate text-gray-500">1k+ bought</span>
                         </div>
 
                         {/* Reviews */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex text-amber-500 text-[10px] sm:text-sm">
+                        <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                          <div className="flex text-amber-500 text-[11px] sm:text-sm">
                             {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
                           </div>
-                          <span className="text-[10px] sm:text-xs text-gray-500 pt-0.5">20 Reviews</span>
+                          <span className="text-[9px] sm:text-xs text-gray-500 pt-0.5">20 Reviews</span>
                         </div>
 
                         {/* Price & Actions Section: STACKED for Responsive */}
-                        <div className="mt-auto pt-2 border-t border-gray-50 flex flex-col gap-2">
+                        <div className="mt-auto pt-2 border-t border-gray-100 sm:border-gray-50 flex flex-col gap-2">
 
                           {/* Row 1: Prices & EMI Text */}
                           <div className="flex justify-between items-baseline">
                             <div className="flex flex-col">
                               <div className="flex items-baseline gap-1">
-                                <span className="text-base sm:text-lg font-black text-gray-900">
-                                  {(() => {
+                                <span className="text-base sm:text-lg font-black text-gray-900 tracking-tight">
+                                  {/* {(() => {
                                     const p = item.product;
                                     const raw =
                                       item.price ??
@@ -705,9 +735,10 @@ const Trends = () => {
                                       (p?.variants?.length ? p.variants[0]?.price : null);
                                     const displayPrice = parsePrice(raw);
                                     return displayPrice != null ? `₹${displayPrice.toLocaleString()}` : "₹—";
-                                  })()}
+                                  })()} */}
+                                  N/A
                                 </span>
-                                {(() => {
+                                {/* {(() => {
                                   const p = item.product;
                                   const displayPrice = parsePrice(item.oldPrice ?? p?.original_price ?? p?.mrp);
                                   const mainPrice = item.price ?? (item.product && getProductPrice(item.product));
@@ -717,33 +748,51 @@ const Trends = () => {
                                       ₹{displayPrice.toLocaleString()}
                                     </span>
                                   );
-                                })()}
+                                })()} */}
                               </div>
-                              <span className="text-[9px] sm:text-[10px] text-gray-500 leading-none">(incl. taxes)</span>
+                              <span className="text-[9px] sm:text-[10px] text-gray-500 leading-none">{/* (incl. taxes) */}</span>
                             </div>
 
                             <div className="text-right">
                               <span className="block text-[10px] sm:text-[11px] font-semibold text-gray-800">
-                                {(() => {
+                                {/* {(() => {
                                   const p = item.product;
                                   const raw = item.price ?? p?.price ?? p?.selling_price ?? p?.mrp ?? p?.detail_price ?? (p?.variants?.length ? p.variants[0]?.price : null);
                                   const num = parsePrice(raw);
                                   return num != null ? `or ₹${Math.round(num / 4)}/mo` : "";
-                                })()}
+                                })()} */}
                               </span>
                             </div>
                           </div>
 
-                          {/* Row 2: Buttons (Side by Side) */}
-                          <div className="flex items-center gap-2">
+                          {/* Row 2: Buttons — mobile: icon-only cart + stacked Buy / Now */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap">
                             <button
-                              onClick={(e) => { e.stopPropagation(); item.variantId && handleAddToCart(item); }}
-                              className="flex-1 bg-white hover:bg-[#B91508] text-[#B91508] border border-[#B91508] hover:text-white text-[10px] sm:text-xs font-bold py-1.5 rounded-md shadow-sm active:scale-95 transition-all text-center"
+                              type="button"
+                              aria-label="Add to cart"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                item.variantId && handleAddToCart(item);
+                              }}
+                              className="flex-1 min-w-0 min-h-[40px] sm:min-h-[36px] bg-white hover:bg-[#941007] text-[#941007] border border-[#941007] hover:text-white text-[10px] sm:text-xs font-bold py-1.5 sm:py-1.5 px-0 sm:px-2 rounded-full sm:rounded-md shadow-sm active:scale-95 transition-all text-center touch-manipulation select-none inline-flex items-center justify-center gap-1"
                             >
-                              Add +
+                              <FaCartPlus className="w-4 h-4 shrink-0 sm:w-2.5 sm:h-2.5" aria-hidden />
+                              <span className="hidden sm:inline whitespace-nowrap">Add to cart</span>
                             </button>
-                            <button className="flex-1 bg-[#B91508] text-white border border-[#B91508] text-[10px] sm:text-xs font-bold py-1.5 rounded-md shadow-sm hover:shadow-red-200 active:scale-95 transition-all text-center truncate px-1">
-                              Buy on EMI
+                            <button
+                              type="button"
+                              aria-label="Buy now"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                item.variantId && handleBuyNow(item);
+                              }}
+                              className="flex-1 min-w-0 min-h-[40px] sm:min-h-[36px] bg-[#941007] text-white border border-[#941007] text-[10px] sm:text-xs font-bold py-1 sm:py-1.5 px-0.5 sm:px-2 rounded-full sm:rounded-md shadow-sm hover:shadow-red-200 active:scale-95 transition-all text-center touch-manipulation select-none inline-flex flex-col sm:flex-row items-center justify-center leading-[1.1] sm:leading-normal"
+                            >
+                              <span className="flex flex-col sm:hidden items-center justify-center font-bold">
+                                <span>Buy</span>
+                                <span>Now</span>
+                              </span>
+                              <span className="hidden sm:inline truncate">Buy Now</span>
                             </button>
                           </div>
                         </div>
@@ -755,12 +804,14 @@ const Trends = () => {
               </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="mt-8 relative h-1 bg-gray-100 rounded-full max-w-sm mx-auto overflow-hidden">
-              <div
-                className="absolute top-0 left-0 h-full bg-[#B91508] transition-all duration-300 rounded-full"
-                style={{ width: `${Math.min(((currentIndex + itemsPerView) / filteredProducts.length) * 100, 100)}%` }}
-              />
+            {/* Progress Bar – same as SmartCookerFinder */}
+            <div className="mt-6 sm:mt-8 px-4 sm:px-0 max-w-md mx-auto">
+              <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#941007] transition-all duration-300 ease-out rounded-full"
+                  style={{ width: `${Math.min(((currentIndex + itemsPerView) / filteredProducts.length) * 100, 100)}%` }}
+                />
+              </div>
             </div>
           </>
         )}

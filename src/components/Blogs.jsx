@@ -20,22 +20,11 @@ const Blogs = () => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          `https://blogs.summithomeappliance.com/wp-json/wp/v2/posts?_embed&per_page=10&page=1`
-        );
-        setPosts(response.data);
-
-        const authorIds = [...new Set(response.data.map((post) => post.author))];
-        const authorRequests = authorIds.map((id) =>
-          axios.get(`https://blogs.summithomeappliance.com/wp-json/wp/v2/users/${id}`)
-        );
-        const authorResponses = await Promise.all(authorRequests);
-        const authorMap = {};
-        authorResponses.forEach((res) => {
-          authorMap[res.data.id] = res.data.name;
-        });
-        setAuthors(authorMap);
-      } catch {
+        const response = await axios.get("/api/blogs");
+        const blogData = response.data.data || response.data || [];
+        setPosts(blogData.slice(0, 10)); // Take first 10 for slider
+      } catch (err) {
+        console.error("Error fetching blogs for slider:", err);
         setPosts([]);
       } finally {
         setLoading(false);
@@ -46,13 +35,6 @@ const Blogs = () => {
 
   const bloglistener = (slug) => {
     navigate(`/blog/${slug}`);
-  };
-
-  const getFirst15Words = (htmlContent) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = htmlContent;
-    const text = tempDiv.textContent || tempDiv.innerText || "";
-    return text.split(" ").slice(0, 18).join(" ") + "...";
   };
 
   return (
@@ -69,7 +51,6 @@ const Blogs = () => {
           View all
         </h3>
       </div>
-
       {/* Blog posts from API */}
       {loading ? (
         <div className="text-center py-10">
@@ -81,7 +62,7 @@ const Blogs = () => {
             modules={[Autoplay, Pagination, Navigation]}
             spaceBetween={24}
             slidesPerView={1}
-            loop={true}
+            loop={posts.length > 4}
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,
@@ -118,14 +99,13 @@ const Blogs = () => {
             }}
             className="blog-swiper"
           >
-            {posts.map((post) => {
-              const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
-              const date = new Date(post.date).toLocaleDateString("en-US", {
+            {Array.isArray(posts) && posts.map((post) => {
+              const imageUrl = post.image_url || "/asset/images/Others.png";
+              const date = post.created_at ? new Date(post.created_at).toLocaleDateString("en-US", {
                 month: "numeric",
                 day: "numeric",
                 year: "numeric"
-              });
-              const authorName = authors[post.author] || "Unknown";
+              }) : "Recent";
 
               return (
                 <SwiperSlide key={post.id}>
@@ -133,30 +113,23 @@ const Blogs = () => {
                     className="blog-card bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] shadow-md h-[350px] sm:h-[450px] flex flex-col"
                     onClick={() => bloglistener(post.slug)}
                   >
-                    {imageUrl && (
-                      <img
-                        src={imageUrl}
-                        alt={post.title.rendered}
-                        className="w-full h-56 sm:h-72 object-cover"
-                      />
-                    )}
+                    <img
+                      src={imageUrl}
+                      alt={post.title}
+                      className="w-full h-56 sm:h-72 object-cover"
+                    />
                     <div className="p-1.5 sm:p-6 flex flex-col flex-grow">
                       <h3
                         className="  sm:text-lg font-bold text-gray-900   sm:mb-4 leading-tight line-clamp-3 overflow-hidden"
-                        dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                      />
+                      >
+                        {post.title}
+                      </h3>
                       <div className="flex flex-col gap-2 mb-5 text-xs sm:text-sm text-gray-600 mt-auto">
                         <div className="flex items-center gap-2">
                           <FaCalendar className="text-gray-400" size={14} />
                           <span>{date}</span>
                         </div>
-                        {/* 
-  <div className="flex items-center gap-2">
-    <FaTag className="text-gray-400" size={14} />
-    <span>{authorName}</span>
-  </div> */}
                       </div>
-
                     </div>
                   </div>
                 </SwiperSlide>
@@ -167,13 +140,13 @@ const Blogs = () => {
           {/* Navigation Buttons - Desktop Only */}
           <div className="hidden md:flex absolute top-1/2 -translate-y-1/2 -left-4 -right-4 justify-between pointer-events-none z-10">
             <button
-              className="blog-prev bg-white hover:bg-gray-100 text-[#B91508] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
+              className="blog-prev bg-white hover:bg-gray-100 text-[#941007] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
               aria-label="Previous"
             >
               <FaChevronLeft className="text-xl" />
             </button>
             <button
-              className="blog-next bg-white hover:bg-gray-100 text-[#B91508] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
+              className="blog-next bg-white hover:bg-gray-100 text-[#941007] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
               aria-label="Next"
             >
               <FaChevronRight className="text-xl" />

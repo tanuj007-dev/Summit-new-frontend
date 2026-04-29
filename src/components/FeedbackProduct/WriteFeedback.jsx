@@ -90,7 +90,7 @@ const ReviewTaken = ({ id, isLoggedIn }) => {
           </span>
         </div>
         {errors.rating && (
-          <p className="text-red-500 text-sm">{errors.rating}</p>
+          <p className="text-[#941007] text-sm">{errors.rating}</p>
         )}
       </div>
 
@@ -104,7 +104,7 @@ const ReviewTaken = ({ id, isLoggedIn }) => {
             onChange={(e) => setNickname(e.target.value)}
           />
           {errors.nickname && (
-            <p className="text-red-500 text-sm">{errors.nickname}</p>
+            <p className="text-[#941007] text-sm">{errors.nickname}</p>
           )}
         </div>
 
@@ -119,7 +119,7 @@ const ReviewTaken = ({ id, isLoggedIn }) => {
             onChange={(e) => setReason(e.target.value)}
           />
           {errors.reason && (
-            <p className="text-red-500 text-sm">{errors.reason}</p>
+            <p className="text-[#941007] text-sm">{errors.reason}</p>
           )}
         </div>
       </div>
@@ -132,13 +132,13 @@ const ReviewTaken = ({ id, isLoggedIn }) => {
           onChange={(e) => setComment(e.target.value)}
         />
         {errors.comment && (
-          <p className="text-red-500 text-sm">{errors.comment}</p>
+          <p className="text-[#941007] text-sm">{errors.comment}</p>
         )}
       </div>
 
       <div>
         <button
-          className="bg-red-800 text-white text-sm p-2 rounded-md"
+          className="bg-[#941007] text-white text-sm p-2 rounded-md"
           onClick={handleSubmit}
         >
           Submit Your Review

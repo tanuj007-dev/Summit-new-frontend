@@ -66,7 +66,7 @@
 //                 key={category}
 //                 className={`rounded-full px-2 md:px-4 md:py-1.5 font-sans py-0.5 text-[0.625rem] md:text-sm  whitespace-nowrap text-center
 //                   ${isSelected
-//                     ? "bg-[#B91508] text-white"
+//                     ? "bg-[#941007] text-white"
 //                     : isDisabled
 //                       ? "bg-[#E9E9EB] text-[#545455] cursor-not-allowed"
 //                       : "bg-[#E9E9EB] text-[#545455] cursor-pointer"
@@ -150,7 +150,7 @@
 //                                                     {res.variants?.slice(0, 4).map((variant, index) => (
 //                                                         <img 
 //                                                             key={index}
-//                                                             className="w-[50px] h-[50px] inline shadow border-1 border-red-500 rounded-full p-1 m-1" 
+//                                                             className="w-[50px] h-[50px] inline shadow border-1 border-[#941007] rounded-full p-1 m-1" 
 //                                                             src={variant.image_url || "/asset/images/dummy-image-square.jpg"} 
 //                                                             alt={`${variant.attributes?.map(attr => attr.value).join(' ') || 'variant'}`}
 //                                                         />
@@ -164,27 +164,27 @@
 //                                                     <span className="font-normal text-[#3e3e3e]">
                                                   
 //                                                     </span>
-//                                                     Rs. <span className="text-[#B91508] font-bold">
+//                                                     Rs. <span className="text-[#941007] font-bold">
 //                                                         {res.variants?.[0]?.price ? Math.floor(res.variants[0].price) : 'N/A'}
 //                                                     </span>
 //                                                 </p>
 //                                                 {/* <div className="flex justify-between w-full mt-3 px-2">
-//                                                     <button className="w-30 rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer  font-semibold mr-1"
+//                                                     <button className="w-30 rounded-full px-3 py-1 text-white bg-[#941007] cursor-pointer  font-semibold mr-1"
 //                                                     // onClick={() => buyNowHandle(item)}
 //                                                     >
 //                                                         Buy Now
 //                                                     </button>
 //                                                     <button
-//                                                         className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#B91508] cursor-pointer ml-1 text-center"
+//                                                         className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#941007] cursor-pointer ml-1 text-center"
 //                                                     // onClick={() => handleAddToCart(item)}
 //                                                     >
 //                                                         <div className="flex items-center justify-center">
-//                                                             <span className="inline text-[#B91508]">Cart</span> <FaCartPlus className="mx-1 text-[#B91508]" />
+//                                                             <span className="inline text-[#941007]">Cart</span> <FaCartPlus className="mx-1 text-[#941007]" />
 //                                                         </div>
 
 //                                                     </button>
 //                                                 </div> */}
-//                                                     <button className="w-full rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer  font-semibold mr-1"
+//                                                     <button className="w-full rounded-full px-3 py-1 text-white bg-[#941007] cursor-pointer  font-semibold mr-1"
 //                                                     // onClick={() => buyNowHandle(item)}
 //                                                     >
 //                                                         View Details
@@ -266,7 +266,7 @@
 //                                                 <p className="text-xs text-gray-600 mt-1">
 //                                                     {variant.attributes.map((attr) => (
 //                                                         <span key={attr.id} className="mr-1">
-//                                                             <strong>{attr.attribute.name}:</strong> <span className="bg-[#B91508] px-3 text-[#fff]">{attr.value}</span><br />
+//                                                             <strong>{attr.attribute.name}:</strong> <span className="bg-[#941007] px-3 text-[#fff]">{attr.value}</span><br />
 //                                                         </span>
 //                                                     ))}
 //                                                 </p>
@@ -274,23 +274,23 @@
 //                                                 {/* Price */}
 //                                                 <p className="text-sm font-semibold mt-2">
 //                                                     Rs.{" "}
-//                                                     <span className="text-[#B91508] font-bold">
+//                                                     <span className="text-[#941007] font-bold">
 //                                                         {Math.floor(variant.price)}
 //                                                     </span>
 //                                                 </p>
 
 //                                                 <div className="flex justify-between w-full mt-3 px-2">
-//                                                     <button className="w-30 rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer  font-semibold mr-1"
+//                                                     <button className="w-30 rounded-full px-3 py-1 text-white bg-[#941007] cursor-pointer  font-semibold mr-1"
 //                                                     // onClick={() => buyNowHandle(item)}
 //                                                     >
 //                                                         Buy Now
 //                                                     </button>
 //                                                     <button
-//                                                         className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#B91508] cursor-pointer ml-1 text-center"
+//                                                         className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#941007] cursor-pointer ml-1 text-center"
 //                                                     // onClick={() => handleAddToCart(item)}
 //                                                     >
 //                                                         <div className="flex items-center justify-center">
-//                                                             <span className="inline text-[#B91508]">Cart</span> <FaCartPlus className="mx-1 text-[#B91508]" />
+//                                                             <span className="inline text-[#941007]">Cart</span> <FaCartPlus className="mx-1 text-[#941007]" />
 //                                                         </div>
 
 //                                                     </button>
@@ -367,23 +367,23 @@
 //                                                 {/* Price */}
 //                                                 <p className="text-sm font-semibold mt-2">
 //                                                     Rs.{" "}
-//                                                     <span className="text-[#B91508] font-bold">
+//                                                     <span className="text-[#941007] font-bold">
 //                                                         {Math.floor(variant.price)}
 //                                                     </span>
 //                                                 </p>
 
 //                                                 <div className="flex justify-between w-full mt-3 px-2">
-//                                                     <button className="w-30 rounded-full px-3 py-1 text-white bg-[#B91508] cursor-pointer  font-semibold mr-1"
+//                                                     <button className="w-30 rounded-full px-3 py-1 text-white bg-[#941007] cursor-pointer  font-semibold mr-1"
 //                                                     // onClick={() => buyNowHandle(item)}
 //                                                     >
 //                                                         Buy Now
 //                                                     </button>
 //                                                     <button
-//                                                         className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#B91508] cursor-pointer ml-1 text-center"
+//                                                         className="w-30 rounded-full  px-3 py-1 color-white border-1 border-[#941007] cursor-pointer ml-1 text-center"
 //                                                     // onClick={() => handleAddToCart(item)}
 //                                                     >
 //                                                         <div className="flex items-center justify-center">
-//                                                             <span className="inline text-[#B91508]">Cart</span> <FaCartPlus className="mx-1 text-[#B91508]" />
+//                                                             <span className="inline text-[#941007]">Cart</span> <FaCartPlus className="mx-1 text-[#941007]" />
 //                                                         </div>
 
 //                                                     </button>
@@ -413,6 +413,11 @@ import { Link } from "react-router-dom";
 import axiosInstance from "../../../axiosConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
+import { useWishlist } from "../../../context/WishlistContext";
+import { FaShoppingCart } from "react-icons/fa";
+import { CartContext } from "../../../context/CartContext";
+import { useContext } from "react";
 
 /* =========================
    Helper functions
@@ -444,6 +449,8 @@ const getProductPrice = (product) => {
 const ProductCard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToWishlist, isInWishlist } = useWishlist();
+  const { handleAddToCart } = useContext(CartContext);
 
   useEffect(() => {
     // Fetch random products without specific search term
@@ -508,19 +515,27 @@ const ProductCard = () => {
 
               {/* Wishlist */}
               <FontAwesomeIcon
-                icon={solidHeart}
-                className="absolute top-2 right-2 text-[#B91508] cursor-pointer"
+                icon={isInWishlist(product.id) ? solidHeart : regularHeart}
+                className={`absolute top-3 right-3 cursor-pointer z-10 transition-colors duration-300 ${
+                  isInWishlist(product.id) ? "text-[#941007]" : "text-gray-400 hover:text-[#941007]"
+                }`}
+                style={{ fontSize: "20px" }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addToWishlist(product);
+                }}
               />
 
               {/* Discount */}
-              <div className="absolute top-2 left-0 px-3 py-1 text-xs bg-[#B91508] text-white rounded-r">
+              <div className="absolute top-2 left-0 px-3 py-1 text-xs bg-[#941007] text-white rounded-r">
                 {product.discount_percentage
                   ? `${product.discount_percentage}% OFF`
                   : "NEW"}
               </div>
 
               {/* Image */}
-              <Link to={`/product-details/${product.id}`}>
+              <Link to={`/product-details/${product.id || product.product_id || product.sno || product.detail_id}`}>
                 <img
                   src={getProductImage(product)}
                   alt={product.name}
@@ -549,17 +564,17 @@ const ProductCard = () => {
                 {/* Price */}
                 <p className="text-sm mt-2">
                   Rs.{" "}
-                  <span className="font-bold text-[#B91508]">
+                  <span className="font-bold text-[#941007]">
                     {getProductPrice(product)}
                   </span>
                 </p>
 
                 {/* CTA */}
                 <Link
-                  to={`/product-details/${product.id}`}
+                  to={`/product-details/${product.id || product.product_id || product.sno || product.detail_id}`}
                   className="block mt-3"
                 >
-                  <button className="w-full rounded-full px-4 py-1.5 bg-[#B91508] text-white font-medium">
+                  <button className="w-full rounded-full px-4 py-1.5 bg-[#941007] text-white font-medium">
                     View Details
                   </button>
                 </Link>

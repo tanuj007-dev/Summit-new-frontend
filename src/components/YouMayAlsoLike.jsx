@@ -1,8 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaTrophy, FaCartPlus } from "react-icons/fa";
 import { CartContext } from "../context/CartContext";
-import axios from "axios";
+import { useWishlist } from "../context/WishlistContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
+import axios from "../axiosConfig";
 
 /* -------------------- IMAGE OPTIMIZATION -------------------- */
 // Optimized image helper with quality and size parameters
@@ -110,15 +114,17 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
     }
   };
 
-  // Update items per view based on screen size
+  // Update items per view based on screen size (match reference: 5 cards on large)
   React.useEffect(() => {
     const updateItemsPerView = () => {
       if (window.innerWidth < 640) {
         setItemsPerView(2);
       } else if (window.innerWidth < 768) {
         setItemsPerView(3);
-      } else {
+      } else if (window.innerWidth < 1024) {
         setItemsPerView(4);
+      } else {
+        setItemsPerView(5);
       }
     };
 
@@ -128,6 +134,7 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
   }, []);
 
   const { handleAddToCart, handleBuyNow } = useContext(CartContext);
+  const { addToWishlist, isInWishlist } = useWishlist();
 
   // Helper function to get product image from S3 presigned URL
   const getProductImage = (product) => {
@@ -201,50 +208,68 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
     return null;
   };
 
-  // Fetch products from API
+  // Fetch relevant products (same category or all with client-side filter)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
 
-        // If currentProduct is provided, fetch products from the same category
-        // Otherwise, fetch all products
-        const searchQuery = currentProduct?.master_category ||
-          currentProduct?.main_category ||
-          currentProduct?.category ||
-          'all';
+        // Build category search: support category as object { name, slug } or string
+        const catObj = currentProduct?.category;
+        const categoryStr = typeof catObj === "string"
+          ? catObj
+          : (catObj?.name || catObj?.slug || currentProduct?.master_category || currentProduct?.main_category || "all");
+        const searchQuery = String(categoryStr).trim() || "all";
 
-        const response = await axios.get("api/products/view", {
-          params: { search: searchQuery.toLowerCase() },
-          withCredentials: true, // REQUIRED for session cookie
-        });
-
-        console.log("API Response:", response.data);
-
-        // Handle different response structures
         let productsData = [];
-        if (Array.isArray(response.data)) {
-          productsData = response.data;
-        } else if (response.data?.data && Array.isArray(response.data.data)) {
-          productsData = response.data.data;
-        } else if (response.data?.products && Array.isArray(response.data.products)) {
-          productsData = response.data.products;
+
+        // First try: fetch by category/search
+        try {
+          const response = await axios.get("/api/products/view", {
+            params: { search: searchQuery.toLowerCase() },
+            withCredentials: true,
+          });
+          if (Array.isArray(response.data)) {
+            productsData = response.data;
+          } else if (response.data?.data && Array.isArray(response.data.data)) {
+            productsData = response.data.data;
+          } else if (response.data?.products && Array.isArray(response.data.products)) {
+            productsData = response.data.products;
+          }
+        } catch (e) {
+          console.warn("YouMayAlsoLike category fetch failed:", e?.message);
         }
 
-        console.log("Products Data:", productsData);
-        console.log("Products Count:", productsData.length);
-        if (productsData.length > 0) {
-          console.log("First Product Sample:", productsData[0]);
-          console.log("Product Keys:", Object.keys(productsData[0]));
+        // Fallback: if no or few results, fetch all and filter by category
+        const currentId = currentProduct?.product_id || currentProduct?.id;
+        if (productsData.length < 4) {
+          try {
+            const res = await axios.get("/api/products/view", {
+              params: { search: "all" },
+              withCredentials: true,
+            });
+            let all = [];
+            if (Array.isArray(res.data)) all = res.data;
+            else if (res.data?.data && Array.isArray(res.data.data)) all = res.data.data;
+            else if (res.data?.products && Array.isArray(res.data.products)) all = res.data.products;
+            const catLower = searchQuery.toLowerCase();
+            const sameCategory = all.filter((p) => {
+              const pCat = (p.category?.name || p.category?.slug || p.master_category || p.main_category || p.category || "").toString().toLowerCase();
+              return pCat && (pCat === catLower || pCat.includes(catLower) || catLower.includes(pCat));
+            });
+            if (sameCategory.length > 0) productsData = sameCategory;
+            else if (all.length > 0) productsData = all;
+          } catch (e2) {
+            console.warn("YouMayAlsoLike fallback fetch failed:", e2?.message);
+          }
         }
 
-        // Filter out the current product from the results
-        let filteredData = productsData;
-        if (currentProduct?.product_id) {
-          filteredData = productsData.filter(
-            p => (p.id || p.product_id || p.detail_id) != currentProduct.product_id
-          );
-        }
+        // Filter out the current product and limit to 16 for "You May Also Like"
+        let filteredData = productsData
+          .filter(
+            (p) => String(p.id || p.product_id || p.detail_id || "").trim() !== String(currentId || "").trim()
+          )
+          .slice(0, 16);
 
         // Transform API response to match component structure
         const transformedProducts = filteredData.map((product, index) => {
@@ -324,7 +349,7 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
     };
 
     fetchProducts();
-  }, [currentProduct?.product_id]);
+  }, [currentProduct?.product_id, currentProduct?.category, currentProduct?.master_category, currentProduct?.main_category]);
 
   // === SLIDE ONE BY ONE ===
   const nextSlide = () => {
@@ -349,8 +374,9 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
     <section className="w-full bg-white py-8 sm:py-8 px-2 sm:px-6 lg:px-8 relative">
       {/* ===== Heading ===== */}
       <div className="text-center mb-4 sm:mb-8">
-        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
-          You May Also Like
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-black tracking-tight mx-auto mb-3 sm:mb-0 leading-[1.12] sm:leading-tight px-1 font-['Playfair_Display',_serif]">
+          You May Also Like 
+
         </h2>
 
       </div>
@@ -392,21 +418,22 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
                   return (
                     <div
                       key={item.id || `product-${i}`}
-                      className={`flex-shrink-0 px-2 flex justify-center ${itemsPerView === 2 ? 'w-1/2' : itemsPerView === 3 ? 'w-1/3' : 'w-1/4 lg:w-1/5'
+                      className={`shrink-0 px-2 flex justify-center ${itemsPerView === 2 ? 'w-1/2' : itemsPerView === 3 ? 'w-1/3' : itemsPerView === 4 ? 'w-1/4' : 'w-1/5'
                         }`}
                     >
-                      <div className="flex flex-col items-center w-full max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[260px] bg-[#fff4f4] border border-[#ffc5c5] rounded-[10px] pb-5 p-1 sm:p-2 md:p-3">
+                      <div className="flex flex-col items-center w-full max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[260px] bg-white pb-4 p-2 sm:p-3 transition-shadow">
                         {/* IMAGE */}
-                        <div className="relative w-full overflow-hidden rounded-2xl shadow-md">
-                          <Link to={`/product-details/${item.id}`}>
+                        <div className="relative w-full overflow-hidden rounded-lg">
+                          <Link to={`/product-details/${item.id || item.sno || item.product_id || item.detail_id}`}>
                             <div className="relative">
                               {!imageLoadingStates[item.id] && (
-                                <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-2xl" />
+                                <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
                               )}
+
                               <img
                                 src={getOptimizedImageSrc(item.image, 400, 80)}
                                 alt={item.title}
-                                className="w-full h-[180px] sm:h-[200px] md:h-[260px] lg:h-[280px] object-cover rounded-2xl transition-all duration-300 hover:scale-110"
+                                className="w-full h-[160px] sm:h-[180px] md:h-[200px] lg:h-[220px] object-contain bg-gray-50 rounded-lg transition-all duration-300 hover:scale-[1.02]"
                                 loading="lazy"
                                 onLoad={() => handleImageLoad(item.id)}
                                 onError={(e) => {
@@ -421,50 +448,89 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
                             </div>
                           </Link>
                           {item.oldPrice && item.price && item.oldPrice > item.price && (
-                            <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
+                            <span className="absolute bottom-2 left-2 bg-[#941007] text-white text-[10px] sm:text-xs px-2 py-0.5 rounded">
                               Sale
                             </span>
                           )}
+
+
+                          {/* Wishlist Icon */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              addToWishlist(item.product || item);
+                            }}
+                            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform duration-300 hover:bg-white"
+                          >
+                            <FontAwesomeIcon
+                              icon={isInWishlist(item.id || item.product_id) ? solidHeart : regularHeart}
+                              className={isInWishlist(item.id || item.product_id) ? "text-red-600" : "text-gray-400"}
+                              style={{ fontSize: "14px" }}
+                            />
+                          </button>
                         </div>
 
-                        {/* TEXT + PRICE */}
-                        <div className="text-center mt-3 sm:mt-4">
-                          <h3 className="text-[18px] sm:text-base md:text-lg lg:text-lg font-semibold text-gray-900 mb-1">
-                            {item.title?.toLowerCase()
-                              .replace(/^\w/, (c) => c.toUpperCase())}
+                        {/* TITLE */}
+                        <Link to={`/product-details/${item.id || item.sno || item.product_id || item.detail_id}`} className="w-full mt-2 sm:mt-3 text-left">
+                          <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 leading-tight">
+                            {item.title}
                           </h3>
-                          <p className="text-[14px] sm:text-sm text-gray-400 mb-2 sm:mb-3">
+                        </Link>
+
+
+                        {/* BESTSELLER + 1k+ bought */}
+                        <div className="flex items-center gap-1.5 mt-1.5 text-[10px] sm:text-xs text-gray-500 w-full">
+                          <span className="flex items-center gap-0.5 font-semibold text-[#941007]">
+                            <FaTrophy className="size-3 text-[#941007]" /> BESTSELLER
+                          </span>
+                          <span className="text-gray-400">|</span>
+                          <span>1k+ bought</span>
+                        </div>
+
+
+                        {/* STARS + REVIEWS */}
+                        <div className="flex items-center gap-1 mt-1 w-full">
+                          <span className="flex text-amber-400" aria-hidden>
+                            {[...Array(5)].map((_, k) => (
+                              <span key={k} className="text-[10px] sm:text-xs">★</span>
+                            ))}
+                          </span>
+                          <span className="text-[10px] sm:text-xs text-gray-500">20 Reviews</span>
+                        </div>
+
+
+                        {/* PRICE */}
+                        <div className="w-full mt-1.5 text-left">
+                          <p className="text-xs sm:text-sm text-gray-600">
                             {item.price ? (
                               <>
                                 from{" "}
-                                <span className="font-semibold text-black">
-                                  Rs. {item.price}
-                                </span>
+                                <span className="font-semibold text-gray-900">Rs. {item.price}</span>
                                 {item.oldPrice && item.oldPrice > item.price && (
-                                  <span className="text-gray-400 line-through ml-1">
-                                    Rs. {item.oldPrice}
-                                  </span>
+                                  <span className="text-gray-400 line-through ml-1 text-xs">Rs. {item.oldPrice}</span>
                                 )}
                               </>
                             ) : (
-                              <span className="text-gray-500">Price not available</span>
+                              <span className="text-gray-500">N/A</span>
                             )}
                           </p>
                         </div>
 
-                        {/* BUTTONS */}
-                        <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
+
+                        {/* BUTTONS: Add to (outline) + Buy Now (solid) */}
+                        <div className="flex gap-2 w-full mt-3">
                           <button
                             onClick={() => variantId && handleAddToCart(item)}
                             disabled={!variantId}
-                            className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 flex items-center justify-center gap-1 border border-[#941007] text-[#941007] text-[11px] sm:text-xs py-2 rounded-lg hover:bg-[#941007] hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Add to Cart
+                            <FaCartPlus className="size-3.5" /> Add to
                           </button>
                           <button
                             onClick={() => variantId && handleBuyNow(item)}
                             disabled={!variantId}
-                            className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 bg-[#941007] text-white text-[11px] sm:text-xs py-2 rounded-lg hover:bg-[#941007] transition disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Buy Now
                           </button>
@@ -476,19 +542,20 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
               </div>
             </div>
 
+
             {/* Navigation Buttons - Desktop Only */}
             {!loading && products.length > itemsPerView && (
               <div className="hidden md:flex absolute top-1/2 -translate-y-1/2 left-0 right-0 px-2 justify-between pointer-events-none z-10">
                 <button
                   onClick={prevSlide}
-                  className="bg-white hover:bg-gray-100 text-[#B91508] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
+                  className="bg-white hover:bg-gray-100 text-[#941007] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
                   aria-label="Previous"
                 >
                   <FaChevronLeft className="text-xl" />
                 </button>
                 <button
                   onClick={nextSlide}
-                  className="bg-white hover:bg-gray-100 text-[#B91508] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
+                  className="bg-white hover:bg-gray-100 text-[#941007] p-3 rounded-full shadow-lg transition pointer-events-auto border border-gray-100"
                   aria-label="Next"
                 >
                   <FaChevronRight className="text-xl" />
@@ -497,6 +564,7 @@ const YouMayAlsoLike = ({ currentProduct = null }) => {
             )}
           </>
         )}
+
 
         {/* Progress Bar */}
         {!loading && products.length > 0 && (

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+     import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { CartContext } from "../context/CartContext";
@@ -373,7 +373,7 @@ const YouMayAlso = () => {
                     setCurrentIndex(0);
                   }}
                   className={`rounded-full px-3 sm:px-4 md:px-5 py-1.5 text-sm sm:text-sm md:text-base transition-all whitespace-nowrap flex-shrink-0 ${isActive
-                      ? "bg-[#B91508] text-white"
+                      ? "bg-[#941007] text-white"
                       : "bg-[#E9E9EB] text-[#545455] hover:bg-[#d5d5d7]"
                     }`}
                 >
@@ -431,7 +431,7 @@ const YouMayAlso = () => {
                       <div className="flex flex-col items-center w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px]">
                         {/* IMAGE */}
                         <div className="relative w-full overflow-hidden rounded-2xl shadow-md">
-                          <Link to={`/product-details/${item.id}`}>
+                          <Link to={`/product-details/${item.id || item.product_id || item.variantId}`}>
                             <div className="relative">
                               {!imageLoadingStates[item.id] && (
                                 <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-2xl" />
@@ -454,7 +454,7 @@ const YouMayAlso = () => {
                             </div>
                           </Link>
                           {item.oldPrice && item.price && item.oldPrice > item.price && (
-                            <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
+                            <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#941007] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
                               Sale
                             </span>
                           )}
@@ -489,14 +489,14 @@ const YouMayAlso = () => {
                           <button
                             onClick={() => variantId && handleAddToCart(item)}
                             disabled={!variantId}
-                            className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-[#941007] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#941007] transition disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Add to Cart
                           </button>
                           <button
                             onClick={() => variantId && handleBuyNow(item)}
                             disabled={!variantId}
-                            className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-[#941007] text-[13px] sm:text-sm text-nowrap border-1 border-[#941007] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#941007] hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Buy Now
                           </button>

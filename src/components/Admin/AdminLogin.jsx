@@ -60,7 +60,7 @@ const AdminLogin = () => {
               {/* Cooking Pot Icon */}
               <div className="flex justify-center mb-4">
                 <div className="relative">
-                 <GiRiceCooker size={55} className='text-red-700' />
+                 <GiRiceCooker size={55} className='text-[#941007]' />
                   {/* Steam lines */}
                   <div className="absolute -top-2 left-1/2 -translate-x-1/2">
                     <div className="w-1 h-4 bg-gray-300 rounded-full opacity-60 animate-pulse"></div>
@@ -115,7 +115,7 @@ const AdminLogin = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-red-700 text-white py-3 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#941007] text-white py-3 rounded-lg font-semibold hover:bg-[#941007] focus:outline-none focus:ring-2 focus:ring-[#941007] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Signing in...' : 'LOGIN'}
                 </button>

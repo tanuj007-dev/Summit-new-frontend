@@ -1,9 +1,17 @@
 import axios from "../axiosConfig";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const CartContext = createContext();
+
+export const useCart = () => {
+    const context = useContext(CartContext);
+    if (!context) {
+        throw new Error("useCart must be used within a CartProvider");
+    }
+    return context;
+};
 
 export function CartProvider({ children }) {
     const [cart, setCart] = useState({});
@@ -389,7 +397,7 @@ export function CartProvider({ children }) {
                 handleUpdateCart,
                 handleRemoveFromCart,
                 handleClearCart,
-                totalItems: (cart?.cart?.items?.length > 0) ? cart.cart.items.length : 0,
+                totalItems: Array.isArray(cart?.cart?.items) ? cart.cart.items.length : 0,
             }}
         >
             {children}

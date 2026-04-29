@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import { Category, Product, Subcategory, Series, Material, Warranty, Certification, ProductDetail } from '../components/Admin/types/database';
 import * as mockData from '../components/Admin/data/mockData';
 
 const DataContext = createContext(undefined);
 
-const API_BASE_URL = `${import.meta.env.VITE_APP_API_BASE_URL ?? 'https://api.summithomeappliance.com'}/api/admin`;
+const API_BASE_URL = '/api/admin';
 
 export function DataProvider({ children }) {
   const [categories, setCategories] = useState([]);
@@ -49,6 +49,8 @@ export function DataProvider({ children }) {
   const [isLoadingCertifications, setIsLoadingCertifications] = useState(false);
   const [productDetails, setProductDetails] = useState(mockData.productDetails);
   const [isLoadingProductDetails, setIsLoadingProductDetails] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState(false);
 
   // Category CRUD
   const addCategory = async (item) => {
@@ -580,6 +582,56 @@ export function DataProvider({ children }) {
     }
   };
 
+  const fetchBlogs = async () => {
+    try {
+      setIsLoadingBlogs(true);
+      const response = await axios.get('/api/blogs');
+      setBlogs(response.data.data || response.data || []);
+    } catch (error) {
+      console.error('Error fetching blogs:', error);
+      setBlogs([]);
+    } finally {
+      setIsLoadingBlogs(false);
+    }
+  };
+
+  const addBlog = async (item) => {
+    try {
+      const response = await axios.post('/api/blogs', item);
+      const blogData = response.data.data || response.data;
+      setBlogs(prev => [...prev, blogData]);
+      return blogData;
+    } catch (error) {
+      console.error('Error adding blog:', error);
+      throw error;
+    }
+  };
+
+  const updateBlog = async (id, item) => {
+    try {
+      const response = await axios.put(`/api/blogs/${id}`, item);
+      setBlogs(prev => prev.map(b => b.id === id ? { ...b, ...item } : b));
+      return response.data;
+    } catch (error) {
+      console.error('Error updating blog:', error);
+      throw error;
+    }
+  };
+
+  const deleteBlog = async (id) => {
+    try {
+      await axios.delete(`/api/blogs/${id}`);
+      setBlogs(prev => prev.filter(b => b.id !== id));
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
   return (
     <DataContext.Provider
       value={{
@@ -630,6 +682,12 @@ export function DataProvider({ children }) {
         addProductDetail,
         updateProductDetail,
         deleteProductDetail,
+        blogs,
+        isLoadingBlogs,
+        fetchBlogs,
+        addBlog,
+        updateBlog,
+        deleteBlog,
       }}
     >
       {children}

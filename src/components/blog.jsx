@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import axios from "../axiosConfig";
 
 const Blog = () => {
   const { slug } = useParams();
@@ -19,14 +20,15 @@ const Blog = () => {
     const fetchPost = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://blogs.summithomeappliance.com/wp-json/wp/v2/posts?slug=${slug}&_embed`);
-        const data = await res.json();
-        if (!res.ok || data.length === 0) throw new Error("Post not found");
+        // Fetch all blogs and find the one with matching slug
+        // (Assuming the API might not have a direct slug endpoint yet)
+        const res = await axios.get("/api/blogs");
+        const blogs = res.data.data || res.data || [];
+        const foundPost = blogs.find(b => b.slug === slug);
 
-        const sanitizedContent = data[0].content.rendered.replaceAll(
-          "https://blogs.summithomeappliance.com/",
-          "https://summithomeappliance.com/"
-        );
+        if (!foundPost) throw new Error("Post not found");
+
+        const sanitizedContent = foundPost.content;
 
         // Generate Table of Contents and inject IDs into content
         const parser = new DOMParser();
@@ -46,16 +48,11 @@ const Blog = () => {
         setToc(tocEntries);
 
         setPost({
-          ...data[0],
-          content: {
-            ...data[0].content,
-            rendered: doc.body.innerHTML,
-          },
+          ...foundPost,
+          content: doc.body.innerHTML,
         });
 
-        const all = await fetch(`https://blogs.summithomeappliance.com/wp-json/wp/v2/posts?_embed`);
-        const allData = await all.json();
-        setAllPosts(allData);
+        setAllPosts(blogs);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -66,44 +63,10 @@ const Blog = () => {
     fetchPost();
   }, [slug]);
 
-  const getFeaturedImage = (post) =>
-    post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";
-
-  const getAuthor = (post) =>
-    post._embedded?.author?.[0]?.name || "Unknown";
-
-  const getCategory = (post) =>
-    post._embedded?.["wp:term"]?.[0]?.[0]?.name || "Uncategorized";
-
   const handleCommentSubmit = async () => {
     if (!authorName || !authorEmail || !comment) return alert("Please fill all fields");
-
-    try {
-      const res = await fetch("https://blogs.summithomeappliance.com/wp-json/wp/v2/comments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          post: post.id,
-          author_name: authorName,
-          author_email: authorEmail,
-          content: comment,
-        }),
-      });
-
-      const result = await res.json();
-      if (res.ok) {
-        setCommentSubmitted(true);
-        setComment("");
-        setAuthorEmail("");
-        setAuthorName("");
-      } else {
-        alert("Comment failed: " + result.message);
-      }
-    } catch (error) {
-      alert("Failed to submit comment");
-    }
+    // Placeholder for new comment API if available
+    alert("Comments feature coming soon!");
   };
 
   const scrollToHeading = (id) => {
@@ -136,7 +99,7 @@ const Blog = () => {
               {toc.length > 0 && (
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                   <h3 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
-                    <span className="w-1 h-5 bg-[#B91508] rounded-full"></span>
+                    <span className="w-1 h-5 bg-[#941007] rounded-full"></span>
                     Table of Contents
                   </h3>
                   <nav className="space-y-1 max-h-[60vh] overflow-y-auto scrollbar-hide">
@@ -144,7 +107,7 @@ const Blog = () => {
                       <button
                         key={item.id}
                         onClick={() => scrollToHeading(item.id)}
-                        className={`block text-left w-full py-2 px-3 rounded-lg text-[13px] leading-snug transition-all duration-200 hover:bg-red-50 hover:text-[#B91508] ${item.level === "h3"
+                        className={`block text-left w-full py-2 px-3 rounded-lg text-[13px] leading-snug transition-all duration-200 hover:bg-red-50 hover:text-[#941007] ${item.level === "h3"
                           ? "pl-6 text-gray-400 font-normal"
                           : "font-semibold text-gray-700"
                           }`}
@@ -175,42 +138,42 @@ const Blog = () => {
           <main className="flex-1 max-w-[850px] mx-auto min-w-0 w-full">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-32 space-y-4">
-                <div className="w-12 h-12 border-4 border-gray-100 border-t-[#B91508] rounded-full animate-spin"></div>
+                <div className="w-12 h-12 border-4 border-gray-100 border-t-[#941007] rounded-full animate-spin"></div>
                 <p className="text-gray-400 animate-pulse font-medium">Preparing your story...</p>
               </div>
             ) : error ? (
-              <div className="bg-red-50 text-red-600 p-8 rounded-2xl text-center border border-red-100">
+              <div className="bg-red-50 text-[#941007] p-8 rounded-2xl text-center border border-red-100">
                 <p className="text-xl font-bold mb-2">Oops! Something went wrong.</p>
                 <p>{error}</p>
-                <Link to="/blog" className="inline-block mt-4 text-[#B91508] font-bold hover:underline">Return to Blogs</Link>
+                <Link to="/blog" className="inline-block mt-4 text-[#941007] font-bold hover:underline">Return to Blogs</Link>
               </div>
             ) : post && (
               <article className="animate-fade-in w-full overflow-hidden">
                 <header className="mb-8 md:mb-10 text-center md:text-left">
                   <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4 mb-6">
-                    <span className="px-3 py-1 bg-red-50 text-[#B91508] rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest">{getCategory(post)}</span>
-                    <span className="text-gray-400 text-[12px] md:text-sm">{new Date(post.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    <span className="px-3 py-1 bg-red-50 text-[#941007] rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest">Summit Home Blog</span>
+                    <span className="text-gray-400 text-[12px] md:text-sm">{post.created_at ? new Date(post.created_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>
                   </div>
                   <h1 className="text-2xl sm:text-3xl md:text-[48px] font-extrabold text-gray-900 mb-6 md:mb-8 leading-[1.2] md:leading-[1.15] tracking-tight break-words">
-                    {post.title.rendered}
+                    {post.title}
                   </h1>
                   <div className="flex items-center justify-center md:justify-start gap-3">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#B91508] to-red-400 p-[2px]">
-                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#B91508] font-bold text-base md:text-lg">
-                        {getAuthor(post).charAt(0)}
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#941007] to-[#941007] p-[2px]">
+                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#941007] font-bold text-base md:text-lg">
+                        {(post.author || 'S').charAt(0)}
                       </div>
                     </div>
                     <div className="text-left">
-                      <p className="text-xs md:text-sm font-bold text-gray-900 leading-none mb-1">{getAuthor(post)}</p>
+                      <p className="text-xs md:text-sm font-bold text-gray-900 leading-none mb-1">{post.author || 'Summit Home'}</p>
                       <p className="text-[10px] md:text-xs text-gray-500">Summit Home Contributor</p>
                     </div>
                   </div>
                 </header>
 
-                {getFeaturedImage(post) && (
+                {post.image_url && (
                   <div className="mb-10 rounded-2xl md:rounded-[2rem] overflow-hidden shadow-xl md:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] group">
                     <img
-                      src={getFeaturedImage(post)}
+                      src={post.image_url}
                       alt="Featured"
                       className="w-full h-auto transition-transform duration-[2s] group-hover:scale-105"
                     />
@@ -227,10 +190,10 @@ const Blog = () => {
                     [&>ol]:list-decimal [&>ol]:ml-5 md:[&>ol]:ml-8 [&>ol]:mb-8 md:[&>ol]:mb-10 [&>ol]:space-y-3 md:[&>ol]:space-y-4
                     [&>li]:pl-2
                     [&>img]:rounded-2xl [&>img]:my-8 md:[&>img]:my-12 [&>img]:shadow-xl md:[&>img]:shadow-2xl [&>img]:mx-auto [&>img]:transition-all [&>img]:duration-500 hover:[&>img]:scale-[1.02]
-                    [&>blockquote]:border-l-[4px] md:[&>blockquote]:border-l-[6px] [&>blockquote]:border-[#B91508] [&>blockquote]:pl-6 md:[&>blockquote]:pl-10 [&>blockquote]:italic [&>blockquote]:my-10 md:[&>blockquote]:my-14 [&>blockquote]:bg-gray-50 [&>blockquote]:py-8 md:[&>blockquote]:py-10 [&>blockquote]:pr-6 md:[&>blockquote]:pr-8 [&>blockquote]:text-xl md:[&>blockquote]:text-2xl [&>blockquote]:text-gray-900 [&>blockquote]:rounded-r-2xl md:[&>blockquote]:rounded-r-3xl [&>blockquote]:font-serif
-                    [&>a]:text-[#B91508] [&>a]:font-bold [&>a]:underline hover:[&>a]:text-red-800
+                    [&>blockquote]:border-l-[4px] md:[&>blockquote]:border-l-[6px] [&>blockquote]:border-[#941007] [&>blockquote]:pl-6 md:[&>blockquote]:pl-10 [&>blockquote]:italic [&>blockquote]:my-10 md:[&>blockquote]:my-14 [&>blockquote]:bg-gray-50 [&>blockquote]:py-8 md:[&>blockquote]:py-10 [&>blockquote]:pr-6 md:[&>blockquote]:pr-8 [&>blockquote]:text-xl md:[&>blockquote]:text-2xl [&>blockquote]:text-gray-900 [&>blockquote]:rounded-r-2xl md:[&>blockquote]:rounded-r-3xl [&>blockquote]:font-serif
+                    [&>a]:text-[#941007] [&>a]:font-bold [&>a]:underline hover:[&>a]:text-[#941007]
                   "
-                  dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+                  dangerouslySetInnerHTML={{ __html: post.content }}
                 />
 
                 {/* Comment Section */}
@@ -261,7 +224,7 @@ const Blog = () => {
                           type="text"
                           value={authorName}
                           onChange={(e) => setAuthorName(e.target.value)}
-                          className="w-full p-5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-50 outline-none transition-all placeholder:text-gray-300 focus:border-[#B91508]"
+                          className="w-full p-5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-50 outline-none transition-all placeholder:text-gray-300 focus:border-[#941007]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -271,7 +234,7 @@ const Blog = () => {
                           type="email"
                           value={authorEmail}
                           onChange={(e) => setAuthorEmail(e.target.value)}
-                          className="w-full p-5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-50 outline-none transition-all placeholder:text-gray-300 focus:border-[#B91508]"
+                          className="w-full p-5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-50 outline-none transition-all placeholder:text-gray-300 focus:border-[#941007]"
                         />
                       </div>
                     </div>
@@ -283,12 +246,12 @@ const Blog = () => {
                         rows={6}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
-                        className="w-full p-5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-50 outline-none transition-all placeholder:text-gray-300 focus:border-[#B91508] resize-none"
+                        className="w-full p-5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-50 outline-none transition-all placeholder:text-gray-300 focus:border-[#941007] resize-none"
                       />
                     </div>
                     <button
                       type="submit"
-                      className="group w-full md:w-auto px-12 py-5 bg-[#B91508] text-white font-extrabold rounded-full hover:bg-black transition-all shadow-xl hover:shadow-2xl active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden"
+                      className="group w-full md:w-auto px-12 py-5 bg-[#941007] text-white font-extrabold rounded-full hover:bg-black transition-all shadow-xl hover:shadow-2xl active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden"
                     >
                       <span className="relative z-10">Post Comment</span>
                       <svg className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -305,7 +268,7 @@ const Blog = () => {
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-xl font-black text-gray-900 tracking-tight">Read Next</h3>
-                  <Link to="/blog" className="text-xs font-bold text-[#B91508] hover:underline uppercase tracking-widest">All Blogs</Link>
+                  <Link to="/blog" className="text-xs font-bold text-[#941007] hover:underline uppercase tracking-widest">All Blogs</Link>
                 </div>
                 <div className="space-y-6">
                   {allPosts
@@ -319,16 +282,16 @@ const Blog = () => {
                       >
                         <div className="w-24 h-24 shrink-0 rounded-2xl overflow-hidden shadow-sm">
                           <img
-                            src={getFeaturedImage(item)}
-                            alt={item.title.rendered}
+                            src={item.image_url || "/asset/images/Others.png"}
+                            alt={item.title}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-[14px] font-extrabold text-gray-900 leading-tight group-hover:text-[#B91508] transition-colors line-clamp-3">
-                            {item.title.rendered}
+                          <h4 className="text-[14px] font-extrabold text-gray-900 leading-tight group-hover:text-[#941007] transition-colors line-clamp-3">
+                            {item.title}
                           </h4>
-                          <p className="text-[11px] font-bold text-gray-400 mt-2 uppercase tracking-tight">{getCategory(item)}</p>
+                          <p className="text-[11px] font-bold text-gray-400 mt-2 uppercase tracking-tight">Article</p>
                         </div>
                       </Link>
                     ))}
@@ -337,10 +300,10 @@ const Blog = () => {
 
               {/* Newsletter or CTA Card placeholder */}
               <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-red-600/20 rounded-full blur-3xl"></div>
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#941007]/20 rounded-full blur-3xl"></div>
                 <h3 className="text-white text-2xl font-black leading-tight mb-4 relative z-10">Upgrade Your Home Experience</h3>
                 <p className="text-gray-400 text-sm mb-6 relative z-10 leading-relaxed">Discover our latest innovations in home appliances.</p>
-                <Link to="/" className="inline-flex py-3 px-8 bg-[#B91508] text-white text-[13px] font-black rounded-full hover:bg-white hover:text-black transition-all duration-300 relative z-10 shadow-lg">Explore Shop</Link>
+                <Link to="/" className="inline-flex py-3 px-8 bg-[#941007] text-white text-[13px] font-black rounded-full hover:bg-white hover:text-black transition-all duration-300 relative z-10 shadow-lg">Explore Shop</Link>
               </div>
             </div>
           </aside>

@@ -1,120 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Slider from 'react-slick';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const ExploreMoreCategories = () => {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(2);
-  const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  const minSwipeDistance = 30;
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const categories = [
     {
       name: 'Pressure Cooker',
-      image: '/asset/images/Gallery/Pressure Cooker.webp'
+      image: '/asset/images/9. SI5.5CIHA.jpeg'
     },
     {
       name: 'Cookware',
-      image: '/asset/images/Gallery/Cookware.webp'
+      image: '/asset/images/Untitled design (21).png'
     },
     {
       name: 'Gas Stove',
-      image: '/asset/images/Gallery/Gas Stove.webp'
+      image: '/asset/images/7. S2BGD (1).jpg'
     },
     {
       name: 'Mixer Grinder',
-      image: '/asset/images/Gallery/Mixer Grinder.webp'
+      image: '/asset/images/Untitled design (27).png'
     },
     {
       name: 'Gas Tandoor',
-      image: '/asset/images/Gallery/Gas Tandoor.webp'
+      image: '/asset/images/Untitled design (22).png'
+    },
+    {
+      name: 'Steam Cookware',
+      image: '/asset/images/Untitled design (28).png'
     }
   ];
-
-  // Update items per view based on screen size
-  useEffect(() => {
-    const updateItemsPerView = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerView(2);
-      } else if (window.innerWidth < 768) {
-        setItemsPerView(3);
-      } else {
-        setItemsPerView(5);
-        setCurrentIndex(0); // Reset index for desktop
-      }
-    };
-
-    updateItemsPerView();
-    window.addEventListener('resize', updateItemsPerView);
-    return () => window.removeEventListener('resize', updateItemsPerView);
-  }, []);
-
-  // Touch handlers
-  const handleTouchStart = (e) => {
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    const distance = touchStartX - touchEndX;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-
-    setTouchStartX(0);
-    setTouchEndX(0);
-  };
-
-  const nextSlide = () => {
-    if (categories.length <= itemsPerView) return;
-    if (currentIndex < categories.length - itemsPerView) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setCurrentIndex(0);
-    }
-  };
-
-  const prevSlide = () => {
-    if (categories.length <= itemsPerView) return;
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      setCurrentIndex(Math.max(0, categories.length - itemsPerView));
-    }
-  };
-
-  const handleCategoryClick = (categoryName) => {
-    // Navigate to product grid with category as search parameter
-    navigate(`/product-grid?search=${encodeURIComponent(categoryName.toLowerCase())}`);
-  };
 
   const handleCategoryClickWithAPI = async (categoryName) => {
     try {
       setLoading(true);
+      const baseURL = import.meta.env.VITE_APP_API_BASE_URL ?? 'https://api.summithomeappliance.com';
 
-      // Fetch products from API based on category
-      const response = await axios.get("api/search", {
-        params: {
-          search: categoryName.toLowerCase()
-        },
-        withCredentials: true // Include cookies for session
+      const response = await axios.get(`${baseURL}/api/search`, {
+        params: { search: categoryName.toLowerCase() },
+        withCredentials: true
       });
 
-      console.log('API Response:', response.data);
-
-      // Handle different response structures
       let productsData = [];
       if (Array.isArray(response.data)) {
         productsData = response.data;
@@ -124,114 +57,94 @@ const ExploreMoreCategories = () => {
         productsData = response.data.products;
       }
 
-      console.log('Products fetched:', productsData.length);
-
-      // Navigate to products page with category name as main parameter and pass products data
-      navigate(`/products/${categoryName.toLowerCase()}`, {
-        state: {
-          searchResults: productsData,
-          searchQuery: categoryName
-        }
+      navigate(`/products/${categoryName.toLowerCase().replace(/\s+/g, '-')}`, {
+        state: { searchResults: productsData, searchQuery: categoryName }
       });
     } catch (error) {
       console.error('Error fetching products:', error);
-      // Fallback to regular navigation if API fails
-      navigate(`/products/${categoryName.toLowerCase()}`);
+      navigate(`/products/${categoryName.toLowerCase().replace(/\s+/g, '-')}`);
     } finally {
       setLoading(false);
     }
   };
 
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    afterChange: (current) => setCurrentSlide(current),
+    responsive: [
+      {
+        breakpoint: 1280,
+        settings: {
+          slidesToShow: 4,
+        }
+      },
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+        }
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 2,
+        }
+      }
+    ]
+  };
+
   return (
-    <div className="max-w-8xl px-2 py-8 md:py-12">
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
+    <div className="max-w-7xl mx-auto px-10 py-12 md:py-16">
+      <h2 className="text-2xl sm:text-4xl text-center md:text-5xl lg:text-5xl font-bold text-black tracking-tight mx-auto mb-3 sm:mb-0 leading-[1.12] sm:leading-tight px-1 font-['Playfair_Display',_serif]">
         Explore More Categories
       </h2>
 
-      {/* Desktop View - Grid Layout */}
-      <div className="hidden md:flex flex-wrap justify-center  gap-4 md:gap-8 max-w-8xl mx-auto">
-        {categories.map((category, index) => (
-          <div
-            key={index}
-            onClick={() => handleCategoryClickWithAPI(category.name)}
-            className="flex flex-col items-center cursor-pointer group transition-transform duration-300 hover:scale-105"
-          >
-            <div className="relative w-24 h-24 md:w-56 md:h-56 mb-3 md:mb-4">
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-full h-full object-cover rounded-lg shadow-md"
-                style={{ opacity: loading ? 0.6 : 1 }}
-              />
-              {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
-                  <div className="animate-spin">⏳</div>
-                </div>
-              )}
-            </div>
-            <p className="text-sm md:text-base font-medium text-gray-800 text-center">
-              {category.name}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Mobile View - Carousel */}
-      <div className="md:hidden">
-        <div
-          className="w-full overflow-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          style={{ cursor: 'grab' }}
-        >
-          <div
-            className="flex transition-transform duration-300 ease-out"
-            style={{
-              transform: `translateX(-${(currentIndex * 100) / itemsPerView}%)`,
-            }}
-          >
-            {categories.map((category, index) => (
+      <div className="relative group mt-10">
+        <Slider {...settings}>
+          {categories.map((category, index) => (
+            <div key={index} className="px-3">
               <div
-                key={index}
                 onClick={() => handleCategoryClickWithAPI(category.name)}
-                className={`flex-shrink-0 flex flex-col items-center cursor-pointer ${itemsPerView === 2 ? 'w-1/2' : 'w-1/3'
-                  } px-2`}
+                className="flex flex-col items-center cursor-pointer group/item"
               >
-                <div className="relative w-40 h-40 mb-3">
+                <div className="relative w-full aspect-square mb-4 overflow-hidden rounded-2xl shadow-sm border border-gray-100 group-hover/item:shadow-xl transition-all duration-300">
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover rounded-lg shadow-md"
+                    className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
                     style={{ opacity: loading ? 0.6 : 1 }}
                   />
                   {loading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
-                      <div className="animate-spin">⏳</div>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                      <div className="animate-spin text-[#941007]">⏳</div>
                     </div>
                   )}
                 </div>
-                <p className="text-sm font-medium text-gray-800 text-center">
+                <p className="text-sm md:text-lg font-bold text-gray-800 text-center uppercase tracking-wide group-hover/item:text-[#941007] transition-colors">
                   {category.name}
                 </p>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          ))}
+        </Slider>
 
         {/* Progress Bar */}
-        <div className="mt-6 px-8">
-          <div className="relative">
-            {/* Progress Track */}
-            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-              {/* Progress Fill */}
-              <div
-                className="h-full bg-gray-400 transition-all duration-200 ease-out rounded-full"
-                style={{
-                  width: `${Math.min(((currentIndex + itemsPerView) / categories.length) * 100, 100)}%`
-                }}
-              />
-            </div>
+        <div className="mt-12 flex justify-center">
+          <div className="w-48 h-1 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#941007] transition-all duration-500 ease-out"
+              style={{
+                width: `${((currentSlide + 1) / categories.length) * 100}%`
+              }}
+            />
           </div>
         </div>
       </div>

@@ -14,41 +14,39 @@ export default defineConfig({
     proxy: {
       // Proxy all /api/* to backend (avoids CORS in dev)
       '/api': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+        target: 'https://api.summithomeappliance.com',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
-      // PHP endpoints used by Header (getMegaMenu) etc.
-      '/getMegaMenu.php': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+      '/storage': {
+        target: 'https://api.summithomeappliance.com',
         changeOrigin: true,
-        secure: true,
+        secure: false,
+      },
+      '/getMegaMenu.php': {
+        target: 'https://api.summithomeappliance.com',
+        changeOrigin: true,
+        secure: false,
       },
       '/products.php': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+        target: 'https://api.summithomeappliance.com',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
-      '/products': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
-        changeOrigin: true,
-        secure: true,
-      },
-      // Image/base path if needed
       '/php_admin_panel': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+        target: 'https://api.summithomeappliance.com',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
       '/wishlistupload.php': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+        target: 'https://api.summithomeappliance.com',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
       '/getcatproducts.php': {
-        target: process.env.VITE_API_PROXY_TARGET || 'https://api.summithomeappliance.com',
+        target: 'https://api.summithomeappliance.com',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
     },
   },

@@ -115,7 +115,7 @@ function SubCategory({ addToCart }) {
                 <FontAwesomeIcon
                   icon={isInWishlist ? solidHeart : regularHeart}
                   style={{
-                    color: isInWishlist ? "#E03B2D" : "gray",
+                    color: isInWishlist ? "#941007" : "gray",
                     cursor: "pointer",
                     fontSize: "20px",
                   }}
@@ -141,12 +141,12 @@ function SubCategory({ addToCart }) {
                   </p>
                   <div className="flex justify-between w-full mt-3 px-2">
                     <button
-                      className="text-xs rounded-full px-3 py-1 text-white bg-[#B91508]"
+                      className="text-xs rounded-full px-3 py-1 text-white bg-[#941007]"
                       onClick={() => handleAddToCart(item)}
                     >
                       Add to cart
                     </button>
-                    <button className="text-xs text-[#B91508] font-semibold">
+                    <button className="text-xs text-[#941007] font-semibold">
                       Buy Now
                     </button>
                   </div>

@@ -85,10 +85,10 @@ const CookerFinder = () => {
               >
                 ❯
               </div>
-              <div className="bg-[#B91508] rounded-full text-center px-3 py-1.5 md:text-xs text-white whitespace-nowrap">
+              <div className="bg-[#941007] rounded-full text-center px-3 py-1.5 md:text-xs text-white whitespace-nowrap">
                 Apply
               </div>
-              <div className="text-[#B91508] rounded-full text-xs px-3 py-1 whitespace-nowrap">
+              <div className="text-[#941007] rounded-full text-xs px-3 py-1 whitespace-nowrap">
                 Reset
               </div>
             </div>
@@ -123,10 +123,10 @@ const CookerFinder = () => {
                         Rs. {Math.floor(item.price)}
                       </p>
                       <div className="flex justify-between w-full mt-3 px-2">
-                        <button className="text-xs rounded-full px-2 py-1 text-white bg-[#B91508]">
+                        <button className="text-xs rounded-full px-2 py-1 text-white bg-[#941007]">
                           Add to cart
                         </button>
-                        <button className="text-xs text-[#B91508] font-semibold">
+                        <button className="text-xs text-[#941007] font-semibold">
                           Buy Now
                         </button>
                       </div>

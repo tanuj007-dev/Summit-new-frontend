@@ -1,36 +1,9 @@
-// import axios from 'axios';
-// const baseUrl = 'https://api.summithomeappliance.com';
-// const axiosInstance = axios.create({
-//   baseURL: baseUrl, // Change to your actual API
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   withCredentials: true, 
-//   timeout: 10000,
-// });
-
-// axiosInstance.interceptors.request.use((config) => {
-//   const url = config.url;
-//   if (!url) return config;
-//   if (/^https?:\/\//i.test(url)) return config;
-
-//   // Support both '/endpoint.php' and 'endpoint.php' usage.
-//   if (url.startsWith('/')) {
-//     config.url = `${baseUrl}${url}`;
-//   } else {
-//     config.url = `${baseUrl}/${url}`;
-//   }
-
-//   // baseURL is not needed since we fully rewrite config.url
-//   config.baseURL = '';
-//   return config;
-// });
-
-// export default axiosInstance;
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL || 'https://api.summithomeappliance.com';
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_BASE_URL ?? "https://api.summithomeappliance.com",
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     Accept: "application/json",
@@ -49,21 +22,51 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 errors - token might be expired
+// Helper to clean malformed JSON with leading garbage text (e.g. leaked PHP code)
+const cleanMalformedData = (data) => {
+  if (typeof data === 'string' && (data.includes('[') || data.includes('{'))) {
+    try {
+      const potentialStarts = [];
+      for (let i = 0; i < data.length; i++) {
+        if (data[i] === '[' || data[i] === '{') {
+          potentialStarts.push(i);
+        }
+      }
+
+      for (let i = potentialStarts.length - 1; i >= 0; i--) {
+        const startIdx = potentialStarts[i];
+        const potentialJson = data.substring(startIdx);
+        try {
+          const parsed = JSON.parse(potentialJson);
+          if (parsed) return parsed;
+        } catch (e) {
+          // Continue to next start
+        }
+      }
+    } catch (e) {
+      console.debug("Failed to clean malformed data", e);
+    }
+  }
+  return data;
+};
+
+// Handle responses
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    response.data = cleanMalformedData(response.data);
+    return response;
+  },
   (error) => {
+    if (error.response) {
+      error.response.data = cleanMalformedData(error.response.data);
+    }
+    
     if (error.response?.status === 401) {
-      // Token is invalid or expired
       console.warn("Token expired or invalid, clearing localStorage");
       localStorage.removeItem("auth_token");
-      // Optionally redirect to login
-      // window.location.href = "/login";
     }
     return Promise.reject(error);
   }
 );
 
 export default axiosInstance;
-
-

@@ -19,9 +19,9 @@ const FilterSelect = ({ label, options, value, onChange }) => (
         min-w-[120px]
         max-w-[120px]
         focus:outline-none
-        focus:ring-2 focus:ring-[#B91508]
-        focus:border-[#B91508]
-        hover:border-[#B91508]
+        focus:ring-2 focus:ring-[#941007]
+        focus:border-[#941007]
+        hover:border-[#941007]
         transition-colors
       "
     >

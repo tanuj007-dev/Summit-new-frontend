@@ -1,8 +1,12 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight, FaChevronDown, FaTrophy } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaChevronDown, FaTrophy, FaCartPlus } from "react-icons/fa";
 import axios from "../axiosConfig";
 import { CartContext } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
 
 
 /* -------------------- IMAGE OPTIMIZATION -------------------- */
@@ -22,38 +26,124 @@ const getOptimizedImageSrc = (img, width = 400, quality = 80) => {
   return img;
 };
 
-const FilterSelect = ({ label, options, value, onChange, defaultValue }) => (
-  <div className="relative  mt-2 inline-block">
-    <select
-      value={value !== undefined && value !== null && value !== "" ? value : ""}
-      onChange={onChange}
-      className="
+const FilterSelect = ({ label, options, value, onChange, onFocus }) => {
+  const hasValue = value !== undefined && value !== null && value !== "";
+  return (
+    <div className="relative mt-0 sm:mt-1 w-full min-w-0 lg:mt-2 lg:w-auto lg:inline-block lg:shrink-0">
+      <select
+        value={hasValue ? value : ""}
+        onChange={onChange}
+        onFocus={onFocus}
+        aria-label={label}
+        className={`
         appearance-none
-        bg-gray-50 border-2 border-gray-300
-        text-gray-700 text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full
-        cursor-pointer
-        w-auto
-        min-w-[90px] sm:min-w-[120px]
-        max-w-[90px] sm:max-w-[150px]
-        focus:outline-none
-        focus:ring-2 focus:ring-[#B91508]
-      "
-    >
-      <option value="">{label}</option>
-      {options.map((opt, i) => (
-        <option key={i} value={opt}>{opt}</option>
-      ))}
-    </select>
+        bg-gray-50 border-2 rounded-full
+        text-gray-700 text-[12px] sm:text-sm
+        pl-3 pr-7 sm:pl-4 sm:pr-9 py-2.5 sm:py-2
+        cursor-pointer w-full min-w-0 min-h-[44px] sm:min-h-0
+        lg:w-auto lg:min-w-[120px] lg:max-w-[170px]
+        focus:outline-none focus:ring-2 focus:ring-[#941007]
+        ${hasValue ? "border-[#941007]" : "border-gray-300"}
+      `}
+      >
+        <option value="">{label}</option>
+        {(Array.isArray(options) ? options : []).map((opt, i) => (
+          <option key={i} value={opt}>{opt}</option>
+        ))}
+      </select>
 
-    <FaChevronDown
-      className="
-        absolute right-5 top-1/2 -translate-y-1/2
-        text-gray-400 text-[10px]
-        pointer-events-none
-      "
-    />
-  </div>
-);
+      <FaChevronDown
+        className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"
+      />
+    </div>
+  );
+};
+
+const SizeMeterDropdown = ({ value, onChange, onFocus }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        // Detached node check for React re-renders
+        if (e.target.ownerDocument && !e.target.ownerDocument.body.contains(e.target)) return;
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="relative mt-0 sm:mt-1 w-full min-w-0 lg:mt-2 lg:w-auto lg:inline-block lg:shrink-0" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (!isOpen) onFocus();
+        }}
+        className={`
+          appearance-none bg-gray-50 border-2 rounded-full text-left text-gray-700 text-[12px] sm:text-sm pl-3 pr-7 sm:pl-4 sm:pr-9 py-2.5 sm:py-2
+          cursor-pointer w-full min-w-0 min-h-[44px] sm:min-h-0 lg:w-auto lg:min-w-[120px] lg:max-w-[170px]
+          focus:outline-none focus:ring-2 focus:ring-[#941007] relative
+          ${value ? "border-[#941007]" : "border-gray-300"}
+        `}
+      >
+        <span className="truncate block pr-4">
+          {value ? `Size: ${value}L` : "Size"}
+        </span>
+        <FaChevronDown
+          className={`absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      
+      {isOpen && (
+        <div 
+          className="absolute z-50 top-full left-0 mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl p-4"
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
+          <div className="w-full flex justify-between text-[11px] text-gray-500 mb-3 font-medium">
+            <span>1L</span>
+            <span>40L</span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="40"
+            step="0.5"
+            value={value || 1}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full cursor-pointer accent-[#941007]"
+          />
+          <div className="mt-4 text-[13px] font-bold text-gray-800 text-center">
+            {value || 1} Litres
+          </div>
+          {parseFloat(value || 1) > 24 && (
+            <div className="mt-4 text-[11px] leading-tight text-[#941007] text-center font-medium bg-red-50 p-2.5 rounded-lg border border-red-100">
+              Products for &gt;24L have not been added yet, stay tuned for more updates.
+            </div>
+          )}
+          {value && (
+            <button 
+              type="button"
+              onClick={() => onChange("")}
+              className="mt-4 w-full text-center text-[11px] text-gray-500 hover:text-gray-800 underline transition-colors font-medium"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 
 
@@ -61,6 +151,7 @@ const SmartCookerFinder = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState([]); // This will hold the filtered and transformed products
   const [loading, setLoading] = useState(true);
+  const { addToWishlist, isInWishlist } = useWishlist();
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -69,7 +160,7 @@ const SmartCookerFinder = () => {
     shape: "",
     material_name: "",
     net_quantity: "",
-    // bottom_type: "",
+    bottom_type: "",
   });
 
   const [filterOptions, setFilterOptions] = useState({
@@ -77,24 +168,41 @@ const SmartCookerFinder = () => {
     shape: [],
     material_name: [],
     net_quantity: [],
-    // bottom_type: [],
+    bottom_type: ["Induction compatible", "Non induction compatible"],
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(4);
+  const [itemsPerView, setItemsPerView] = useState(() =>
+    typeof window !== "undefined" ? (window.innerWidth < 1024 ? 2 : 5) : 2
+  );
+  const [isLg, setIsLg] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches
+  );
+  const [activeFilterKey, setActiveFilterKey] = useState(null);
+
+  const filterDescriptions = {
+    type: "Inner lids are compact and safe, outer lids are easier to open and often used in larger sizes.",
+    shape: "Choose a shape that suits your cooking style—from traditional to compact.",
+    material: "Each material has its benefits—choose based on durability, heat distribution, or preference.",
+    size: "Select the right size based on your family size or recipe needs.",
+    bottom: "Make sure your pressure cooker suits your cooktop.",
+  };
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
   const [mouseStartX, setMouseStartX] = useState(0);
   const [mouseEndX, setMouseEndX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [touchStartTime, setTouchStartTime] = useState(0);
+  const touchStartXRef = useRef(0);
 
   // Image loading optimization states
   const [imageLoadingStates, setImageLoadingStates] = useState({});
 
-  const minSwipeDistance = 20; // Reduced for easier swiping
-  const velocityThreshold = 0.3; // pixels per millisecond
+  const minSwipeDistance = 20;
+  const velocityThreshold = 0.3;
+  const dragThreshold = 8;
 
   // Handle image load events
   const handleImageLoad = (imageId) => {
@@ -106,39 +214,40 @@ const SmartCookerFinder = () => {
   };
 
   const handleTouchStart = (e) => {
-    const clientX = e.touches[0].clientX;
-    setTouchStartX(clientX);
-    setTouchEndX(clientX);
+    const x = e.touches[0].clientX;
+    touchStartXRef.current = x;
+    setTouchStartX(x);
+    setTouchEndX(x);
     setTouchStartTime(Date.now());
     setDragOffset(0);
   };
 
   const handleTouchMove = (e) => {
     const currentX = e.touches[0].clientX;
+    const startX = touchStartXRef.current;
+    const move = currentX - startX;
+    if (!isSwiping) {
+      if (Math.abs(move) > dragThreshold) setIsSwiping(true);
+      else return;
+    }
+    e.preventDefault();
     setTouchEndX(currentX);
-    const offset = (currentX - touchStartX) * 1.2; // 1.2x multiplier for more sensitive drag
-    setDragOffset(offset);
+    setDragOffset(move);
   };
 
   const handleTouchEnd = () => {
+    if (!isSwiping) return;
     const distance = touchStartX - touchEndX;
     const timeElapsed = Date.now() - touchStartTime;
-    const velocity = Math.abs(distance) / timeElapsed;
-
-    // Check velocity for fast swipes or distance for slower swipes
+    const velocity = timeElapsed > 0 ? Math.abs(distance) / timeElapsed : 0;
     const isLeftSwipe = distance > minSwipeDistance || (velocity > velocityThreshold && distance > 5);
     const isRightSwipe = distance < -minSwipeDistance || (velocity > velocityThreshold && distance < -5);
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-
-    // Reset touch positions
+    if (isLeftSwipe) nextSlide();
+    else if (isRightSwipe) prevSlide();
     setTouchStartX(0);
     setTouchEndX(0);
     setTouchStartTime(0);
+    setIsSwiping(false);
     setDragOffset(0);
   };
 
@@ -195,21 +304,24 @@ const SmartCookerFinder = () => {
     }
   };
 
-  // Update items per view based on screen size
+  // Below lg: horizontal carousel, 2 cards per view; lg+: 5 vertical tiles
   React.useEffect(() => {
     const updateItemsPerView = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerView(2);
-      } else if (window.innerWidth < 768) {
-        setItemsPerView(3);
-      } else {
-        setItemsPerView(5);
-      }
+      if (window.innerWidth < 1024) setItemsPerView(2);
+      else setItemsPerView(5);
     };
 
     updateItemsPerView();
     window.addEventListener('resize', updateItemsPerView);
     return () => window.removeEventListener('resize', updateItemsPerView);
+  }, []);
+
+  React.useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => setIsLg(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   const { handleAddToCart, handleBuyNow } = useContext(CartContext);
@@ -439,7 +551,7 @@ const SmartCookerFinder = () => {
         shape: uniqueShapes,
         material_name: uniqueMaterials,
         net_quantity: uniqueValues(productsData, ['size', 'net_quantity', 'capacity']),
-        // bottom_type: uniqueValues(productsData, ['bottom_type', 'bottom', 'base_type']),
+        bottom_type: ['Induction compatible', 'Non induction compatible'],
       });
 
     } catch (error) {
@@ -542,12 +654,23 @@ const SmartCookerFinder = () => {
       return;
     }
 
+    // Helper: derive Induction compatible / Non induction compatible from product for bottom filter
+    const getBottomInductionType = (p) => {
+      const raw = (p.bottom_type || p.bottom || p.base_type || p.induction || p.induction_compatible || "").toString().toLowerCase();
+      const name = (p.product_name || p.name || p.title || "").toString().toLowerCase();
+      if (raw.includes("induction") || name.includes("induction")) return "Induction compatible";
+      if (raw.includes("non") && raw.includes("induction")) return "Non induction compatible";
+      if (raw.includes("gas") || name.includes("gas only") || raw === "non induction") return "Non induction compatible";
+      return null;
+    };
+
     let filtered = allProducts.filter(product => {
       const lidType = product.lid_type || product.subcat_name || product.type;
       const productMaterial = getProductMaterial(product); // Extract material from product
       const size = product.size || product.net_quantity || product.capacity;
       const productShape = getProductShape(product); // Extract shape from product name
       const bottom = product.bottom_type || product.bottom || product.base_type;
+      const bottomInductionType = getBottomInductionType(product);
 
       // Handle "Inner Lid" and "Outer Lid" filter selections
       let matchesSubcat = true;
@@ -563,9 +686,35 @@ const SmartCookerFinder = () => {
       }
 
       const matchesMaterial = !filters.material_name || (productMaterial && productMaterial === filters.material_name);
-      const matchesSize = !filters.net_quantity || (size && String(size).trim() === filters.net_quantity);
+      
+      let matchesSize = true;
+      if (filters.net_quantity) {
+        const selectedSizeNum = parseFloat(filters.net_quantity);
+        let productSizeNum = NaN;
+        const pName = String(product.product_name || product.name || product.title || "").toLowerCase();
+        if (pName) {
+          const sizeMatch = pName.match(/([\d.]+)\s*(?:l|liters?|litres?)\b/i);
+          if (sizeMatch) {
+            productSizeNum = parseFloat(sizeMatch[1]);
+          }
+        }
+        if (isNaN(productSizeNum)) {
+          productSizeNum = parseFloat(size);
+        }
+        matchesSize = !isNaN(productSizeNum) && productSizeNum === selectedSizeNum;
+      }
+
       const matchesShape = !filters.shape || (productShape && productShape === filters.shape);
-      const matchesBottom = !filters.bottom_type || (bottom && String(bottom).trim() === filters.bottom_type);
+      // Bottom filter: Induction compatible / Non induction compatible (or exact match for legacy bottom_type values)
+      let matchesBottom = true;
+      if (filters.bottom_type) {
+        if (filters.bottom_type === "Induction compatible" || filters.bottom_type === "Non induction compatible") {
+          // Match when product has same type, or when type is unknown (show in both)
+          matchesBottom = bottomInductionType === filters.bottom_type || bottomInductionType === null;
+        } else {
+          matchesBottom = (bottom && String(bottom).trim() === filters.bottom_type);
+        }
+      }
 
       return matchesSubcat && matchesMaterial && matchesSize && matchesShape && matchesBottom;
     });
@@ -655,6 +804,7 @@ const SmartCookerFinder = () => {
   };
 
   const handleResetFilters = () => {
+    setActiveFilterKey(null);
     setFilters({
       sort: "",
       subcat_name: "",
@@ -665,41 +815,187 @@ const SmartCookerFinder = () => {
     });
   };
 
+  const scrollContainerRef = useRef(null);
+
+  React.useEffect(() => {
+    setCurrentIndex(0);
+    const el = scrollContainerRef.current;
+    if (el) el.scrollLeft = 0;
+  }, [itemsPerView]);
+
   const nextSlide = () => {
-    if (products.length <= itemsPerView) return;
-    if (currentIndex < products.length - itemsPerView) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setCurrentIndex(0);
-    }
+    const el = scrollContainerRef.current;
+    if (!el || products.length <= itemsPerView) return;
+    el.scrollBy({ left: el.clientWidth, behavior: "smooth" });
   };
 
   const prevSlide = () => {
-    if (products.length <= itemsPerView) return;
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      setCurrentIndex(Math.max(0, products.length - itemsPerView));
-    }
+    const el = scrollContainerRef.current;
+    if (!el || products.length <= itemsPerView) return;
+    el.scrollBy({ left: -el.clientWidth, behavior: "smooth" });
   };
 
-  return (
-    <section className="w-full bg-white py-16 px-4 sm:px-6 lg:px-12 relative">
-
-      {/* Heading */}
-      <div className="text-center mb-1 sm:mb-8">
-        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-black">
-          Smart Cooker Finder
-        </h2>
-        <p className="text-[#636365] text-sm sm:text-base md:text-lg font-semibold mt-1">
-          Built for the Way You Cook
-        </p>
+  const renderCookerCard = (item) => (
+    <div className="group/card flex flex-col h-full min-h-0 items-stretch bg-white transition-shadow duration-300 hover:shadow-lg rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 shadow-sm">
+      <div className="relative w-full shrink-0 aspect-square bg-[#FAFAFA] overflow-hidden border-b border-gray-100">
+        <Link to={`/product-details/${item.id || item.sno || item.product_id || item.detail_id}`} className="block w-full h-full">
+          <div className="w-full h-full relative flex items-center justify-center p-3 sm:p-4 lg:p-6">
+            {!imageLoadingStates[item.id] && (
+              <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+            )}
+            <img
+              src={getOptimizedImageSrc(item.image, 400, 80)}
+              alt={item.title}
+              className={`w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105 ${imageLoadingStates[item.id] ? "opacity-100" : "opacity-0"}`}
+              loading="lazy"
+              onLoad={() => handleImageLoad(item.id)}
+              onError={(e) => {
+                handleImageError(item.id);
+                e.target.src = "/asset/images/dummy-image-square.jpg";
+              }}
+              style={{ transition: "opacity 0.3s ease-in-out" }}
+            />
+          </div>
+        </Link>
+        {/* Wishlist Icon */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            addToWishlist(item.product || item);
+          }}
+          className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform duration-300 hover:bg-white"
+        >
+          <FontAwesomeIcon
+            icon={isInWishlist(item.id || item.product_id) ? solidHeart : regularHeart}
+            className={isInWishlist(item.id || item.product_id) ? "text-red-600" : "text-gray-400"}
+            style={{ fontSize: "14px" }}
+          />
+        </button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col  sm:flex-row  items-start sm:items-center gap-1 mt-4 justify-center mb-6 sm:mb-8">
-        <div className="w-full sm:w-auto   overflow-x-auto scrollbar-hide pb-2">
-          <div className="flex flex-wrap  gap-3 sm:gap-4 min-w-max px-1">
+      <div className="font-gotham flex flex-col text-left min-w-0 justify-between p-3 sm:p-3.5 lg:p-4 flex-1 grow">
+        <p className="font-bold font-gotham text-gray-900 text-xs sm:text-sm lg:text-[15px] leading-snug min-h-0 mb-2 uppercase tracking-tight line-clamp-2 lg:min-h-11 break-words">
+          {item.title}
+        </p>
+
+        <div className="flex items-center gap-1 sm:gap-1.5 mb-2 text-[9px] sm:text-[11px] text-gray-500 flex-wrap">
+          <span className="flex items-center gap-0.5 font-bold text-[#941007] uppercase tracking-wide shrink-0">
+            <FaTrophy className="text-[#941007] shrink-0" size={10} />
+            BESTSELLER
+          </span>
+          <span className="text-gray-300 select-none shrink-0" aria-hidden>
+            |
+          </span>
+          <span className="truncate text-gray-500">1k+ bought</span>
+        </div>
+
+        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          <div className="flex text-amber-500 text-[11px] sm:text-sm lg:text-base">
+            {[...Array(5)].map((_, k) => (
+              <span key={k}>★</span>
+            ))}
+          </div>
+          <span className="text-[9px] sm:text-xs text-gray-500 pt-0.5">20 Reviews</span>
+        </div>
+
+        <div className="mt-auto border-t border-gray-100 flex flex-col pt-2 sm:pt-2.5 gap-2">
+          <div className="flex justify-between items-baseline gap-1 min-w-0">
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-baseline gap-1">
+                <span className="text-base sm:text-lg lg:text-2xl font-black text-gray-900 truncate tracking-tight">
+                  N/A
+                </span>
+              </div>
+              <span className="text-[9px] sm:text-[10px] text-gray-500 leading-none" />
+            </div>
+            <div className="text-right shrink-0">
+              <span className="block text-[10px] sm:text-[11px] font-semibold text-gray-800" />
+            </div>
+          </div>
+          <div className="flex flex-row flex-wrap items-stretch gap-1 sm:gap-1.5 lg:gap-2">
+            <button
+              type="button"
+              aria-label="Add to cart"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (item.variantId || item.id) {
+                  handleAddToCart({
+                    product_id: item.id,
+                    id: item.id,
+                    name: item.title,
+                    title: item.title,
+                    price: item.price,
+                    image: item.image,
+                    ...item,
+                  });
+                }
+              }}
+              className="flex-1 min-w-0 min-h-[40px] sm:min-h-[36px] lg:min-h-[36px] bg-white hover:bg-[#941007] text-[#941007] border border-[#941007] hover:text-white text-[9px] sm:text-[10px] lg:text-xs font-bold py-1.5 sm:py-2 lg:py-1.5 px-0 sm:px-2 rounded-full shadow-sm active:scale-95 transition-all text-center touch-manipulation select-none inline-flex items-center justify-center gap-0.5 sm:gap-1 leading-tight"
+            >
+              <FaCartPlus className="w-4 h-4 shrink-0 sm:w-2.5 sm:h-2.5" aria-hidden />
+              <span className="hidden sm:inline text-center">Add to cart</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Buy now"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (item.variantId || item.id) {
+                  handleBuyNow({
+                    product_id: item.id,
+                    id: item.id,
+                    name: item.title,
+                    title: item.title,
+                    price: item.price,
+                    image: item.image,
+                    ...item,
+                  });
+                }
+              }}
+              className="flex-1 min-w-0 min-h-[40px] sm:min-h-[36px] lg:min-h-[36px] bg-[#941007] text-white border border-[#941007] text-[9px] sm:text-[10px] lg:text-xs font-bold py-1 sm:py-2 lg:py-1.5 px-0.5 sm:px-2 rounded-full shadow-sm hover:shadow-red-200 active:scale-95 transition-all text-center touch-manipulation select-none inline-flex flex-col sm:flex-row items-center justify-center leading-[1.1] sm:leading-tight gap-0 sm:gap-0"
+            >
+              <span className="flex flex-col sm:hidden items-center justify-center font-bold">
+                <span>Buy</span>
+                <span>Now</span>
+              </span>
+              <span className="hidden sm:inline">Buy Now</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <section className="font-gotham w-full bg-white py-12 sm:py-16 lg:py-20 px-3 sm:px-6 lg:px-12 relative">
+      <div className="max-w-[1400px] mx-auto w-full min-w-0">
+        {/* ===== Heading (mobile-first — text only; filters stay fully available below) ===== */}
+        <div className="text-center mb-10 sm:mb-14 md:mb-16 px-3 sm:px-4 max-w-5xl mx-auto">
+          <span className="inline-block text-[#941007] text-[11px] sm:text-sm font-bold tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-2 opacity-90 px-1">
+            Peak Culinary Performance
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-black tracking-tight text-balance max-w-[min(100%,40rem)] mx-auto mb-3 sm:mb-0 leading-[1.12] sm:leading-tight px-1">
+            Smart Cooker Finder
+          </h2>
+          <p className="text-[#636365] text-[13px] sm:text-base md:text-[18px] font-semibold max-w-md sm:max-w-2xl mx-auto px-2 sm:px-4 mb-2 sm:mb-0 leading-snug">
+            Built for the Way You Cook
+          </p>
+          {activeFilterKey && filterDescriptions[activeFilterKey] && (
+          <div className="text-center max-w-5xl mx-auto">
+            <p className="text-gray-400 text-[12px] sm:text-[14px] md:text-[16px] max-w-3xl sm:max-w-4xl mx-auto leading-relaxed text-pretty">
+              {filterDescriptions[activeFilterKey]}
+            </p>
+          </div>
+        )}
+        </div>
+
+        {/* ===== Filter description (context when a filter is focused) ===== */}
+        
+
+        {/* ===== All filters: grid on mobile (always visible) · flex-wrap on large screens ===== */}
+        <div className="w-full mb-6 sm:mb-8 min-w-0 relative z-20">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:flex lg:flex-wrap lg:justify-center lg:gap-3 w-full">
             <FilterSelect
               label="Sort By"
               options={["Popularity", "Newest", "Price: Low to High", "Price: High to Low"]}
@@ -710,53 +1006,58 @@ const SmartCookerFinder = () => {
               label="Type"
               options={filterOptions.subcat_name}
               value={filters.subcat_name}
-              onChange={handleSubcatChange}
+              onChange={(e) => { handleSubcatChange(e); setActiveFilterKey("type"); }}
+              onFocus={() => setActiveFilterKey("type")}
             />
             <FilterSelect
               label="Shape"
               options={filterOptions.shape}
               value={filters.shape}
-              onChange={handleShapeChange}
+              onChange={(e) => { handleShapeChange(e); setActiveFilterKey("shape"); }}
+              onFocus={() => setActiveFilterKey("shape")}
             />
             <FilterSelect
               label="Material"
               options={filterOptions.material_name}
               value={filters.material_name}
-              onChange={handleMaterialChange}
+              onChange={(e) => { handleMaterialChange(e); setActiveFilterKey("material"); }}
+              onFocus={() => setActiveFilterKey("material")}
+            />
+            <SizeMeterDropdown
+              value={filters.net_quantity}
+              onChange={(val) => setFilters(prev => ({ ...prev, net_quantity: val }))}
+              onFocus={() => setActiveFilterKey("size")}
             />
             <FilterSelect
-              label="Size"
-              options={filterOptions.net_quantity}
-              value={filters.net_quantity}
-              onChange={handleSizeChange}
-            />
-            {/* <FilterSelect
               label="Bottom"
               options={filterOptions.bottom_type}
               value={filters.bottom_type}
-              onChange={handleBottomTypeChange}
-            /> */}
+              onChange={(e) => { handleBottomTypeChange(e); setActiveFilterKey("bottom"); }}
+              onFocus={() => setActiveFilterKey("bottom")}
+            />
           </div>
         </div>
 
-        <div className="flex gap-2 sm:gap-3 flex-shrink-0 w-full items-center justify-end sm:w-auto">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-center gap-3 mt-4 sm:mt-6 relative z-20">
           <button
+            type="button"
             onClick={handleApplyFilters}
-            className="bg-[#B91508] text-white  text-[13px] sm:text-sm px-4 sm:px-4 py-1 sm:py-2 rounded-full whitespace-nowrap hover:bg-red-700 transition"
+            className="min-h-[44px] bg-[#941007] text-white text-[13px] sm:text-sm px-8 sm:px-10 py-2.5 rounded-full whitespace-nowrap hover:bg-[#941007] transition touch-manipulation shadow-sm active:scale-95"
           >
             Apply
           </button>
           <button
+            type="button"
             onClick={handleResetFilters}
-            className="text-[#B91508] text-sm sm:text-sm font-medium hover:underline whitespace-nowrap border-1 border-[#B91508] px-4 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
+            className="min-h-[44px] text-[#941007] text-sm font-medium border-2 border-[#941007] px-8 sm:px-10 py-2 rounded-full hover:bg-[#941007] hover:text-white transition touch-manipulation active:scale-95"
           >
             Reset
           </button>
         </div>
-      </div>
 
-      {/* Slider */}
-      <div className="relative flex flex-col">
+        {/* ===== Products: carousel — vertical cards (image top, content below) all breakpoints ===== */}
+        <div className="relative group w-full min-w-0 z-0 mt-10 pt-6 border-t border-gray-100">
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="text-gray-500">Loading products...</div>
@@ -766,212 +1067,86 @@ const SmartCookerFinder = () => {
             <div className="text-gray-500">No products found</div>
           </div>
         ) : (
-          <div
-            className="w-full overflow-hidden"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              cursor: isDragging ? 'grabbing' : 'grab',
-              touchAction: 'pan-y pinch-zoom',
-              userSelect: 'none'
-            }}
-          >
+          <div className="relative w-full min-w-0">
             <div
-              className="flex"
+              ref={scrollContainerRef}
+              className="w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory py-3 -mx-3 px-3 sm:-mx-2 sm:px-2 lg:-mx-4 lg:px-4 scrollbar-hide touch-pan-x"
               style={{
-                transform: `translateX(calc(-${(currentIndex * 100) / itemsPerView}% + ${dragOffset}px))`,
-                transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                willChange: 'transform'
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+              onScroll={() => {
+                const el = scrollContainerRef.current;
+                if (!el) return;
+                const pageWidth = el.clientWidth;
+                const idx = pageWidth > 0 ? Math.round(el.scrollLeft / pageWidth) : 0;
+                const next = Math.min(Math.max(0, idx), Math.max(0, products.length - itemsPerView));
+                setCurrentIndex((prev) => (prev === next ? prev : next));
               }}
             >
-              {products.map((item, i) => {
-                const variantId = item.variantId || item.id;
-
-                return (
-                  <div
-                    key={item.id || `product-${i}`}
-                    className={`flex-shrink-0 px-3 ${itemsPerView === 2 ? "w-1/2" :
-                      itemsPerView === 3 ? "w-1/3" : "w-1/5"
-                      }`}
-                  >
-                    {/* "AMAZON/QUICK COMMERCE" STYLE CARD */}
-                    <div className="group/card flex flex-col h-full bg-white transition-transform duration-300 hover:shadow-lg rounded-lg overflow-hidden border border-transparent hover:border-gray-200">
-
-                      {/* IMAGE SECTION */}
-                      <div className="relative aspect-square w-full bg-[#FAFAFA] overflow-hidden">
-                        <Link to={`/product-details/${item.id}`} className="block w-full h-full">
-                          <div className="w-full h-full relative p-4 flex items-center justify-center">
-                            {!imageLoadingStates[item.id] && (
-                              <div className="absolute inset-0 bg-gray-100 animate-pulse" />
-                            )}
-                            <img
-                              src={getOptimizedImageSrc(item.image, 400, 80)}
-                              alt={item.title}
-                              className={`w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105 ${imageLoadingStates[item.id] ? 'opacity-100' : 'opacity-0'}`}
-                              loading="lazy"
-                              onLoad={() => handleImageLoad(item.id)}
-                              onError={(e) => {
-                                handleImageError(item.id);
-                                e.target.src = "/asset/images/dummy-image-square.jpg";
-                              }}
-                              style={{
-                                transition: 'opacity 0.3s ease-in-out'
-                              }}
-                            />
-                          </div>
-                        </Link>
-                      </div>
-
-                      {/* CONTENT SECTION */}
-                      <div className="p-3 flex flex-col flex-grow text-left">
-
-                        {/* Title */}
-                        <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 min-h-[2.5rem] mb-1">
-                          {item.title
-                            ?.toLowerCase()
-                            .replace(/^\w/, (c) => c.toUpperCase())}
-                        </h3>
-
-                        {/* Bestseller / Stats Badge (Mock Data) */}
-                        <div className="flex items-center gap-1.5 mb-1.5 text-xs text-gray-500">
-                          <span className="flex items-center gap-1 font-bold text-[#B91508]">
-                            <FaTrophy className="text-[#B91508]" /> BESTSELLER
-                          </span>
-                          <span className="w-0.5 h-3 bg-gray-300"></span>
-                          <span className="truncate">1k+ bought last month</span>
-                        </div>
-
-                        {/* Reviews */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex text-amber-500 text-sm">
-                            {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
-                          </div>
-                          <span className="text-xs text-gray-500 pt-0.5">20 Reviews</span>
-                        </div>
-
-                        {/* Price & Actions Section: STACKED for Responsive */}
-                        <div className="mt-auto pt-2 border-t border-gray-50 flex flex-col gap-2">
-
-                          {/* Row 1: Prices & EMI Text */}
-                          <div className="flex justify-between items-baseline">
-                            <div className="flex flex-col">
-                              <div className="flex items-baseline gap-1">
-                                <span className="text-base sm:text-lg font-black text-gray-900">
-                                  ₹{item.price?.toLocaleString()}
-                                </span>
-                                {item.oldPrice && item.oldPrice > item.price && (
-                                  <span className="text-[10px] sm:text-xs text-gray-400 line-through decoration-gray-400">
-                                    ₹{item.oldPrice?.toLocaleString()}
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-[9px] sm:text-[10px] text-gray-500 leading-none">(incl. taxes)</span>
-                            </div>
-
-                            <div className="text-right">
-                              <span className="block text-[10px] sm:text-[11px] font-semibold text-gray-800">
-                                or ₹{Math.round((item.price || 999) / 4)}/mo
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Row 2: Buttons (Side by Side) */}
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const variantId = item.variantId || item.id;
-                                if (variantId) {
-                                  handleAddToCart({
-                                    product_id: item.id,
-                                    id: item.id,
-                                    name: item.title,
-                                    title: item.title,
-                                    price: item.price,
-                                    image: item.image,
-                                    ...item
-                                  });
-                                }
-                              }}
-                              className="flex-1 bg-white hover:bg-[#B91508] text-[#B91508] border border-[#B91508] hover:text-white text-[10px] sm:text-xs font-bold py-1.5 rounded-md shadow-sm active:scale-95 transition-all text-center"
-                            >
-                              Add +
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const variantId = item.variantId || item.id;
-                                if (variantId) {
-                                  handleBuyNow({
-                                    product_id: item.id,
-                                    id: item.id,
-                                    name: item.title,
-                                    title: item.title,
-                                    price: item.price,
-                                    image: item.image,
-                                    ...item
-                                  });
-                                }
-                              }}
-                              className="flex-1 bg-[#B91508] text-white border border-[#B91508] text-[10px] sm:text-xs font-bold py-1.5 rounded-md shadow-sm hover:shadow-red-200 active:scale-95 transition-all text-center truncate px-1"
-                            >
-                              Buy on EMI
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+              <div
+                className="flex flex-row flex-nowrap items-stretch gap-2 sm:gap-2.5 lg:gap-0 w-full"
+              >
+                {products.map((item, i) => {
+                  const slideStyle = isLg
+                    ? { flex: `0 0 ${100 / itemsPerView}%`, maxWidth: `${100 / itemsPerView}%` }
+                    : {
+                        flex: "0 0 auto",
+                        width: "min(calc(50vw - 1.75rem), 12.5rem)",
+                        maxWidth: "min(calc(50vw - 1.75rem), 12.5rem)",
+                      };
+                  return (
+                    <div
+                      key={item.id || `product-${i}`}
+                      className="shrink-0 snap-start min-w-0 box-border first:pl-0 last:pr-0 lg:px-3"
+                      style={slideStyle}
+                    >
+                      {renderCookerCard(item)}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
+
+            {products.length > itemsPerView && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevSlide}
+                  className="hidden lg:flex absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#941007] hover:scale-110 transition-all duration-300"
+                  aria-label="Previous"
+                >
+                  <FaChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextSlide}
+                  className="hidden lg:flex absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#941007] hover:scale-110 transition-all duration-300"
+                  aria-label="Next"
+                >
+                  <FaChevronRight size={18} />
+                </button>
+              </>
+            )}
           </div>
         )}
 
-      </div>
-
-      {/* Navigation Buttons - Desktop Only */}
-      {!loading && products.length > itemsPerView && (
-        <div className="hidden md:flex absolute top-1/2 -translate-y-1/2  mt-18  left-0 right-0 px-2 justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)" }}>
-          <button
-            onClick={prevSlide}
-            className="bg-gray-100 hover:bg-gray-100 text-[#B91508] p-2 sm:p-3 rounded-full shadow-lg transition pointer-events-auto"
-            aria-label="Previous"
-          >
-            <FaChevronLeft className="text-lg sm:text-xl" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="bg-gray-100 hover:bg-gray-100 text-[#B91508] p-2 sm:p-3 rounded-full shadow-lg transition pointer-events-auto"
-            aria-label="Next"
-          >
-            <FaChevronRight className="text-lg sm:text-xl" />
-          </button>
-        </div>
-      )}
-
-      {/* Progress Bar */}
-      {!loading && products.length > 0 && (
-        <div className="mt-6 px-8">
-          <div className="relative">
-            {/* Progress Track */}
-            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-              {/* Progress Fill */}
+        {/* Progress bar (all breakpoints when carousel) */}
+        {!loading && products.length > 0 && (
+          <div className="mt-5 sm:mt-6 lg:mt-8 px-1 sm:px-4 w-full max-w-none lg:max-w-md lg:mx-auto">
+            <div className="relative h-2 lg:h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gray-400 transition-all duration-200 ease-out rounded-full"
+                className="h-full bg-[#941007] transition-all duration-300 ease-out rounded-full"
                 style={{
-                  width: `${Math.min(((currentIndex + itemsPerView) / products.length) * 100, 100)}%`
+                  width: `${Math.min(((currentIndex + itemsPerView) / products.length) * 100, 100)}%`,
                 }}
               />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      </div>
     </section>
   );
 };

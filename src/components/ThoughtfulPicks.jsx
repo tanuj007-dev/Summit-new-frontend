@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight, FaTrophy } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaTrophy, FaCartPlus } from "react-icons/fa";
 import axios from "../axiosConfig";
 import { CartContext } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
 
 /* -------------------- IMAGE OPTIMIZATION -------------------- */
 // Optimized image helper with quality and size parameters
@@ -26,31 +30,34 @@ const ThoughtfulPicks = () => {
   const [loading, setLoading] = useState(true);
 
   const filters = [
+    { label: "Under ₹499", value: 499 },
     { label: "Under ₹999", value: 999 },
     { label: "Under ₹1499", value: 1499 },
     { label: "Under ₹1999", value: 1999 },
-    { label: "Under ₹2999", value: 2999 },
-    { label: "Under ₹3999", value: 3999 },
-    { label: "Under ₹4999", value: 4999 },
+    { label: "Above ₹1999", value: 1999 },
+
   ];
 
   const [filteredProducts, setFilteredProducts] = useState(products);
-  const [activeFilter, setActiveFilter] = useState("Under ₹2999");
+  const [activeFilter, setActiveFilter] = useState("Under ₹1999");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [slidesToShow, setSlidesToShow] = useState(5);
+  const [slidesToShow, setSlidesToShow] = useState(2);
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
   const [mouseStartX, setMouseStartX] = useState(0);
   const [mouseEndX, setMouseEndX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [touchStartTime, setTouchStartTime] = useState(0);
+  const touchStartXRef = useRef(0);
 
   // Image loading optimization states
   const [imageLoadingStates, setImageLoadingStates] = useState({});
 
-  const minSwipeDistance = 20; // Reduced for easier swiping
-  const velocityThreshold = 0.3; // pixels per millisecond
+  const minSwipeDistance = 20;
+  const velocityThreshold = 0.3;
+  const dragThreshold = 8;
 
   // Handle image load events
   const handleImageLoad = (imageId) => {
@@ -61,41 +68,42 @@ const ThoughtfulPicks = () => {
     setImageLoadingStates(prev => ({ ...prev, [imageId]: 'error' }));
   };
 
-  // Touch handlers
+  // Touch handlers – only start drag after threshold so button taps register as clicks
   const handleTouchStart = (e) => {
-    const clientX = e.touches[0].clientX;
-    setTouchStartX(clientX);
-    setTouchEndX(clientX);
+    const x = e.touches[0].clientX;
+    touchStartXRef.current = x;
+    setTouchStartX(x);
+    setTouchEndX(x);
     setTouchStartTime(Date.now());
     setDragOffset(0);
   };
 
   const handleTouchMove = (e) => {
     const currentX = e.touches[0].clientX;
+    const startX = touchStartXRef.current;
+    const move = currentX - startX;
+    if (!isSwiping) {
+      if (Math.abs(move) > dragThreshold) setIsSwiping(true);
+      else return;
+    }
+    e.preventDefault();
     setTouchEndX(currentX);
-    const offset = (currentX - touchStartX) * 1.2; // 1.2x multiplier for more sensitive drag
-    setDragOffset(offset);
+    setDragOffset(move);
   };
 
   const handleTouchEnd = () => {
+    if (!isSwiping) return;
     const distance = touchStartX - touchEndX;
     const timeElapsed = Date.now() - touchStartTime;
-    const velocity = Math.abs(distance) / timeElapsed;
-
-    // Check velocity for fast swipes or distance for slower swipes
+    const velocity = timeElapsed > 0 ? Math.abs(distance) / timeElapsed : 0;
     const isLeftSwipe = distance > minSwipeDistance || (velocity > velocityThreshold && distance > 5);
     const isRightSwipe = distance < -minSwipeDistance || (velocity > velocityThreshold && distance < -5);
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-
-    // Reset touch positions
+    if (isLeftSwipe) nextSlide();
+    else if (isRightSwipe) prevSlide();
     setTouchStartX(0);
     setTouchEndX(0);
     setTouchStartTime(0);
+    setIsSwiping(false);
     setDragOffset(0);
   };
 
@@ -153,6 +161,7 @@ const ThoughtfulPicks = () => {
   };
 
   const { handleAddToCart, handleBuyNow } = useContext(CartContext);
+  const { addToWishlist, isInWishlist } = useWishlist();
 
   // Helper function to get product image from S3 presigned URL
   const getProductImage = (product) => {
@@ -316,16 +325,12 @@ const ThoughtfulPicks = () => {
     fetchProducts();
   }, []);
 
-  /* 🔹 Responsive slides */
+  /* 🔹 Responsive slides (match Trends: 2 on mobile/tablet, 5 on desktop) */
   useEffect(() => {
     const updateSlides = () => {
-      if (window.innerWidth < 640) {
-        setSlidesToShow(2);
-      } else if (window.innerWidth < 1024) {
-        setSlidesToShow(3);
-      } else {
-        setSlidesToShow(5);
-      }
+      if (window.innerWidth < 640) setSlidesToShow(2);
+      else if (window.innerWidth < 1024) setSlidesToShow(2);
+      else setSlidesToShow(5);
     };
 
     updateSlides();
@@ -341,118 +346,128 @@ const ThoughtfulPicks = () => {
     setCurrentIndex(0);
   };
 
-  /* 🔹 Slider logic */
+  /* 🔹 Slider logic – native scroll (same as SmartCookerFinder) */
+  const scrollContainerRef = useRef(null);
+
   const nextSlide = () => {
-    if (filteredProducts.length <= slidesToShow) return;
-    if (currentIndex < filteredProducts.length - slidesToShow) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setCurrentIndex(0);
-    }
+    const el = scrollContainerRef.current;
+    if (!el || filteredProducts.length <= slidesToShow) return;
+    el.scrollBy({ left: el.clientWidth, behavior: "smooth" });
   };
 
   const prevSlide = () => {
-    if (filteredProducts.length <= slidesToShow) return;
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      setCurrentIndex(Math.max(0, filteredProducts.length - slidesToShow));
-    }
+    const el = scrollContainerRef.current;
+    if (!el || filteredProducts.length <= slidesToShow) return;
+    el.scrollBy({ left: -el.clientWidth, behavior: "smooth" });
   };
 
 
   return (
-    <section className="w-full bg-white py-16 px-4 sm:px-6 lg:px-12 relative">
-
-      {/* ===== Heading ===== */}
-      <div className="text-center mb-2 sm:mb-6">
-        <h2 className="text-2xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
-          Thoughtful Picks by Price
-        </h2>
-        <p className="text-[#636365] text-sm sm:text-base md:text-lg mb-4 font-semibold mt-1">
-          Gifting Made Simple, Shopping Made Smarter
-        </p>
-      </div>
-
-      {/* ===== Filters ===== */}
-      <div className="overflow-x-auto scrollbar-hide pb-2 mb-3 sm:mb-6">
-        <div className="flex gap-2 justify-center sm:gap-3 min-w-max px-1">
-          {filters.map(filter => (
-            <button
-              key={filter.value}
-              onClick={() => handleFilterClick(filter.value, filter.label)}
-              className={`rounded-full justify-center text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 transition-all whitespace-nowrap flex-shrink-0
-                ${activeFilter === filter.label
-                  ? "bg-[#B91508] text-white shadow-md scale-105"
-                  : "bg-[#E9E9EB] text-[#545455]"
-                }`}
-            >
-              {filter.label}
-            </button>
-          ))}
+    <section className="font-gotham w-full bg-white py-16 px-4 sm:px-6 lg:px-12 relative overflow-hidden">
+      <div className="max-w-[1400px] mx-auto">
+        {/* ===== Heading (mobile-first — matches Trends / KitchenCategories) ===== */}
+        <div className="text-center mb-10 sm:mb-12 md:mb-14 px-3 sm:px-4 max-w-5xl mx-auto">
+          <span className="inline-block text-[#941007] text-[11px] sm:text-sm font-bold tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-2 opacity-90 px-1">
+            Smart Budget Choices
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-black tracking-tight text-balance max-w-[min(100%,40rem)] mx-auto mb-3 sm:mb-0 leading-[1.12] sm:leading-tight px-1">
+            Thoughtful Picks by Price
+          </h2>
+          <p className="text-[#636365] text-[13px] sm:text-base md:text-[18px] font-semibold max-w-md sm:max-w-2xl mx-auto px-2 sm:px-4 mb-2 sm:mb-0 leading-snug">
+            Gifting Made Simple, Shopping Made Smarter
+          </p>
+          <p className="text-gray-400 text-[12px] sm:text-[14px] md:text-[16px] max-w-3xl sm:max-w-4xl mx-auto leading-relaxed px-2 sm:px-4 text-pretty">
+            From festive gifts to personal upgrades—explore quality cookware and kitchen essentials that suit your budget, without compromising on style or substance.
+          </p>
         </div>
-      </div>
 
-
-
-      {/* ===== Slider ===== */}
-      <div className="relative flex flex-col mt-6">
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="text-gray-500">Loading products...</div>
+        {/* ===== Filters (Trends-style: full-bleed scroll on mobile) ===== */}
+        <div className="w-full overflow-x-auto scrollbar-hide mb-6 sm:mb-8 px-4 -mx-4 sm:mx-0 sm:px-0">
+          <div className="flex flex-nowrap sm:flex-wrap justify-center gap-2 sm:gap-3 min-w-max sm:min-w-0 px-1 sm:px-0">
+            {filters.map(filter => (
+              <button
+                key={filter.value}
+                onClick={() => handleFilterClick(filter.value, filter.label)}
+                className={`rounded-full justify-center text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 transition-all whitespace-nowrap shrink-0
+                ${activeFilter === filter.label
+                    ? "bg-[#941007] text-white shadow-md scale-105"
+                    : "bg-[#E9E9EB] text-[#545455]"
+                  }`}
+              >
+                {filter.label}
+              </button>
+            ))}
           </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="text-gray-500">No products found</div>
-          </div>
-        ) : (
-          <div
-            className="w-full overflow-hidden"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              cursor: isDragging ? 'grabbing' : 'grab',
-              touchAction: 'pan-y pinch-zoom',
-              userSelect: 'none'
-            }}
-          >
+        </div>
+
+        {/* ===== Filter description (below filters, when a filter is selected) ===== */}
+        {activeFilter && (() => {
+          const content = activeFilter === "Under ₹499"
+            ? { heading: "Everyday Essentials Under ₹499", para: "Perfect for giveaways, Diwali hampers, or quick kitchen upgrades." }
+            : activeFilter === "Under ₹999"
+              ? { heading: "Gifts That Impress – Under ₹999", para: "Corporate-ready, budget-friendly, and full of utility." }
+              : activeFilter === "Under ₹1499"
+                ? { heading: "Smart Buys Under ₹1499", para: "Ideal for wedding return gifts, new homeowners, or festival gifting." }
+                : activeFilter === "Under ₹1999"
+                  ? { heading: "Premium Picks Under ₹1999", para: "Big value for small budgets—perfect for employee gifts or celebrations." }
+                  : activeFilter === "Above ₹1999"
+                    ? { heading: "Festive Favorites & Luxe Kitchenware Above 1999", para: "For those who want to give (or get) something truly special." }
+                    : { heading: `Everyday Essentials ${activeFilter}`, para: "Perfect for giveaways, Diwali hampers, or quick kitchen upgrades." };
+          return (
+            <div className="mb-6 text-center">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+                {content.heading}
+              </h3>
+              <p className="text-gray-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+                {content.para}
+              </p>
+            </div>
+          );
+        })()}
+
+        {/* ===== Content Area (Trends-style: relative group for nav) ===== */}
+        <div className="relative group w-full">
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-gray-500">Loading products...</div>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-gray-500">No products found</div>
+            </div>
+          ) : (
             <div
-              className="flex"
+              ref={scrollContainerRef}
+              className="flex w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory py-2 -mx-1 sm:-mx-4 px-1 sm:px-4 scrollbar-hide"
               style={{
-                transform: `translateX(calc(-${(currentIndex * 100) / slidesToShow}% + ${dragOffset}px))`,
-                transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                willChange: 'transform'
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none"
+              }}
+              onScroll={() => {
+                const el = scrollContainerRef.current;
+                if (!el) return;
+                const pageWidth = el.clientWidth;
+                const idx = pageWidth > 0 ? Math.round(el.scrollLeft / pageWidth) : 0;
+                const next = Math.min(Math.max(0, idx), Math.max(0, filteredProducts.length - slidesToShow));
+                setCurrentIndex((prev) => (prev === next ? prev : next));
               }}
             >
               {filteredProducts.map((item, i) => {
                 const variantId = item.variantId || item.id;
-
                 return (
                   <div
                     key={item.id || `product-${i}`}
-                    className={`flex-shrink-0 px-3 ${slidesToShow === 5
-                      ? "w-1/5"
-                      : slidesToShow === 4
-                        ? "w-1/4"
-                        : slidesToShow === 3
-                          ? "w-1/3"
-                          : slidesToShow === 2
-                            ? "w-1/2"
-                            : "w-full"
-                      }`}
+                    className="shrink-0 px-2 sm:px-3 snap-start"
+                    style={{ width: `${100 / Math.max(1, slidesToShow)}%` }}
                   >
-                    {/* "AMAZON/QUICK COMMERCE" STYLE CARD */}
-                    <div className="group/card flex flex-col h-full bg-white transition-transform duration-300 hover:shadow-lg rounded-lg overflow-hidden border border-transparent hover:border-gray-200">
+                    {/* CARD — mobile matches Trends / SmartCookerFinder reference */}
+                    <div className="group/card flex flex-col h-full bg-white transition-shadow duration-300 hover:shadow-lg rounded-2xl sm:rounded-lg overflow-hidden border border-gray-100 sm:border-transparent shadow-sm hover:border-gray-200">
 
                       {/* IMAGE SECTION */}
-                      <div className="relative aspect-square w-full bg-[#FAFAFA] overflow-hidden">
-                        <Link to={`/product-details/${item.id}`} className="block w-full h-full">
-                          <div className="w-full h-full relative p-4 flex items-center justify-center">
+                      <div className="relative aspect-square w-full bg-[#FAFAFA] overflow-hidden border-b border-gray-100">
+                        <Link to={`/product-details/${item.id || item.sno || item.product_id || item.detail_id}`} className="block w-full h-full">
+                          <div className="w-full h-full relative p-3 sm:p-4 flex items-center justify-center">
                             {!imageLoadingStates[item.id] && (
                               <div className="absolute inset-0 bg-gray-100 animate-pulse" />
                             )}
@@ -472,68 +487,71 @@ const ThoughtfulPicks = () => {
                             />
                           </div>
                         </Link>
+                        {/* Wishlist Icon */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addToWishlist(item.product || item);
+                          }}
+                          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform duration-300 hover:bg-white"
+                        >
+                          <FontAwesomeIcon
+                            icon={isInWishlist(item.id || item.product_id) ? solidHeart : regularHeart}
+                            className={isInWishlist(item.id || item.product_id) ? "text-red-600" : "text-gray-400"}
+                            style={{ fontSize: "14px" }}
+                          />
+                        </button>
                       </div>
 
                       {/* CONTENT SECTION */}
-                      <div className="p-3 flex flex-col flex-grow text-left">
+                      <div className="font-gotham p-3 flex flex-col grow text-left">
 
                         {/* Title */}
-                        <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 min-h-[2.5rem] mb-1">
-                          {item.title
-                            ?.toLowerCase()
-                            .replace(/^\w/, (c) => c.toUpperCase())}
-                        </h3>
+                        <p className="font-bold font-gotham text-gray-900 text-xs sm:text-[18px] leading-snug line-clamp-2 min-h-0 sm:min-h-10 mb-1.5 uppercase tracking-tight sm:normal-case sm:tracking-normal">
+                          {item.title}
+                        </p>
 
-                        {/* Bestseller / Stats Badge (Mock Data) */}
-                        <div className="flex items-center gap-1.5 mb-1.5 text-xs text-gray-500">
-                          <span className="flex items-center gap-1 font-bold text-[#B91508]">
-                            <FaTrophy className="text-[#B91508]" /> BESTSELLER
+                        {/* Best Seller / Stats */}
+                        <div className="flex items-center gap-1 sm:gap-1.5 mb-2 text-[9px] sm:text-xs text-gray-500 flex-wrap">
+                          <span className="flex items-center gap-0.5 font-bold text-[#941007] uppercase tracking-wide shrink-0">
+                            <FaTrophy className="text-[#941007] shrink-0" size={10} />
+                            BESTSELLER
                           </span>
-                          <span className="w-0.5 h-3 bg-gray-300"></span>
-                          <span className="truncate">1k+ bought last month</span>
+                          <span className="text-gray-300 select-none shrink-0" aria-hidden>
+                            |
+                          </span>
+                          <span className="truncate text-gray-500">1k+ bought</span>
                         </div>
 
                         {/* Reviews */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex text-amber-500 text-sm">
-                            {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
+                        <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                          <div className="flex text-amber-500 text-[11px] sm:text-sm">
+                            {[...Array(5)].map((_, k) => <span key={k}>★</span>)}
                           </div>
-                          <span className="text-xs text-gray-500 pt-0.5">20 Reviews</span>
+                          <span className="text-[9px] sm:text-xs text-gray-500 pt-0.5">20 Reviews</span>
                         </div>
 
-                        {/* Price & Actions Section: STACKED for Responsive */}
-                        <div className="mt-auto pt-2 border-t border-gray-50 flex flex-col gap-2">
-
-                          {/* Row 1: Prices & EMI Text */}
+                        {/* Price & Actions */}
+                        <div className="mt-auto pt-2 border-t border-gray-100 sm:border-gray-50 flex flex-col gap-2">
                           <div className="flex justify-between items-baseline">
                             <div className="flex flex-col">
                               <div className="flex items-baseline gap-1">
-                                <span className="text-base sm:text-lg font-black text-gray-900">
-                                  ₹{item.price?.toLocaleString()}
-                                </span>
-                                {item.oldPrice && item.oldPrice > item.price && (
-                                  <span className="text-[10px] sm:text-xs text-gray-400 line-through decoration-gray-400">
-                                    ₹{item.oldPrice?.toLocaleString()}
-                                  </span>
-                                )}
+                                <span className="text-base sm:text-lg font-black text-gray-900 tracking-tight">N/A</span>
                               </div>
-                              <span className="text-[9px] sm:text-[10px] text-gray-500 leading-none">(incl. taxes)</span>
+                              <span className="text-[9px] sm:text-[10px] text-gray-500 leading-none" />
                             </div>
-
                             <div className="text-right">
-                              <span className="block text-[10px] sm:text-[11px] font-semibold text-gray-800">
-                                or ₹{Math.round((item.price || 999) / 4)}/mo
-                              </span>
+                              <span className="block text-[10px] sm:text-[11px] font-semibold text-gray-800" />
                             </div>
                           </div>
-
-                          {/* Row 2: Buttons (Side by Side) */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap">
                             <button
+                              type="button"
+                              aria-label="Add to cart"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                const variantId = item.variantId || item.id;
-                                if (variantId) {
+                                if (item.variantId || item.id) {
                                   handleAddToCart({
                                     product_id: item.id,
                                     id: item.id,
@@ -545,15 +563,17 @@ const ThoughtfulPicks = () => {
                                   });
                                 }
                               }}
-                              className="flex-1 bg-white hover:bg-[#B91508] text-[#B91508] border border-[#B91508] hover:text-white text-[10px] sm:text-xs font-bold py-1.5 rounded-md shadow-sm active:scale-95 transition-all text-center"
+                              className="flex-1 min-w-0 min-h-[40px] sm:min-h-[36px] bg-white hover:bg-[#941007] text-[#941007] border border-[#941007] hover:text-white text-[10px] sm:text-xs font-bold py-1.5 sm:py-1.5 px-0 sm:px-2 rounded-full sm:rounded-md shadow-sm active:scale-95 transition-all text-center touch-manipulation select-none inline-flex items-center justify-center gap-1"
                             >
-                              Add +
+                              <FaCartPlus className="w-4 h-4 shrink-0 sm:w-2.5 sm:h-2.5" aria-hidden />
+                              <span className="hidden sm:inline whitespace-nowrap">Add to cart</span>
                             </button>
                             <button
+                              type="button"
+                              aria-label="Buy now"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                const variantId = item.variantId || item.id;
-                                if (variantId) {
+                                if (item.variantId || item.id) {
                                   handleBuyNow({
                                     product_id: item.id,
                                     id: item.id,
@@ -565,9 +585,12 @@ const ThoughtfulPicks = () => {
                                   });
                                 }
                               }}
-                              className="flex-1 bg-[#B91508] text-white border border-[#B91508] text-[10px] sm:text-xs font-bold py-1.5 rounded-md shadow-sm hover:shadow-red-200 active:scale-95 transition-all text-center truncate px-1"
-                            >
-                              Buy on EMI
+                              className="flex-1 min-w-0 min-h-[40px] sm:min-h-[36px] bg-[#941007] text-white border border-[#941007] text-[10px] sm:text-xs font-bold py-1 sm:py-1.5 px-0.5 sm:px-2 rounded-full sm:rounded-md shadow-sm hover:shadow-red-200 active:scale-95 transition-all text-center touch-manipulation select-none inline-flex flex-col sm:flex-row items-center justify-center leading-[1.1] sm:leading-normal" >
+                              <span className="flex flex-col sm:hidden items-center justify-center font-bold">
+                                <span>Buy</span>
+                                <span>Now</span>
+                              </span>
+                              <span className="hidden sm:inline truncate">Buy Now</span>
                             </button>
                           </div>
                         </div>
@@ -577,48 +600,45 @@ const ThoughtfulPicks = () => {
                 );
               })}
             </div>
-          </div>
-        )}
+          )}
 
-      </div>
-
-      {/* Navigation Buttons - Desktop Only */}
-      {!loading && filteredProducts.length > slidesToShow && (
-        <div className="hidden md:flex absolute top-1/2 -translate-y-1/2 mt-18 left-0 right-0 px-2 justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)" }}>
-          <button
-            onClick={prevSlide}
-            className="bg-gray-100 hover:bg-gray-100 text-[#B91508] p-2 sm:p-3 rounded-full shadow-lg transition pointer-events-auto"
-            aria-label="Previous"
-          >
-            <FaChevronLeft className="text-lg sm:text-xl" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="bg-gray-100 hover:bg-gray-100 text-[#B91508] p-2 sm:p-3 rounded-full shadow-lg transition pointer-events-auto"
-            aria-label="Next"
-          >
-            <FaChevronRight className="text-lg sm:text-xl" />
-          </button>
+          {/* Navigation Arrows (Desktop only – Trends-style) */}
+          {!loading && filteredProducts.length > slidesToShow && (
+            <>
+              <button
+                type="button"
+                onClick={prevSlide}
+                className="hidden lg:flex absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#941007] hover:scale-110 transition-all duration-300"
+                aria-label="Previous"
+              >
+                <FaChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={nextSlide}
+                className="hidden lg:flex absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 items-center justify-center text-gray-700 hover:text-[#941007] hover:scale-110 transition-all duration-300"
+                aria-label="Next"
+              >
+                <FaChevronRight size={18} />
+              </button>
+            </>
+          )}
         </div>
-      )}
 
-      {/* Progress Bar */}
-      {!loading && filteredProducts.length > 0 && (
-        <div className="mt-6 px-8">
-          <div className="relative">
-            {/* Progress Track */}
-            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-              {/* Progress Fill */}
+        {/* Progress Bar (Trends-style) */}
+        {!loading && filteredProducts.length > 0 && (
+          <div className="mt-6 sm:mt-8 px-4 sm:px-0 max-w-md mx-auto">
+            <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gray-400 transition-all duration-200 ease-out rounded-full"
+                className="h-full bg-[#941007] transition-all duration-300 ease-out rounded-full"
                 style={{
                   width: `${Math.min(((currentIndex + slidesToShow) / filteredProducts.length) * 100, 100)}%`
                 }}
               />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 };

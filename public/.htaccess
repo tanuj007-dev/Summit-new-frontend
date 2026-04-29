@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Disable MultiViews to prevent Apache from incorrectly resolving paths
+  Options -MultiViews
+
+  # Don't rewrite existing physical files
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # Redirect all other requests (including directories like /admin) to index.html for React Router
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>

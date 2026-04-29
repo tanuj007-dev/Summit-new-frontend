@@ -36,13 +36,12 @@ export default {
   				'monospace'
   			],
   			serif: [
-  				'Merriweather',
-  				'ui-serif',
-  				'Georgia',
-  				'Cambria',
-  				'Times New Roman',
-  				'Times',
-  				'serif'
+  				 
+  			],
+  			'roboto-condensed': [
+  				'Roboto Condensed',
+  				'ui-sans-serif',
+  				'sans-serif'
   			]
   		},
   		colors: {

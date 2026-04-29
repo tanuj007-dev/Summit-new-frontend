@@ -7,6 +7,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;1,400&display=swap");
 
 @import "tailwindcss";
 
@@ -56,19 +58,89 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: 'Outfit', sans-serif;
+    font-family: "Gotham", "Gotham Rounded", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
     font-weight: 700;
     letter-spacing: -0.025em;
   }
+}
+
+/* Roboto Condensed – force font on sections that use it */
+.font-roboto-condensed,
+.font-roboto-condensed * {
+  font-family: "Roboto Condensed", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* Gotham – section font (load from CDN; replace with your own woff2 if you have licensed Gotham) */
+@font-face {
+  font-family: "Gotham";
+  src: url("https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/fonts/GothamRounded-Book.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/fonts/GothamRounded-Book.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gotham";
+  src: url("https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/fonts/GothamRounded-Medium.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/fonts/GothamRounded-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gotham";
+  src: url("https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/fonts/GothamRounded-Bold.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/fonts/GothamRounded-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-gotham,
+.font-gotham * {
+  font-family: "Gotham", "Gotham Rounded", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* Headings inside Gotham sections use Playfair Display (Trends, SmartCookerFinder, ThoughtfulPicks, Discription) */
+.font-gotham h1,
+.font-gotham h2,
+.font-gotham h3,
+.font-gotham h4,
+.font-gotham h5,
+.font-gotham h6 {
+  font-family: "Playfair Display", serif !important;
+}
+
+/* Poppins Regular – e.g. category tabs */
+.font-poppins {
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* Arial Medium – 14px / 20px line-height / 0 letter-spacing (e.g. Trends category tabs) */
+.font-arial-tabs {
+  font-family: Arial, sans-serif !important;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+/* Alegreya Regular – product details only (after Gotham so it overrides inside product cards) */
+.font-alegreya,
+.font-alegreya * {
+  font-family: "Alegreya", Georgia, serif !important;
 } 
 
 @layer components {
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
   .glass-card {
     background-color: hsl(var(--color-card) / 0.8);
     backdrop-filter: blur(4px);
@@ -172,6 +244,15 @@
     }
   }
 
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.01); }
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 4s infinite ease-in-out;
+  }
+
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--border)) transparent;
@@ -197,12 +278,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(185, 21, 8, 0.05);
+    background: rgba(148, 16, 7, 0.05);
     border-radius: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #B91508 0%, #8B0F06 100%);
+    background: linear-gradient(180deg, #941007 0%, #8B0F06 100%);
     border-radius: 10px;
     transition: all 0.3s ease;
   }
@@ -214,7 +295,7 @@
   /* Firefox scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #B91508 rgba(185, 21, 8, 0.05);
+    scrollbar-color: #941007 rgba(148, 16, 7, 0.05);
   }
 }
 
@@ -291,7 +372,7 @@ body {
 
 .form-group button {
   padding: 10px 25px;
-  background-color: #B91508;
+  background-color: #941007;
   border: none;
   border-radius: 6px;
   color: white;
@@ -299,7 +380,7 @@ body {
 }
 
 .form-group button:hover {
-  background-color: #B91508;
+  background-color: #941007;
 }
 
 .already {
@@ -362,7 +443,7 @@ input[type="password"]::placeholder {
 
     .form-side h2 {
       margin-bottom: 20px;
-      color: #B91508 ;
+      color: #941007 ;
     }
 
     .form-group {
@@ -386,13 +467,13 @@ input[type="password"]::placeholder {
     }
 
     .form-group a {
-      color: #B91508;
+      color: #941007;
       
     }
 
     .form-group a {
       padding: 10px 25px;
-      background-color: #B91508;
+      background-color: #941007;
       border: none;
       border-radius: 6px;
       color: white;
@@ -472,7 +553,7 @@ input[type="password"]::placeholder {
 
     .login{
         background:white !important;
-        border:1px solid #B91508 !important;
+        border:1px solid #941007 !important;
         color:black !important;
     }
 
@@ -480,7 +561,7 @@ input[type="password"]::placeholder {
     
    .login {
        padding: 10px 25px;
-      background-color: #B91508;
+      background-color: #941007;
       border: none;
       border-radius: 6px;
       color: white;

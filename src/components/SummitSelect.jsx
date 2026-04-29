@@ -223,7 +223,7 @@
 //                         className="w-full h-[190px] sm:h-[180px] md:h-[220px] lg:h-[300px] object-cover rounded-2xl transition-transform duration-300 hover:scale-110"
 //                       />
 //                     </Link>
-//                <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#B91508] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
+//                <span className="absolute bottom-8 sm:bottom-10 left-0 bg-[#941007] text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 rounded">
 //                       Sale
 //                     </span>
 //                   </div>
@@ -248,13 +248,13 @@
 //                  <div className="flex gap-1 sm:gap-3 justify-center mt-auto">
 //                     <button
 //                       onClick={() => handleAddToCart(item.id)}
-//                       className="bg-[#B91508] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-red-700 transition"
+//                       className="bg-[#941007] text-white text-nowrap text-[13px] sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#941007] transition"
 //                     >
 //                       Add to Cart
 //                     </button>
 //                     <button
 //                       onClick={() => handleBuyNow(item.id)}
-//                       className="text-[#B91508] text-[13px] sm:text-sm text-nowrap border-1 border-[#B91508] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#B91508] hover:text-white transition"
+//                       className="text-[#941007] text-[13px] sm:text-sm text-nowrap border-1 border-[#941007] px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-[#941007] hover:text-white transition"
 //                     >
 //                       Buy Now
 //                     </button>
@@ -431,7 +431,7 @@ const SummitSelect = () => {
             >
               <div className="text-center">
                 {/* IMAGE */}
-                <Link to={`/product-details/${product.product_id}`}>
+                <Link to={`/product-details/${product.product_id || product.id || product.sno || product.detail_id}`}>
                   <img
                     src={product.image}   
                     alt={product.product_name}
@@ -468,13 +468,13 @@ const SummitSelect = () => {
                 <div className="flex justify-center gap-3 mt-3">
                   <button
                     onClick={() => handleAddToCart(product.product_id)}
-                    className="bg-[#B91508] text-white px-4 py-2 rounded-full text-sm"
+                    className="bg-[#941007] text-white px-4 py-2 rounded-full text-sm"
                   >
                     Add to Cart
                   </button>
                   <button
                     onClick={() => handleBuyNow(product.product_id)}
-                    className="border border-[#B91508] text-[#B91508] px-4 py-2 rounded-full text-sm hover:bg-[#B91508] hover:text-white"
+                    className="border border-[#941007] text-[#941007] px-4 py-2 rounded-full text-sm hover:bg-[#941007] hover:text-white"
                   >
                     Buy Now
                   </button>

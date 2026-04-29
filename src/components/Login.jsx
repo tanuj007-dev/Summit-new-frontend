@@ -282,6 +282,7 @@ import axios from "../axiosConfig";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { downloadProductCatalog } from "../utils/productCatalog";
 
 const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
@@ -291,8 +292,9 @@ const Login = ({ setIsLoggedIn }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo =
-    new URLSearchParams(location.search).get("redirectTo") || "/";
+  const searchParams = new URLSearchParams(location.search);
+  const redirectTo = searchParams.get("redirectTo") || "/";
+  const wantsCatalog = searchParams.get("catalog") === "1";
 
   // 🔹 Check already logged in
   useEffect(() => {
@@ -315,6 +317,9 @@ const Login = ({ setIsLoggedIn }) => {
         });
 
         setIsLoggedIn(true);
+        if (wantsCatalog) {
+          await downloadProductCatalog();
+        }
         navigate(redirectTo);
       } catch (error) {
         console.log("Token verification failed, showing login form");
@@ -324,7 +329,7 @@ const Login = ({ setIsLoggedIn }) => {
     };
 
     checkAuth();
-  }, [navigate, redirectTo, setIsLoggedIn]);
+  }, [navigate, location.search, redirectTo, wantsCatalog, setIsLoggedIn]);
 
   // 🔹 Login handler
   const handleLogin = async () => {
@@ -366,6 +371,10 @@ const Login = ({ setIsLoggedIn }) => {
       setIsLoggedIn(true);
       toast.success("Login successful");
 
+      if (wantsCatalog) {
+        await downloadProductCatalog();
+      }
+
       setTimeout(() => navigate(redirectTo), 800);
     } catch (error) {
       console.error("Login error:", error);
@@ -383,172 +392,91 @@ const Login = ({ setIsLoggedIn }) => {
     }
   };
 
-  if (checkingAuth) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-600 font-semibold">Checking login status...</p>
+  const loginShell = (children) => (
+    <div className="relative min-h-screen w-full overflow-hidden bg-white">
+      <div className="pointer-events-none absolute -top-28 -left-28 z-0 h-[min(85vw,420px)] w-[min(85vw,420px)] rounded-full bg-gradient-to-br from-red-100/90 via-[#941007]/10 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 -right-28 z-0 h-[min(85vw,420px)] w-[min(85vw,420px)] rounded-full bg-gradient-to-tl from-red-100/90 via-[#941007]/10 to-transparent blur-3xl" />
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
+        {children}
       </div>
+      <ToastContainer position="top-right" autoClose={2000} />
+    </div>
+  );
+
+  if (checkingAuth) {
+    return loginShell(
+      <p className="text-gray-600 font-semibold">Checking login status...</p>
     );
   }
 
-  return (
-    <div className="min-h-screen">
-      {/* Desktop Layout - Image Left, Form Right */}
-      <div className="hidden md:grid md:grid-cols-2 min-h-screen">
-        {/* Left Section - Image */}
-        <div
-          className="bg-cover bg-center relative"
-          style={{
-            backgroundImage: "url('/asset/images/login.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
+  return loginShell(
+    <div className="w-full max-w-md">
+      <div className="mb-6 text-center sm:mb-8">
+        <h1 className="text-3xl font-black tracking-tight text-gray-900 sm:text-4xl">
+          Welcome <span className="text-[#941007]">Back</span>
+        </h1>
+        <p className="mt-2 text-sm font-medium text-gray-500 sm:text-base">
+          Log in to your Summit account
+        </p>
+      </div>
+
+      <div className="rounded-[24px] border border-gray-100 bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)] sm:p-8">
+        <div className="mb-5">
+          <label className="mb-2 block pl-1 text-xs font-bold uppercase tracking-widest text-gray-700">
+            Email Address
+          </label>
+          <input
+            type="email"
+            placeholder="Enter your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+            className="w-full rounded-xl border-2 border-transparent bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 transition-all focus:border-[#941007] focus:bg-white focus:outline-none"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="mb-2 block pl-1 text-xs font-bold uppercase tracking-widest text-gray-700">
+            Password
+          </label>
+          <input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+            className="w-full rounded-xl border-2 border-transparent bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 transition-all focus:border-[#941007] focus:bg-white focus:outline-none"
+          />
+        </div>
+
+        <div className="mb-6 flex justify-end">
+          <button
+            type="button"
+            className="text-[11px] font-bold uppercase tracking-wider text-[#941007] hover:underline"
+          >
+            Forgot Password?
+          </button>
+        </div>
+
+        <button
+          onClick={handleLogin}
+          disabled={isLoading}
+          className={`mb-6 w-full rounded-xl py-3.5 font-bold text-white shadow-lg transition-all ${
+            isLoading
+              ? 'cursor-not-allowed bg-gray-300 shadow-none'
+              : 'bg-[#941007] shadow-red-200 hover:bg-black active:scale-95'
+          }`}
         >
-          <div className="absolute inset-0 bg-black opacity-30"></div>
-        </div>
+          {isLoading ? 'Processing...' : 'Sign In'}
+        </button>
 
-        {/* Right Section - Login Form */}
-        <div className="bg-white flex flex-col justify-center items-center p-8">
-          <div className="w-full max-w-md">
-            <h2 className="text-4xl font-bold text-red-600 text-center mb-8">
-              Welcome Back!
-            </h2>
-
-            {/* Email Input */}
-            <div className="mb-6">
-              <label className="block text-red-600 font-semibold mb-3 text-sm">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="w-full px-4 py-3 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 font-medium"
-              />
-            </div>
-
-            {/* Password Input */}
-            <div className="mb-8">
-              <label className="block text-red-600 font-semibold mb-3 text-sm">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="w-full px-4 py-3 border-2 border-gray-800 rounded-lg focus:outline-none focus:border-red-600 transition-colors text-gray-800 font-medium"
-              />
-            </div>
-
-            {/* Login Button */}
-            <button
-              onClick={handleLogin}
-              disabled={isLoading}
-              className={`w-full py-3 rounded-lg font-bold text-lg text-white transition-all mb-6 ${isLoading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-red-600 hover:bg-red-700 active:scale-95'
-                }`}
-            >
-              {isLoading ? 'Logging in...' : 'Login'}
-            </button>
-
-            {/* Register Link */}
-            <p className="text-center text-red-600 font-semibold">
-              Don't have an account?{' '}
-              <Link to="/register" className="hover:underline">
-                Register
-              </Link>
-            </p>
-          </div>
+        <div className="text-center">
+          <span className="text-sm font-medium text-gray-400">New to Summit?</span>{' '}
+          <Link to="/register" className="ml-1 text-sm font-bold text-[#941007] hover:underline">
+            Register Now
+          </Link>
         </div>
       </div>
-
-      {/* Mobile Layout - Only Form */}
-      <div className="md:hidden min-h-screen bg-[#fcfcfc] flex flex-col items-center px-4 py-12 relative overflow-hidden">
-        {/* Decorative elements for mobile */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-red-50 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
-
-        <div className="w-full max-w-sm relative z-10">
-          <div className="mb-5 text-center">
-            <Link to="/">
-              <img
-                src="/asset/images/LogoS.png"
-                alt="Summit Logo"
-                className="w-24 mx-auto mb-6 drop-shadow-sm"
-              />
-            </Link>
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-              Welcome <span className="text-red-600">Back</span>
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm font-medium">Log in to your Summit account</p>
-          </div>
-
-          <div className="bg-white p-8 rounded-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100">
-            {/* Email Input */}
-            <div className="mb-5">
-              <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
-              />
-            </div>
-
-            {/* Password Input */}
-            <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
-              />
-            </div>
-
-            <div className="flex justify-end mb-6">
-              <button type="button" className="text-[11px] font-bold text-red-600 uppercase tracking-wider hover:underline">
-                Forgot Password?
-              </button>
-            </div>
-
-            {/* Login Button */}
-            <button
-              onClick={handleLogin}
-              disabled={isLoading}
-              className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all mb-6 ${isLoading
-                ? 'bg-gray-300 cursor-not-allowed shadow-none'
-                : 'bg-red-600 hover:bg-black active:scale-95 shadow-red-200'
-                }`}
-            >
-              {isLoading ? 'Processing...' : 'Sign In'}
-            </button>
-
-            {/* Register Link */}
-            <div className="text-center">
-              <span className="text-gray-400 text-sm font-medium">New to Summit?</span>{' '}
-              <Link to="/register" className="text-red-600 font-bold text-sm hover:underline ml-1">
-                Register Now
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
 };

@@ -72,7 +72,7 @@ const ProductPage = () => {
 
           {/* Buttons */}
           <div className="mt-8 flex gap-4">
-            <button className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 duration-200">
+            <button className="bg-[#941007] text-white px-6 py-3 rounded-lg hover:bg-[#941007] duration-200">
               Add to Cart
             </button>
             <button className="border px-6 py-3 rounded-lg hover:bg-gray-100">
@@ -86,7 +86,7 @@ const ProductPage = () => {
       {/* Description Tabs */}
       <div className="mt-12">
         <div className="flex gap-6 border-b pb-2">
-          <button className="font-semibold border-b-2 border-red-600 pb-2">Description</button>
+          <button className="font-semibold border-b-2 border-[#941007] pb-2">Description</button>
           <button className="text-gray-500">Additional Info</button>
           <button className="text-gray-500">Reviews</button>
           <button className="text-gray-500">Returns & Exchange</button>
@@ -110,8 +110,8 @@ const ProductPage = () => {
           >
             <img src="/images/p1.png" className="rounded-lg mb-2" />
             <p className="font-semibold text-sm">Aluminium Cooker 3L</p>
-            <p className="text-red-600 font-bold">₹2,550</p>
-            <button className="mt-2 w-full bg-red-600 text-white py-1 rounded-md">
+            <p className="text-[#941007] font-bold">₹2,550</p>
+            <button className="mt-2 w-full bg-[#941007] text-white py-1 rounded-md">
               View
             </button>
           </div>
@@ -142,7 +142,7 @@ const ProductPage = () => {
             <p className="text-sm text-gray-600 mt-2">
               Learn how to choose the right cooker for your home...
             </p>
-            <button className="mt-3 text-red-600 font-semibold">
+            <button className="mt-3 text-[#941007] font-semibold">
               Read More →
             </button>
           </div>

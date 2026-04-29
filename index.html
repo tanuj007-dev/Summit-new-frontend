@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./public/asset/images/Logo.png" />
+  <link rel="icon" type="image/png" href="/asset/images/Logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Performance Optimizations -->
@@ -19,13 +19,17 @@
   <!-- Preload critical resources -->
   <link rel="preload" as="script" href="https://checkout.razorpay.com/v1/checkout.js">
 
+  <!-- Roboto Condensed (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+
   <title>Summit Home Appliances</title>
 
 </head>
 
 <body>
   <div id="root"></div>
-  <!-- <script src="https://checkout.razorpay.com/v1/checkout.js" async></script> -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
 
   <script type="module" src="/src/main.jsx"></script>
 </body>

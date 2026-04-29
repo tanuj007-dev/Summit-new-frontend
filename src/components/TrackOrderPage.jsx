@@ -57,19 +57,19 @@ export default function TrackOrderPage() {
               placeholder="Enter Order ID (e.g., SUM123456)"
               value={orderId}
               onChange={(e) => setOrderId(e.target.value)}
-              className="w-full sm:w-2/3 border border-gray-300 rounded-xl px-5 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-red-600 shadow-md"
+              className="w-full sm:w-2/3 border border-gray-300 rounded-xl px-5 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-[#941007] shadow-md"
             />
             <button
               onClick={fetchOrderDetails}
               disabled={loading || !orderId.trim()}
-              className="bg-red-600 text-white px-8 py-4 text-lg rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50"
+              className="bg-[#941007] text-white px-8 py-4 text-lg rounded-xl font-semibold hover:bg-[#941007] transition disabled:opacity-50"
             >
               {loading ? "Tracking..." : "Track Order"}
             </button>
           </div>
 
           {error && (
-            <p className="text-red-600 mt-8 text-center font-medium tracking-wide text-lg">
+            <p className="text-[#941007] mt-8 text-center font-medium tracking-wide text-lg">
               {error}
             </p>
           )}

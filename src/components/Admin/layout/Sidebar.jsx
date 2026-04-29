@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, Grid3X3, Layers, Wrench, Shield, Award, FolderTree, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, Grid3X3, Layers, Wrench, Shield, Award, FolderTree, Settings, LogOut, FileText } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { useState } from 'react';
 import { LogoutDialog } from './LogoutDialog';
@@ -43,6 +43,10 @@ const navigation = [{
   name: 'Certifications',
   href: '/admin/certifications',
   icon: Award
+}, {
+  name: 'Blogs',
+  href: '/admin/blogs',
+  icon: FileText
 }, {
   name: 'Logout',
   href: '#',

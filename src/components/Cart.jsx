@@ -3,8 +3,11 @@ import { FiShoppingCart, FiTrash2, FiPlus, FiMinus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import axios from "../axiosConfig";
+import Header from "./Header";
+import Footer from "./Footer";
+import DesktopFooter from "./DesktopFooter";
 
-const Cart = () => {
+const Cart = ({ addcart = [], isLoggedIn, handlelogout }) => {
   const {
     cart,
     loading,
@@ -133,25 +136,32 @@ const Cart = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your cart...</p>
+      <>
+        <Header addcart={addcart} isLoggedIn={isLoggedIn} handlelogout={handlelogout} />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-4 pb-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#941007] mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading your cart...</p>
+          </div>
         </div>
-      </div>
+        <Footer />
+        <DesktopFooter />
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
+    <>
+      <Header addcart={addcart} isLoggedIn={isLoggedIn} handlelogout={handlelogout} />
+      <div className="min-h-screen bg-gray-50 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-3 sm:gap-0">
           <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-gray-900">
-            <FiShoppingCart className="mr-2 text-red-600" /> Your Shopping Cart
+            <FiShoppingCart className="mr-2 text-[#941007]" /> Your Shopping Cart
           </h1>
-          <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold w-fit">
+          <span className="bg-[#941007] text-white px-4 py-2 rounded-full text-sm font-semibold w-fit">
             {totalItems} {totalItems === 1 ? 'Item' : 'Items'}
           </span>
         </div>
@@ -168,7 +178,7 @@ const Cart = () => {
             </p>
             <Link
               to="/"
-              className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-colors"
+              className="mt-6 inline-block bg-[#941007] hover:bg-[#941007] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-colors"
             >
               Browse Products
             </Link>
@@ -227,7 +237,7 @@ const Cart = () => {
                           <div className="flex items-center gap-4 mt-3">
                             <div>
                               <p className="text-xs text-gray-600">Price</p>
-                              <p className="font-bold text-red-600">₹{parseFloat(item.price).toFixed(2)}</p>
+                              <p className="font-bold text-[#941007]">₹{parseFloat(item.price).toFixed(2)}</p>
                             </div>
                             <div>
                               <p className="text-xs text-gray-600">Total</p>
@@ -253,7 +263,7 @@ const Cart = () => {
                               {item.quantity > 1 ? (
                                 <FiMinus size={16} />
                               ) : (
-                                <FiTrash2 size={16} className="text-red-500" />
+                                <FiTrash2 size={16} className="text-[#941007]" />
                               )}
                             </button>
                             <span className="px-4 py-2 font-semibold min-w-12 text-center">{item.quantity}</span>
@@ -268,7 +278,7 @@ const Cart = () => {
                           </div>
                           <button
                             onClick={() => handleRemoveFromCart(item.id)}
-                            className="p-2 hover:bg-red-50 text-red-600 hover:text-red-700 rounded-lg transition-colors"
+                            className="p-2 hover:bg-red-50 text-[#941007] hover:text-[#941007] rounded-lg transition-colors"
                             title="Delete item"
                           >
                             <FiTrash2 size={18} />
@@ -311,7 +321,7 @@ const Cart = () => {
 
                       {/* PRICE */}
                       <div className="col-span-2 text-center">
-                        <p className="text-sm lg:text-base font-semibold text-red-600">₹{parseFloat(item.price).toFixed(2)}</p>
+                        <p className="text-sm lg:text-base font-semibold text-[#941007]">₹{parseFloat(item.price).toFixed(2)}</p>
                       </div>
 
                       {/* QUANTITY */}
@@ -329,7 +339,7 @@ const Cart = () => {
                             {item.quantity > 1 ? (
                               <FiMinus size={16} />
                             ) : (
-                              <FiTrash2 size={16} className="text-red-500" />
+                              <FiTrash2 size={16} className="text-[#941007]" />
                             )}
                           </button>
                           <span className="px-4 py-1.5 font-semibold min-w-12 text-center text-sm lg:text-base">{item.quantity}</span>
@@ -348,7 +358,7 @@ const Cart = () => {
                       <div className="col-span-1 text-center">
                         <button
                           onClick={() => handleRemoveFromCart(item.id)}
-                          className="p-2 hover:bg-red-50 text-red-600 hover:text-red-700 rounded-lg transition-colors mx-auto block"
+                          className="p-2 hover:bg-red-50 text-[#941007] hover:text-[#941007] rounded-lg transition-colors mx-auto block"
                           title="Delete item"
                         >
                           <FiTrash2 size={18} />
@@ -374,7 +384,7 @@ const Cart = () => {
                   <h2 className="text-lg sm:text-xl font-bold text-gray-900">Order Summary</h2>
                   {/* <button
                     onClick={handleClearCart}
-                    className="text-sm text-red-600 hover:text-red-700 font-semibold hover:underline"
+                    className="text-sm text-[#941007] hover:text-[#941007] font-semibold hover:underline"
                   >
                     Clear Cart
                   </button> */}
@@ -393,7 +403,7 @@ const Cart = () => {
 
                 <div className="flex justify-between items-center mb-6 pb-6 border-b">
                   <span className="text-lg font-bold text-gray-900">Total Amount</span>
-                  <span className="text-xl sm:text-2xl font-bold text-red-600">₹{total.toFixed(2)}</span>
+                  <span className="text-xl sm:text-2xl font-bold text-[#941007]">₹{total.toFixed(2)}</span>
                 </div>
 
                 <Link to="/checkout" className="block w-full">
@@ -413,6 +423,9 @@ const Cart = () => {
         )}
       </div>
     </div>
+      <Footer />
+      <DesktopFooter />
+    </>
   );
 };
 

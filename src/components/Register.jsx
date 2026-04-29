@@ -96,33 +96,29 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Desktop Layout - Image Left, Form Right */}
-      <div className="hidden md:grid md:grid-cols-2 min-h-screen">
-        {/* Left Section - Image */}
-        <div
-          className="bg-cover bg-center relative"
-          style={{
-            backgroundImage: "url('/asset/images/login.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        >
-          <div className="absolute inset-0 bg-black opacity-30"></div>
-        </div>
+    <div className="relative min-h-screen w-full overflow-hidden bg-white">
+      {/* Background Decorative Elements */}
+      <div className="pointer-events-none absolute -top-28 -left-28 z-0 h-[min(85vw,420px)] w-[min(85vw,420px)] rounded-full bg-gradient-to-br from-red-100/90 via-[#941007]/10 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 -right-28 z-0 h-[min(85vw,420px)] w-[min(85vw,420px)] rounded-full bg-gradient-to-tl from-red-100/90 via-[#941007]/10 to-transparent blur-3xl" />
 
-        {/* Right Section - Register Form */}
-        <div className="bg-white flex flex-col justify-center items-center p-8">
-          <div className="w-full max-w-md">
-            <h2 className="text-4xl font-extrabold text-red-600 text-center mb-4">
-              Join Summit
-            </h2>
-            <p className="text-gray-500 text-center mb-10 font-medium">Create your account to start shopping.</p>
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
+        <div className="w-full max-w-md">
+          {/* Header Section */}
+          <div className="mb-6 text-center sm:mb-8">
+            <h1 className="text-3xl font-black tracking-tight text-gray-900 sm:text-4xl">
+              Join <span className="text-[#941007]">Summit</span>
+            </h1>
+            <p className="mt-2 text-sm font-medium text-gray-500 sm:text-base">
+              Create your account to start shopping
+            </p>
+          </div>
 
-            <div className="space-y-6">
+          {/* Form Card */}
+          <div className="rounded-[24px] border border-gray-100 bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)] sm:p-8">
+            <div className="space-y-5">
               {/* Name Input */}
               <div>
-                <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
+                <label className="mb-2 block pl-1 text-xs font-bold uppercase tracking-widest text-gray-700">
                   Full Name
                 </label>
                 <input
@@ -131,13 +127,13 @@ const Register = () => {
                   placeholder="Enter your full name"
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
+                  className="w-full rounded-xl border-2 border-transparent bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 transition-all focus:border-[#941007] focus:bg-white focus:outline-none"
                 />
               </div>
 
               {/* Email Input */}
               <div>
-                <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
+                <label className="mb-2 block pl-1 text-xs font-bold uppercase tracking-widest text-gray-700">
                   Email Address
                 </label>
                 <input
@@ -146,191 +142,72 @@ const Register = () => {
                   placeholder="Enter your email address"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
+                  className="w-full rounded-xl border-2 border-transparent bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 transition-all focus:border-[#941007] focus:bg-white focus:outline-none"
                 />
               </div>
 
               {/* Password Container */}
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
+                  <label className="mb-2 block pl-1 text-xs font-bold uppercase tracking-widest text-gray-700">
                     Password
                   </label>
                   <input
                     type="password"
                     name="password"
-                    placeholder="Enter your password"
+                    placeholder="Password"
                     value={form.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
+                    className="w-full rounded-xl border-2 border-transparent bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 transition-all focus:border-[#941007] focus:bg-white focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
+                  <label className="mb-2 block pl-1 text-xs font-bold uppercase tracking-widest text-gray-700">
                     Confirm
                   </label>
                   <input
                     type="password"
                     name="confirmPassword"
-                    placeholder="Enter your password again"
+                    placeholder="Confirm"
                     value={form.confirmPassword}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
+                    className="w-full rounded-xl border-2 border-transparent bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 transition-all focus:border-[#941007] focus:bg-white focus:outline-none"
                   />
                 </div>
               </div>
 
-              <label className="flex items-center gap-3 text-sm font-medium text-gray-600 group cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="agreed"
-                  checked={form.agreed}
-                  onChange={handleChange}
-                  className="w-5 h-5 rounded-md border-2 border-gray-300 text-red-600 focus:ring-red-500 accent-red-600 cursor-pointer"
-                />
-                <span>
-                  I agree to the{" "}
-                  <span className="text-red-600 font-bold hover:underline">
-                    Terms of Service
-                  </span>
-                </span>
-              </label>
-
-              <button
-                type="button"
-                onClick={handleRegister}
-                disabled={loading}
-                className={`w-full py-4 rounded-xl font-bold text-lg text-white shadow-lg transition-all ${loading
-                  ? 'bg-gray-300 cursor-not-allowed shadow-none'
-                  : 'bg-red-600 hover:bg-black active:scale-95 shadow-red-200'
-                  }`}
-              >
-                {loading ? "Creating Account..." : "Register Now"}
-              </button>
-
-              <p className="text-center text-gray-500 font-medium">
-                Already have an account?{' '}
-                <Link to="/login" className="text-red-600 font-bold hover:underline">
-                  Sign In
-                </Link>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Layout - Only Form */}
-      <div className="md:hidden min-h-screen bg-[#fcfcfc] flex flex-col items-center px-4 py-6 relative overflow-hidden">
-        {/* Decorative elements for mobile */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-red-50 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
-
-        <div className="w-full max-w-sm relative z-10">
-          <div className="mb-4 text-center">
-            <Link to="/">
-              <img
-                src="/asset/images/LogoS.png"
-                alt="Summit Logo"
-                className="w-24 mx-auto mb-6 drop-shadow-sm"
-              />
-            </Link>
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-              Create <span className="text-red-600">Account</span>
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm font-medium">Join the Summit community today</p>
-          </div>
-
-          <div className="bg-white p-8 rounded-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100">
-            <div className="space-y-5">
-              {/* Name Input */}
-              <div>
-                <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Enter your full name"
-                  value={form.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
-                />
-              </div>
-
-              {/* Email Input */}
-              <div>
-                <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter your email address"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
-                />
-              </div>
-
-              {/* Password Input */}
-              <div>
-                <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  value={form.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
-                />
-              </div>
-
-              {/* Confirm Password Input */}
-              <div>
-                <label className="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-widest pl-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Enter your password again"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-red-600 rounded-xl focus:outline-none focus:bg-white transition-all text-gray-800 text-sm font-semibold"
-                />
-              </div>
-
+              {/* Terms Checkbox */}
               <label className="flex items-start gap-3 text-xs font-medium text-gray-500 cursor-pointer">
                 <input
                   type="checkbox"
                   name="agreed"
                   checked={form.agreed}
                   onChange={handleChange}
-                  className="w-4 h-4 mt-0.5 rounded border-gray-300 text-red-600 focus:ring-red-500 accent-red-600"
+                  className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#941007] focus:ring-[#941007] accent-[#941007]"
                 />
                 <span>
                   I agree to the{" "}
-                  <span className="text-red-600 font-bold">Terms of Service</span> and acknowledge the Privacy Policy.
+                  <span className="text-[#941007] font-bold hover:underline">Terms of Service</span> and acknowledge the Privacy Policy.
                 </span>
               </label>
 
+              {/* Submit Button */}
               <button
                 type="button"
                 onClick={handleRegister}
                 disabled={loading}
-                className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all ${loading
+                className={`w-full py-4 rounded-xl font-bold text-lg text-white shadow-lg transition-all ${loading
                   ? 'bg-gray-300 cursor-not-allowed shadow-none'
-                  : 'bg-red-600 hover:bg-black active:scale-95 shadow-red-200'
+                  : 'bg-[#941007] hover:bg-black active:scale-95 shadow-red-200'
                   }`}
               >
-                {loading ? "Creating..." : "Sign Up"}
+                {loading ? "Creating Account..." : "Register Now"}
               </button>
 
-              <div className="text-center">
-                <span className="text-gray-400 text-sm font-medium">Already a member?</span>{' '}
-                <Link to="/login" className="text-red-600 font-bold text-sm hover:underline ml-1">
+              {/* Sign In Link */}
+              <div className="text-center pt-2">
+                <span className="text-sm font-medium text-gray-400">Already have an account?</span>{' '}
+                <Link to="/login" className="ml-1 text-sm font-bold text-[#941007] hover:underline">
                   Sign In
                 </Link>
               </div>

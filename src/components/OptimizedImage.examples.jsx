@@ -147,7 +147,7 @@ export function ImageGallery({ images }) {
             key={idx}
             onClick={() => setActiveIndex(idx)}
             className={`w-16 h-16 flex-shrink-0 rounded border-2 overflow-hidden ${
-              idx === activeIndex ? 'border-red-600' : 'border-gray-300'
+              idx === activeIndex ? 'border-[#941007]' : 'border-gray-300'
             }`}
           >
             <OptimizedImage

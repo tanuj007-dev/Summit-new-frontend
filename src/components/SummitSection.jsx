@@ -74,10 +74,10 @@ const SummitSection = () => {
                   Rs. {Math.floor(item.price)}
                 </p>
                 <div className="flex justify-between w-full mt-3 px-2">
-                  <button className="text-xs rounded-full px-2 py-1 text-white bg-[#B91508]">
+                  <button className="text-xs rounded-full px-2 py-1 text-white bg-[#941007]">
                     Add to cart
                   </button>
-                  <button className="text-xs text-[#B91508] font-semibold">
+                  <button className="text-xs text-[#941007] font-semibold">
                     Buy Now
                   </button>
                 </div>

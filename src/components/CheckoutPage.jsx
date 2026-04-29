@@ -288,7 +288,7 @@ const CheckoutPage = ({ cartItems = [], setCartItems, isLoggedIn }) => {
           <button
             onClick={handlePlaceOrder}
             disabled={isPlacingOrder || cartItems.length === 0}
-            className="mt-6 w-full bg-red-600 text-white py-3 rounded-full font-semibold text-lg hover:bg-red-700 disabled:opacity-50"
+            className="mt-6 w-full bg-[#941007] text-white py-3 rounded-full font-semibold text-lg hover:bg-[#941007] disabled:opacity-50"
           >
             {isPlacingOrder ? 'Placing Order...' : 'Place Order'}
           </button>
@@ -309,9 +309,9 @@ const InputField = ({ label, name, value, onChange, error, type = 'text' }) => (
       value={value}
       onChange={onChange}
       placeholder={label}
-      className={`mt-1 block w-full border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600`}
+      className={`mt-1 block w-full border ${error ? 'border-[#941007]' : 'border-gray-300'} rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#941007]`}
     />
-    {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+    {error && <p className="text-sm text-[#941007] mt-1">{error}</p>}
   </div>
 );
 
